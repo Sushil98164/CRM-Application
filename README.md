@@ -12,7 +12,7 @@ A Customer Relationship Management application built with Django 5.0 and Python 
 ### 1. Clone the Repository
 
 ```bash
-git clone [<repository-url>](https://github.com/Sushil98164/CRM-Application.git)
+git clone https://github.com/Sushil98164/CRM-Application.git
 cd CRM-Application
 ```
 
