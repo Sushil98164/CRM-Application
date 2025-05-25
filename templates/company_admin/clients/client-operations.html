@@ -1,0 +1,679 @@
+{% extends "base_company_admin.html" %}
+{% block title %}
+{% if request.resolver_match.url_name == 'client_add' %}
+Add Client
+{% else %}
+Edit Client
+{% endif %}
+
+{% endblock title %}
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            {% if request.resolver_match.url_name == 'client_add' %}
+            <div class="page-title">Add client</div>
+            {% else %}
+            <div class="page-title">Edit client</div>
+
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="{% url 'company:client_list' %}">Clients</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            {% if request.resolver_match.url_name == 'client_add' %}
+            <li class="active">Add</li>
+            {% else %}
+            <li class="active">Edit</li>
+            {% endif %}
+            
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <form method="POST" enctype="multipart/form-data" class="disable-on-submit">
+            {% csrf_token %}
+  
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Client information</header>
+            
+                </div>
+                    <div class="card-body row">
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field personform.first_name  class="mdl-textfield__input" %}
+                                <label class="mdl-textfield__label">First name</label>
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-lg-6 p-t-20">
+                            
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                
+                                {% render_field personform.last_name  class="mdl-textfield__input"  %}
+                                {% if personform.last_name.errors %}
+                                <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ personform.last_name.errors.0 }}</span>
+                            {% endif %}
+                                <label class="mdl-textfield__label">Last name</label>
+                            </div>
+                        </div>
+                        {{client_formset.management_form}}
+                        {% for form in client_formset %}
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.preferred_name  class="mdl-textfield__input" %}
+                                <label class="mdl-textfield__label">Preferred name</label>
+                                {% render_field form.id %}
+                                {% render_field form.company%}
+
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            
+                                {% render_field form.date_of_birth class="mdl-textfield__input" placeholder="" required="required" %}
+                                {% if form.date_of_birth.errors %}
+                                <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ form.date_of_birth.errors|join:"" }}</span>
+                                {% endif %}
+                                <label class="mdl-textfield__label">Date of birth</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                        
+                                {% render_field personform.gender  class="mdl-textfield__input"%}
+                                <label class="mdl-textfield__label">Gender</label> 
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field personform.email  class="mdl-textfield__input"  %}
+                                {% if personform.email.errors %}
+                                <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ personform.email.errors.0 }}</span>
+                            {% endif %}
+                                <label class="mdl-textfield__label">Email</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field personform.phone_number class="mdl-textfield__input" onkeypress="return /[0-9]/i.test(event.key)"   maxlength="10" title="Please enter a 10-digit phone number." %}
+                                <label class="mdl-textfield__label">Phone number</label>
+                                {% comment %} <span class="mdl-textfield__error">Please enter a valid 10-digit phone number.</span> {% endcomment %}
+                                <span style="color: red; font-size: 13px;  position: absolute; padding-top:5px; ">{{ personform_errors.phone_number.0 }}</span>
+                            </div>
+                        </div> 
+
+                        {{client_formset.management_form}}
+                        {% for form in client_formset %}
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.fix_line pattern="(\+61[2-8][0-9]{8}|0[2-8][0-9]{8})" maxlength="12" title="Enter a valid Australian Fixline number, e.g., 0298765432 or +61298765432"  placeholder="e.g., 0298765432 or +61298765432" class="mdl-textfield__input" %}
+                                <label class="mdl-textfield__label">Fix line</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 p-b-20 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.residential_address  class="mdl-textfield__input" id="date" oninput="autoExpand(this)"  %}
+
+                                <label class="mdl-textfield__label">Residential address</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+
+            
+                        {{emergency_formset.management_form}}
+                        {% for form in emergency_formset %}
+                        <div class="col-lg-8 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.is_authorised_representative  class="mdl-textfield__input"%}
+                                <label class="mdl-textfield__label">Does client have an authorised representative?</label>
+                                {% render_field form.id%}
+                            </div>
+                        </div>
+                        <div class="col-lg-12 p-t-20">
+                            <label class="control-label col-md-3" for="id_profile_image">Upload photo</label>
+                            <div class="col-md-12 dropzone upload-sec text-center">
+                                {% render_field personform.profile_image class="mdl-textfield__input hidden" %}
+                        
+                                <label for="id_profile_image" class="upload-files">Drop files here to upload</label>
+                            </div>
+                            <div id="currentFileContainer">Recommended size: 200x200 pixels</div>
+
+                            <div id="currentFileContainer"></div>
+
+                        </div>
+                        
+                        <div class="col-lg-6 p-t-20 representative_div">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.emergency_name  class="mdl-textfield__input"  %}
+                                <label class="mdl-textfield__label">Name</label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 p-t-20 representative_div">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.emergency_mail  class="mdl-textfield__input"%}
+                                <label class="mdl-textfield__label">Email</label>
+                            </div>
+                        </div>
+                    
+                    
+                        <div class="col-lg-6 p-t-20 representative_div">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.emergency_phone_number class="mdl-textfield__input" pattern="[0-9]{10}" maxlength="10" title="Please enter a 10-digit phone number." id="text6" %}
+
+                                <label class="mdl-textfield__label" for="text6">Phone number</label>
+                                <span class="mdl-textfield__error">Please enter a valid 10-digit phone number.</span>
+                                <span style="color:red">{% if emergency_formset_errors %}
+                                    {% for field_errors in emergency_formset_errors %}
+                                        {% for field, error_msgs in field_errors.items %}
+                                            {% if field == 'emergency_phone_number' %}
+                                                <span style="color:red">{{ error_msgs.0 }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}</span>
+
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 p-t-20 representative_div">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                {% render_field form.emergency_fix_line  class="mdl-textfield__input"  %}
+                                <label class="mdl-textfield__label">Fix line</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+        
+
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Service request form</header>
+                </div>
+
+            
+                <div class="card-body row">
+            
+                
+                    {{ndis_formset.management_form}}
+                    {% for form in ndis_formset %}
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.service_fund_type  class="mdl-textfield__input" id="service_fund_type"%}
+                            <label class="mdl-textfield__label">How is service funded ?</label>
+
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width form-group" id="ndis_services_group" style="display:none;">
+                            {% render_field form.ndis_services class="mdl-textfield__input" id="ndis_services"%}
+                            <label class="mdl-textfield__label">NDIS Services</label>
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.description  class="mdl-textfield__input" oninput="autoExpand(this)" %}
+                            <label class="mdl-textfield__label">Description for requested service</label>
+
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.hours_requested  class="mdl-textfield__input" %}
+                            <label class="mdl-textfield__label">Hours requested</label>
+
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.is_individual_ndis_participant  class="mdl-textfield__input" %}
+                            <label class="mdl-textfield__label">Is the individual NDIS participant?</label>
+
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+                
+                
+                    
+                    <div class="col-lg-6 p-t-20 ndis_div ">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.participant_number  class="mdl-textfield__input ndis_participant_fields"  %}
+
+                            <label class="mdl-textfield__label">NDIS participant number</label>
+                            <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ form.participant_number.errors.0 }}</span>
+
+                        </div>
+                    </div>
+
+                    
+                    <div class="col-lg-6 p-t-20 ndis_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.plan_start_date  class="mdl-textfield__input ndis_participant_fields" placeholder="" %}
+                            <label class="mdl-textfield__label">Start date</label>
+                            <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ form.plan_start_date.errors.0 }}</span>
+
+                        </div>
+                    </div> 
+                    <div class="col-lg-6 p-t-20 ndis_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.plan_end_date  class="mdl-textfield__input ndis_participant_fields" placeholder=""%}
+                            <label class="mdl-textfield__label">End date</label>
+                            <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ form.plan_end_date.errors.0 }}</span>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.plan_goals_and_objectives  class="mdl-textfield__input"  oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label" for="text7">Plan goals and objectives</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.plan_funding_allocation  class="mdl-textfield__input"  oninput="autoExpand(this)"  %}
+
+                            <label class="mdl-textfield__label">Funding allocations</label>
+                        </div>
+                    </div>
+                
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.is_any_service_agreements  class="mdl-textfield__input"%}
+                            <label class="mdl-textfield__label">Has the client made any service agreements?</label> 
+                        </div>
+                    </div>
+                
+            
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.is_any_consents_obtained  class="mdl-textfield__input"%}
+                            <label class="mdl-textfield__label">Does client have any consents obtained?</label> 
+                        </div>
+                    </div>                  
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Health and medical information</header>
+                </div>
+                <div class="card-body row">
+                
+                    
+                    {{medical_formset.management_form}}
+                    {% for form in medical_formset %}
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.is_any_disabilities  class="mdl-textfield__input" %}
+                            <label class="mdl-textfield__label">Does client have any disabilities?</label>
+                            {% render_field form.id%}
+                        </div>
+                    </div>
+        
+
+                <div class="col-lg-12 p-t-20 health_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.primary_disability  class="mdl-textfield__input" oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label">Primary disability</label>
+                            <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ form.primary_disability.errors.0 }}</span>
+                            
+                        </div>
+                    </div> 
+                    
+            
+                    
+                    <div class="col-lg-12 p-t-20 health_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.secondary_disability  class="mdl-textfield__input" oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label">Secondary disability</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.medical_history  class="mdl-textfield__input"  oninput="autoExpand(this)" %}
+                            <label class="mdl-textfield__label">Medical history</label>
+                        </div>
+                    </div>
+            
+                
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.is_any_medication  class="mdl-textfield__input"%}
+                            <label class="mdl-textfield__label">Is there any medication (regulated restrictive practices)? </label> 
+                        </div>
+                    </div>
+                    
+                
+        
+
+                    <div class="col-lg-12 p-t-20 which_one_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.medication_details  class="mdl-textfield__input"   %}
+
+                            <label class="mdl-textfield__label">If yes, which one?</label>
+                        </div>
+                    </div>
+            
+        
+                
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.doctor_consent  class="mdl-textfield__input"%}
+                            <label class="mdl-textfield__label">Is it regulated practice and the doctor has signed on the form?</label> 
+                        </div>
+                    </div>
+        
+
+                
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% comment %} <textarea class="mdl-textfield__input" rows="4" id="text7"></textarea> {% endcomment %}
+                            {% render_field form.allergies_and_sensitives  class="mdl-textfield__input"  oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label">Any allergies and sensitivities</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% comment %} <textarea class="mdl-textfield__input" rows="4" id="text7"></textarea> {% endcomment %}
+                            {% render_field form.healthcare_provider_info  class="mdl-textfield__input"  oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label">Healthcare providers and specialists contact information</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Billing Information</header>
+                </div>
+                <div class="card-body row">
+            
+                    {{client_formset.management_form}}
+                    {% for form in client_formset %}
+                    <div class="col-lg-8 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.fund_management_by  class="mdl-textfield__input"%}
+                            <label class="mdl-textfield__label">How client NDIS funds are managed?</label> 
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="col-lg-12 p-t-20 text-center">
+                        <button type="submit"
+                            class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue" id="submit-btn-id">Submit</button>
+                            <a href="{% url 'company:client_list' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Cancel</a>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function toggleNDISServices() {
+            var serviceFundTypeValue = $('#service_fund_type').val();
+            console.log('Service fund type value:', serviceFundTypeValue);
+
+            if (serviceFundTypeValue === 'NDIS') {
+                $('#ndis_services').closest('.form-group').show();
+                console.log('Showing NDIS services field');
+            } else {
+                    $('#ndis_services_group').hide();
+                    $('#ndis_services').val(null).trigger('change');
+                    console.log('Hiding NDIS services field and clearing its value');
+                }
+            }
+        toggleNDISServices(); // Run on page load
+
+        $('#service_fund_type').change(function() {
+            toggleNDISServices();
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var dateInputs = $('.DateTimeNew.validate');
+        dateInputs.each(function () {
+            $(this).prop('readonly', true);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        function toggleDisplay(element, radioName) {
+            var radioButtons = $(`input[name="${radioName}"]`);
+            element.toggle(radioButtons.filter(':checked').val() == '1');
+        }
+    
+        toggleDisplay($('.representative_block'), 'emergency-0-is_authorised_representative');
+        $('input[name="emergency-0-is_authorised_representative"]').change(function () {
+            toggleDisplay($('.representative_block'), 'emergency-0-is_authorised_representative');
+        });
+    
+        toggleDisplay($('.health_and_medical_block'), 'medical-0-is_any_disabilities');
+        $('input[name="medical-0-is_any_disabilities"]').change(function () {
+            toggleDisplay($('.health_and_medical_block'), 'medical-0-is_any_disabilities');
+        });
+    
+        toggleDisplay($('.any_medication'), 'medical-0-is_any_medication');
+        $('input[name="medical-0-is_any_medication"]').change(function () {
+            toggleDisplay($('.any_medication'), 'medical-0-is_any_medication');
+        });
+    
+        toggleDisplay($('.ndis_participant'), 'ndis-0-is_individual_ndis_participant');
+        $('input[name="ndis-0-is_individual_ndis_participant"]').change(function () {
+            toggleDisplay($('.ndis_participant'), 'ndis-0-is_individual_ndis_participant');
+        });
+    });
+    
+</script>
+
+<script>
+    $(document).ready(function() {
+        function handleNDISVisibility() {
+            var selectedValue = $('#id_ndis-0-is_individual_ndis_participant').val();
+            var fields = ['#id_ndis-0-plan_start_date', '#id_ndis-0-plan_end_date', '#id_ndis-0-participant_number'];
+            
+            $(fields.join(',')).removeAttr('required').parent().removeClass('is-invalid');
+    
+            if (selectedValue == '1') {
+                fields.forEach(function(field) {
+                    var fieldValue = $(field).val().trim();
+                    if (fieldValue === '') {
+                        $(field).attr('required', 'true').parent().addClass('is-invalid');
+                    }
+                });
+                $('.ndis_div').show();
+            } else {
+                $('.ndis_div').hide();
+            }
+        }
+    
+        handleNDISVisibility();
+    
+        $('#id_ndis-0-is_individual_ndis_participant').on('change', handleNDISVisibility);
+        $('#id_ndis-0-plan_start_date, #id_ndis-0-plan_end_date, #id_ndis-0-participant_number').on('keyup', handleNDISVisibility);
+    });
+    
+    
+
+
+    $(document).ready(function() {
+        function handleHealthVisibility() {
+            var selectedValue = $('#id_medical-0-is_any_disabilities').val();
+            var fields = ['#id_medical-0-primary_disability', '#id_medical-0-secondary_disability'];
+    
+            $(fields.join(',')).removeAttr('required').parent().removeClass('is-invalid');
+    
+            if (selectedValue == '1') {
+                fields.forEach(function(field) {
+                    var fieldValue = $(field).val().trim();
+                    if (fieldValue === '') {
+                        $(field).attr('required', 'true').parent().addClass('is-invalid');
+                    }
+                });
+                $('.health_div').show();
+            } else {
+                $('.health_div').hide();
+            }
+        }
+        handleHealthVisibility();
+        $('#id_medical-0-is_any_disabilities, #id_medical-0-primary_disability, #id_medical-0-secondary_disability').on('change keyup', function() {
+            handleHealthVisibility();
+        });
+    });
+    
+    
+
+
+    $(document).ready(function() {
+        function handleRepresentativeVisibility() {
+            var selectedValue = $('#id_emergency-0-is_authorised_representative').val();
+            if (selectedValue == '1') {
+                $('.representative_div').show();
+            } else {
+                $('.representative_div').hide();
+            }
+        }
+    
+        handleRepresentativeVisibility();
+    
+        $('#id_emergency-0-is_authorised_representative').on('change', function() {
+            handleRepresentativeVisibility();
+        });
+    });
+    
+
+    $(document).ready(function() {
+        function handle_any_medication() {
+            var selectedValue = $('#id_medical-0-is_any_medication').val();
+            if (selectedValue == '1') {
+                $('.which_one_div').show();
+            } else {
+                $('.which_one_div').hide();
+            }
+        }
+    
+        handle_any_medication();
+    
+        $('#id_medical-0-is_any_medication').on('change', function() {
+            handle_any_medication();
+        });
+    });
+    
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var textareas = document.querySelectorAll('textarea[id^="id_"]');
+        textareas.forEach(function(textarea) {
+            autoExpand(textarea);
+        });
+    });
+    
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+    </script>
+    <script>
+        window.urlNameToPath = {
+                'client_add': "{% url 'company:client_add' %}",
+            };
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function hideClearCheckbox() {
+                var clearCheckbox = document.getElementById("profile_image-clear_id");
+                if (clearCheckbox) {
+                    clearCheckbox.style.display = "none";
+                    var clearLabel = document.querySelector("label[for='profile_image-clear_id']");
+                    if (clearLabel) {
+                        clearLabel.style.display = "none";
+                    }
+                }
+            }
+            hideClearCheckbox();
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var fileInput = document.getElementById("id_profile_image");
+            var currentFileContainer = document.getElementById("currentFileContainer");
+    
+            fileInput.addEventListener("change", function() {
+                if (fileInput.files.length > 0) {
+                    currentFileContainer.textContent = "Currently selected file: " + fileInput.files[0].name;
+                } else {
+                    currentFileContainer.textContent = "No file selected";
+                }
+            });
+        });
+    </script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var clearCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="-file-clear"]');
+        var clearLabels = document.querySelectorAll('label[for$="-file-clear_id"]');
+        
+        clearCheckboxes.forEach(function(checkbox) {
+            checkbox.remove();
+        });
+        
+        clearLabels.forEach(function(label) {
+            label.remove();
+        });
+    });
+    
+    </script>   
+{% endblock javascripts %}

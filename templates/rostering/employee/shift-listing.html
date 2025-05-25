@@ -1,0 +1,573 @@
+{% extends 'base_rostering.html' %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% block title %}
+  Progress Notes and Timesheet List
+{% endblock %}
+{% block stylesheets %}
+  <style>
+    .capitalize {
+      text-transform: capitalize;
+    }
+
+	.assigned{
+		background-color: #188ae2 ;
+		color: white;
+		border:#188ae2 !important;
+		border-radius: 5px;
+		font-size: 11px	;
+
+	}
+	.in-progress{
+		background-color:  #ff9900;
+		color:rgb(255, 247, 247);
+		border:#188ae2 !important;
+		border-radius: 5px;
+		font-size: 11px	;
+		
+	}
+	.completed{
+		background-color:  rgb(11, 168, 95) !important;
+		color:white;
+		border:rgb(11, 168, 95) !important;
+		border-radius: 5px;
+		font-size: 11px	;
+	}
+	.Pending{
+		background-color: rgb(168, 11, 11) !important;
+		color:white;
+		border:rgb(168, 11, 11) !important;
+		border-radius: 5px;
+		font-size: 11px	;
+	}
+	#addRow{
+		margin-top:10px;
+	}
+	i.fa.fa-plus {
+		color: #fff;
+	}
+  </style>
+  {% endblock stylesheets %}
+  {% block content %}
+	<div class="page-bar">
+		<div class="page-title-breadcrumb">
+			<div class=" pull-left">
+				<div class="page-title">Shifts Reports</div>
+			</div>
+			<ol class="breadcrumb page-breadcrumb pull-right">
+				{% comment %} <li><i class="fa fa-home"></i>&nbsp;<a class="parent-item"
+						href="index.html">Reports</a>&nbsp;<i class="fa fa-angle-right"></i>
+				</li> {% endcomment %}
+				</li>
+				{% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+
+				<li class="active">Roster</li>
+				{% elif request.resolver_match.url_name == 'dailyshift_list_employee' %}
+				<li class="active">Progress note and timesheet</li>
+ 
+			{% endif %}
+			</ol>
+		</div>
+	</div>
+	<div class="row">
+		{% if messages %}
+						<div class="container-fluid">
+						  <ul class="list-unstyled">
+							{% for message in messages %}
+							  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </li>
+							{% endfor %}
+						  </ul>
+						</div>
+						<script>
+							// Automatically close alerts after 5 seconds
+							window.setTimeout(function () {
+							  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+								$(this).remove();
+							  });
+							}, 5000);
+						  </script>
+					  {% endif %}
+		<div class="col-sm-12 col-md-12 col-xl-12">
+			<div class="card-box">
+				<div class="card-head">
+					<!-- {% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+
+					<header></header>
+					{% elif request.resolver_match.url_name == 'employee_ongoing_shifts_list_view' %}
+
+					<header>Ongoing Shifts</header>
+					{% else %}
+					<header>Previous Shifts</header>
+					{% endif %} -->
+				</div>
+				<div class="card-body ">
+					
+					<div class="row">
+						<div class="col-md-12">
+							<div class="tabbable-line">
+							
+								<ul class="nav customtab nav-tabs" role="tablist">
+									{% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+									<li class="nav-item"><a href="{% url 'rostering:employee_shifts_list_view' %}" class="nav-link active">Roster</a></li>
+									<li class="nav-item"><a href="{% url 'rostering:dailyshift_list_employee' %}" class="nav-link ">Progress note and timesheet</a></li>
+									
+									{% else %}
+									<li class="nav-item"><a href="{% url 'rostering:employee_shifts_list_view' %}" class="nav-link ">Roster</a></li>
+									<li class="nav-item"><a href="{% url 'rostering:dailyshift_list_employee' %}" class="nav-link active">Progress note and timesheet</a></li>
+									
+									{% endif %}
+									{% if request.resolver_match.url_name != 'employee_shifts_list_view' %}
+
+									<a href="{% url 'employee:dailyshift_add_employee' %}" id="addRow" class="btn btn-info ml-auto">
+										Add new <i class="fa fa-plus"></i>
+									  </a>
+									{% endif %}
+									
+								</ul>
+								
+								<div class="tab-content">
+									{% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+
+									<div class="tab-pane active fontawesome-demo">
+							
+										<div class="table-scrollable">
+											<table
+												class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+												id="example4">
+	
+												<thead>
+													<tr class="capitalize">
+														<th>SNO</th>
+														<th>Client Name</th>
+														<th>  Start Date And Time </th>
+														<th>  End Date And Time  </th>
+														<th>Status</th>
+														<th> Action </th>
+													</tr>
+												</thead>
+	
+												<tbody>
+													{% if shifts %}
+													{% for shift in shifts %}
+													<tr class="odd gradeX">
+														<td class="patient-img">
+															{% get_proper_counter forloop.counter shifts %}
+														</td>
+														<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name|title}} {% endif %} {% if shift.client.person.last_name %}{{shift.client.person.last_name}}{% endif %} </td>
+														<td class="left">{% if shift.start_date_time %}{{shift.start_date_time}}{% endif %}</td>
+														<td class="left">{% if shift.end_date_time %}{{shift.end_date_time}}{% endif %}</td>
+														{% if shift.status %}
+														{% if shift.status == 'Assigned' %}
+														<td class="left"><button class="assigned" >New</button></td>
+														{% elif shift.status == 'Ongoing' %}
+														<td class="left" ><button class="in-progress" >In progress</button></td>
+														{% elif shift.status == 'Pending' %}
+														<td class="left "><button class="Pending" >Progress note pending</button></td>
+														{% endif %}
+														{% endif %}
+														<td>
+															{% if shift.status == 'Assigned' %}
+															<button id="shift-{{ shift.id }}"
+															class="btn btn-primary punch-in-btn" data-status="{{ shift.status }}">
+															Punch in
+															</button>
+															{% elif shift.status == 'Ongoing' %}
+															<a  href="{% url 'employee:dailyshift_edit' shift.id %}" style="color:white;">	<button id="punch-out"
+															class="btn btn-primary punch-out-btn" data-status="{{ shift.status }}">Punch out</button></a>
+															
+															{% else %}
+															<a  href="{% url 'employee:dailyshift_edit_employee' shift.id %}" style="color:white;">	<button
+																class="btn btn-primary" data-status="{{ shift.status }}">Update</button></a>
+																
+															
+															{% endif %}
+														</td>
+													</tr>
+													{% endfor %}
+													{% else %}
+													<tr class="odd gradeX">
+														<td colspan="6" class="left">No Records Found</td>
+													</tr>
+													{% endif %}
+	
+												</tbody>
+											</table>
+										</div>
+									</div>
+										<div class="row">
+											<div class="col-sm-12 col-md-5">
+												<!-- <div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+													Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+												</div> -->
+											</div>
+											<div class="col-sm-12 col-md-7">
+												<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+													<ul class="pagination float-right">
+														<!-- Previous Button -->
+														<li class="paginate_button page-item previous {% if not shifts.has_previous %}disabled{% endif %}">
+															{% if shifts.has_previous %}
+																<a href="?page={{ shifts.previous_page_number }}" class="page-link">Previous</a>
+															{% else %}
+																<a href="#" class="page-link">Previous</a>
+															{% endif %}
+														</li>
+
+														<!-- First Page -->
+														{% if shifts.number > 4 %}
+															<li class="paginate_button page-item">
+																<a href="?page=1" class="page-link">1</a>
+															</li>
+															{% if shifts.number > 5 %}
+																<li class="paginate_button page-item disabled">
+																	<span class="page-link">...</span>
+																</li>
+															{% endif %}
+														{% endif %}
+
+														<!-- Page Numbers -->
+														{% for num in shifts.paginator.page_range %}
+															{% if num|add:"-3" <= shifts.number and num|add:"3" >= shifts.number %}
+																<li class="paginate_button page-item {% if shifts.number == num %}active{% endif %}">
+																	<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+																</li>
+															{% endif %}
+														{% endfor %}
+
+														<!-- Last Page -->
+														{% if shifts.number < shifts.paginator.num_pages|add:"-3" %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+															<li class="paginate_button page-item">
+																<a href="?page={{ shifts.paginator.num_pages }}" class="page-link">{{ shifts.paginator.num_pages }}</a>
+															</li>
+														{% endif %}
+
+														<!-- Next Button -->
+														<li class="paginate_button page-item next {% if not shifts.has_next %}disabled{% endif %}">
+															{% if shifts.has_next %}
+																<a href="?page={{ shifts.next_page_number }}" class="page-link">Next</a>
+															{% else %}
+																<a href="#" class="page-link">Next</a>
+															{% endif %}
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+
+									{% endif %}
+
+
+									{% if request.resolver_match.url_name == 'employee_ongoing_shifts_list_view' %}
+
+									<div class="tab-pane active fontawesome-demo">
+							
+										<div class="table-scrollable">
+											<table
+												class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+												id="example4">
+	
+												<thead>
+													<tr class="capitalize">
+														<th>SNO</th>
+														<th>Client Name</th>
+														<th>  Start Date And Time </th>
+														<th>  End Date And Time  </th>
+														<th> Action </th>
+													</tr>
+												</thead>
+	
+												<tbody>
+													{% if shifts %}
+													{% for shift in shifts %}
+													<tr class="odd gradeX">
+														<td class="patient-img">
+															{{ forloop.counter }}
+														</td>
+														<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name|title}} {% endif %} {% if shift.client.person.last_name %}{{shift.client.person.last_name}}{% endif %} </td>
+														<td class="left">{% if shift.start_date_time %}{{shift.start_date_time}}{% endif %}</td>
+														<td class="left">{% if shift.end_date_time %}{{shift.end_date_time}}{% endif %}</td>
+														<td>
+															{% if shift.status == 'Ongoing' %}
+															<a href="{% url 'employee:dailyshift_edit' shift.id %}" id="addRow"
+															class="btn btn-info">
+															Update shift
+															</a>
+															{% endif %}
+
+				
+													</a>
+														</td>
+													</tr>
+													{% endfor %}
+													{% else %}
+													<tr class="odd gradeX">
+														<td colspan="6" class="left">No Records Found</td>
+													</tr>
+													{% endif %}
+	
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									{% endif %}
+
+
+									{% if request.resolver_match.url_name == 'dailyshift_list_employee' %}
+
+									<div class="tab-pane active fontawesome-demo">
+							
+										<div class="table-scrollable">
+											<table
+												class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+												id="example4">
+	
+												<thead>
+													<tr class="capitalize">
+														<th>SNO</th>
+														<th>Client Name</th>
+														<th> Actual Start Date And Time </th>
+														<th> Actual End Date And Time  </th>
+														<th>Status</th>
+														<th> Action </th>
+													</tr>
+												</thead>
+	
+												<tbody>
+													{% if shifts %}
+													{% for shift in shifts %}
+													<tr class="odd gradeX">
+														<td class="patient-img">
+															{% get_proper_counter forloop.counter shifts %}
+														</td>
+														<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name|title}} {% endif %} {% if shift.client.person.last_name %}{{shift.client.person.last_name}}{% endif %} </td>
+														{% if shift.daily_shift_case_notes.all %}
+														{% for actual_date_time in shift.daily_shift_case_notes.all %}
+														<td class="left">{% if actual_date_time.start_date_time %}{{actual_date_time.start_date_time}}{% endif %}</td>
+														<td class="left">{% if actual_date_time.end_date_time %}{{actual_date_time.end_date_time}}{% endif %}</td>
+														{% if shift.status == 'Completed' %}
+														<td class="left"><button class="completed" >Completed</button></td>
+														{% elif shift.status == 'Pending' %}
+														<td class="left"><button class="Pending" >Progress note pending</button></td>
+														{% endif %}
+														{% endfor %}
+														{% else %}
+														<td class="left"></td>
+														<td class="left"></td>
+														{% endif %}
+
+														<td>
+															<a href="{% url 'employee:dailyshift_edit_employee' shift.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-pencil"></i>
+															</a>
+															<a href="{% url 'employee:dailyshift_view' shift.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+															</a>
+														</td>
+													</tr>
+												
+													{% endfor %}
+													{% else %}
+													<tr class="odd gradeX">
+														<td colspan="6" class="left">No Records Found</td>
+													</tr>
+													{% endif %}
+	
+												</tbody>
+											</table>
+										</div>
+										<div class="row">
+											<div class="col-sm-12 col-md-5">
+												<!-- <div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+													Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+												</div> -->
+											</div>
+											<div class="col-sm-12 col-md-7">
+												<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+													<ul class="pagination float-right">
+														<!-- Previous Button -->
+														<li class="paginate_button page-item previous {% if not shifts.has_previous %}disabled{% endif %}">
+															{% if shifts.has_previous %}
+																<a href="?page={{ shifts.previous_page_number }}" class="page-link">Previous</a>
+															{% else %}
+																<a href="#" class="page-link">Previous</a>
+															{% endif %}
+														</li>
+
+														<!-- First Page -->
+														{% if shifts.number > 4 %}
+															<li class="paginate_button page-item">
+																<a href="?page=1" class="page-link">1</a>
+															</li>
+															{% if shifts.number > 5 %}
+																<li class="paginate_button page-item disabled">
+																	<span class="page-link">...</span>
+																</li>
+															{% endif %}
+														{% endif %}
+
+														<!-- Page Numbers -->
+														{% for num in shifts.paginator.page_range %}
+															{% if num|add:"-3" <= shifts.number and num|add:"3" >= shifts.number %}
+																<li class="paginate_button page-item {% if shifts.number == num %}active{% endif %}">
+																	<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+																</li>
+															{% endif %}
+														{% endfor %}
+
+														<!-- Last Page -->
+														{% if shifts.number < shifts.paginator.num_pages|add:"-3" %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+															<li class="paginate_button page-item">
+																<a href="?page={{ shifts.paginator.num_pages }}" class="page-link">{{ shifts.paginator.num_pages }}</a>
+															</li>
+														{% endif %}
+
+														<!-- Next Button -->
+														<li class="paginate_button page-item next {% if not shifts.has_next %}disabled{% endif %}">
+															{% if shifts.has_next %}
+																<a href="?page={{ shifts.next_page_number }}" class="page-link">Next</a>
+															{% else %}
+																<a href="#" class="page-link">Next</a>
+															{% endif %}
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									{% endif %}
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+{% block javascripts %}
+
+
+<!-- <script>
+document.querySelectorAll('.punch-in-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        const url = this.getAttribute('data-url');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Progress note created successfully!');
+
+                // Change button text to "Punch Out"
+                this.textContent = 'Punch Out';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-secondary');
+                
+                // Disable all other punch in buttons
+                document.querySelectorAll('.punch-in-btn').forEach(otherButton => {
+                    if (otherButton !== this) {
+                        otherButton.disabled = true;
+                    }
+                });
+            } else {
+                alert('An error occurred: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script> -->
+
+<script>
+	function disablePunchInButtons() {
+        $('.punch-in-btn').attr('disabled', true);
+    }
+
+    // Function to enable all punch-in buttons
+    function enablePunchInButtons() {
+        $('.punch-in-btn').attr('disabled', false);
+    }
+
+	$('.punch-in-btn').click(function () {
+		const button = $(this); 
+		const shift_id = button.attr('id').split('-')[1];
+
+		button.prop('disabled', true);
+        button.html('<span class="loader"></span>');
+
+		$.ajax({
+			url: "{% url 'employee:create_progress_note_by_employee' %}",
+			method: 'POST',
+			data: { shift_id: shift_id }, 
+			headers: {
+				'X-CSRFToken': '{{ csrf_token }}'
+			},
+			success: function (response) {
+				window.location.reload(); 
+			},
+			error: function (xhr, status, error) {
+				console.error(xhr.responseText);
+			}
+			
+		});
+	});
+
+
+    $(document).ready(function () {
+        console.log("Document is ready");
+
+        
+
+        // Check on page load if there's any punch-out button active or shift status is 'Ongoing'
+        if ($('[data-status="Ongoing"]').length > 0 || $('[data-status="Ongoing"]').length > 0) {
+            console.log("Found punch-out buttons or ongoing shifts on page load");
+            disablePunchInButtons();
+        } else {
+            console.log("No punch-out buttons or ongoing shifts found on page load");
+            enablePunchInButtons();
+        }
+    });
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const punchOutBtn = document.getElementById('punch-out')
+
+    punchOutBtn.addEventListener('click',function() {
+         
+        punchOutBtn.disabled = true;
+        punchOutBtn.innerHTML = '<span class="loader"></span>';
+    });
+
+});
+</script>
+
+	
+{% endblock javascripts %}

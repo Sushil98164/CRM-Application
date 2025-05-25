@@ -1,0 +1,172 @@
+{% extends 'base_landing_page.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+{% include 'landing_website/includes/header.html' %}
+  <main id="main">
+    <!-- ======= Ecosystem Section ======= -->
+   <section id="ecosystem-about" class="ecosystem-about">
+
+      <div class="container-fluid" data-aos="fade-up">
+        <div class="row gx-0">
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'landing_page/img/ecosystem.png' %}" class="img-fluid" alt="">
+          </div>
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3 class="">The Beginning</h3>
+              <h2 class="ndis-providers">NDIS clouds curated for NDIS providers</h2>
+              <p class="about-us-text">Inspired by a pressing need to address the escalating costs faced by NDIS providers for technology, and the glaring absence of user-friendly solutions accommodating diversity—including linguistic, digital literacy, and overall health literacy challenges—we embarked on our mission. Recognizing these barriers could significantly hinder the quality of care and access to services for NDIS participants, BellsCRM was founded. Our goal was clear: to develop an inclusive solution that not only reduces financial burdens on providers but also enriches the NDIS experience for all.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section><!-- End Ecosystem Section -->
+    <section id="scroll-bar" class="scroll-bar">
+        <div class="container">
+            <div class="row progress-bar-row">
+                <div class="col-md-10 scrool-bar-col">
+        
+  
+                <nav class="navbar-2">
+                        <div class="progress-bar"></div>
+                        <div class="progress-bar--increment"></div>
+                        <ul>
+                            <!-- <li><a href="#top">Header</a></li> -->
+                            <span class="progress-bar--circle-1"></span><li><a href="#article-1"></a></li>
+                            <li><a href="#article-2"><span class="progress-bar--circle-2"></span></a></li>
+                            <li><a href="#article-3"><span class="progress-bar--circle"></span></a></li>
+                        </ul>
+                    </nav>
+               
+                <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-offset="0" tabindex="0" class="col-md-11">
+                    <article class="article" id="article-1">
+                        <h4 id="item-1">The Challenge</h4>
+                        <p>Embarking on this journey, we confronted a landscape dominated by one-size-fits-all solutions that
+                            overlooked the unique needs of diverse NDIS participants. The dual challenge of making technology both
+                            accessible and cost-effective for providers was daunting. Through relentless research, collaboration
+                            with industry experts, and feedback from the community, we began to break down these barriers, crafting
+                            solutions that were as versatile as the needs they aimed to meet.</p>
+                    </article>
+                    <article class="article" id="article-2">
+                        <h4 id="item-2">The Milestones</h4>
+                        <p>As we navigated the complexities of technology and service provision in the NDIS sector, our milestones
+                            mirrored a deepening comprehension of our community's diverse needs. A notable accomplishment was the
+                            development of a system ingeniously crafted to welcome individuals from various linguistic backgrounds
+                            through the use of straightforward, plain English. This method dismantled language barriers and
+                            democratised access to essential services, making it easier for all NDIS providers to understand and
+                            engage with our solutions. Over the course of three months at an NDIS service provider named 'My Way
+                            Support Tas,' from October 2023 to December 2023 Christmas. We actively engaged with managers,
+                            administrators, and carers to listen, implement feedback, and specifically cater to Tasmanians from low
+                            literacy backgrounds, demonstrating our system's adaptability and inclusiveness. (Fun Fact : That's
+                            where are our name came from Christmas and Bells)</p>
+                    </article>
+                    <article class="article" id="article-3">
+                        <h4 id="item-3">The Future</h4>
+                        <p>As we navigated the complexities of technology and service provision in the NDIS sector, our milestones
+                            mirrored a deepening comprehension of our community's diverse needs. A notable accomplishment was the
+                            development of a system ingeniously crafted to welcome individuals from various linguistic backgrounds
+                            through the use of straightforward, plain English. This method dismantled language barriers and
+                            democratised access to essential services, making it easier for all NDIS participants to understand and
+                            engage with our solutions. Over the course of three months at an NDIS service provider named 'My Way
+                            Support Tas,' we actively engaged with managers, administrators, and carers to listen, implement
+                            feedback, and specifically cater to Tasmanians from low literacy backgrounds, demonstrating our system's
+                            adaptability and inclusiveness.<br><br>
+            
+                            Looking to the future, we are committed to expanding our horizons beyond the NDIS sector. Driven by a
+                            passion for solving problems, we are dedicating time, effort, and resources to learn about and
+                            potentially enter other sectors where our analysis indicates we can add value. Our readiness to spread
+                            our skills and knowledge is guided by our unwavering commitment to make a meaningful difference. Whether
+                            in the NDIS sector or beyond, our mission remains the same: to dismantle barriers and empower all users
+                            with accessible, effective solutions.
+                        </p>
+                    </article>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <!-- <footer id="footer" class="footer"> -->
+    <section class="about-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-10">
+                    <p>We invite you to be a part of this transformative journey. Whether you're an NDIS provider, participant, or advocate for inclusive technology, your support and feedback are invaluable. Together, we can make a difference in the lives of many, paving the way for a more accessible and empowering future for NDIS participants.</p>
+                </div>
+                <div class="col-lg-2 ">
+                    <a href="{% url 'website:landing_page' %}#contact" class="call-us-btn"> Contact Us <svg xmlns="http://www.w3.org/2000/svg" width="36" height="29" viewBox="0 0 36 29" fill="none">
+                        <path d="M19.2448 2.5L32 14.5L19.2448 26.5" stroke="#4154F1" stroke-width="5"/>
+                        <path d="M0 14.5H31.7762" stroke="#4154F1" stroke-width="5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'landing_website/includes/footer.html' %}
+
+  <!-- </footer>End Footer -->
+  {% block javascripts %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+ $(document).ready(function(){
+   // Anchor arrow click
+   // smooth scroll to anchor tag
+   $('a[href*="#"]:not([href="#featured"])').click(function() {
+     if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+       var target = $(this.hash);
+       target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+       if (target.length) {
+         // Smooth scroll to link section
+         $('html, body').animate({
+           scrollTop: target.offset().top + 50
+         }, 900);
+         return false;
+       }
+     }
+   });
+
+   // Highlight navigation
+   $(window).scroll(function() {
+     var windowpos = $(window).scrollTop();
+     $('nav li a').removeClass('active');
+     $('.progress-bar--circle').removeClass('active');
+
+     if (windowpos > $('#article-1').offset().top) {
+       $('nav li a').removeClass('active');
+       $('a[href$="#article-1"]').addClass('active');
+       $('a[href$="#article-1"] .progress-bar--circle').addClass('active');
+     }
+
+     if (windowpos > $('#article-2').offset().top) {
+       $('nav li a').removeClass('active');
+       $('a[href$="#article-2"]').addClass('active');
+       $('a[href$="#article-2"] .progress-bar--circle').addClass('active');
+     }
+
+     if (windowpos > $('#article-3').offset().top) {
+       $('nav li a').removeClass('active');
+       $('a[href$="#article-3"]').addClass('active');
+       $('a[href$="#article-3"] .progress-bar--circle').addClass('active');
+     }
+
+     // Scrollbar progression
+     var scrollTop = $(window).scrollTop(),
+         docHeight = $(document).height(),
+         winHeight = $(window).height(),
+         scrollPercent = (scrollTop) / (docHeight - winHeight),
+         scrollPercentRounded = Math.round(scrollPercent*100);
+
+     $('.progress-bar--increment').css('height', scrollPercentRounded + '%');
+   });
+ });
+</script>
+  {% endblock javascripts %}
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  {% endblock %}

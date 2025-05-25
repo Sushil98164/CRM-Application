@@ -1,0 +1,1584 @@
+{% extends "base_company_admin.html" %}
+{% load company_admin_tags %}
+{% load static %}
+{% block title %} 
+Employee Profile
+{% endblock title %}
+{% load widget_tweaks %}
+
+{% block stylesheets %}
+<style>
+    .card-2 {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .card-2 .card-link  {
+        color: #000;
+        font-size: 20px;
+        text-decoration: none;
+        width: 100% !important;
+        display: flex;
+    }
+
+
+	.modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+		button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 24px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		border-radius: 5px;
+		margin-right: 20px;
+		}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1.25em auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed {
+            border-radius: 0.25em;
+            background: initial;
+            display: inline-block;
+            background-color: rgb(221, 51, 51);
+            border-left-color: rgb(221, 51, 51);
+            border-right-color: rgb(221, 51, 51);
+            color: #ffffff;
+            font-size: 1.0625em;
+            margin: 0.3125em;
+            padding: 0.625em 2em;
+            box-shadow: none;
+            font-weight: 500;
+        }
+		.delete-confirmation-modal.modal #deleteConfirmed:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(158, 158, 158, .2);
+			border: 0;
+			border-radius: 0.25em;
+			color: #000000;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}   
+        .profile-userpic-2 img {
+            border: 3px solid rgb(210, 214, 222);
+            margin: auto;
+            width: 248px;
+            height: 164px;
+            max-width: 100%;
+        }
+        #addclients .modal-content{
+            height:500px;
+            overflow: scroll;
+        }
+        #viewclients .modal-content{
+            height:500px;
+            overflow: scroll;
+        }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Employee profile</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="{% url 'company:employee_list' %}">Employees</a>&nbsp;<i class="fa fa-angle-right"></i>
+
+            
+            {% if request.resolver_match.url_name == 'employee_profile_view' %}
+            <li class="active">Employee profile</li>
+            {% elif request.resolver_match.url_name == 'company_employee_documents' %}
+            <li class="active">Documents</li>
+            {% elif request.resolver_match.url_name == 'manager_employee_profile_clients' %}
+            <li class="active">Clients</li>
+            {% endif %}
+
+            {% if request.resolver_match.url_name == 'company_employee_document' %}
+
+        
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employee profile</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'company:company_employee_documents' employee_id %}">Documents</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            
+            <li class="active">Edit</li>
+            {% elif request.resolver_match.url_name == 'manager_employee_profile_edit' %}
+         
+            
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employee profile</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">View</li>
+            {% endif %}
+        </ol>
+    </div>
+</div>
+<div class="row">
+{% if messages %}
+<div class="container-fluid">
+    <ul class="list-unstyled">
+    {% for message in messages %}
+        <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<script>
+    // Automatically close alerts after 5 seconds
+    window.setTimeout(function () {
+        $(".alert").fadeTo(500, 0).slideUp(500, function () {
+        $(this).remove();
+        });
+    }, 5000);
+    </script>
+{% endif %}
+    <div class="col-md-12">
+        
+        <!-- BEGIN PROFILE SIDEBAR -->
+        <div class="profile-sidebar">
+
+        
+        </div>
+        <!-- END BEGIN PROFILE SIDEBAR -->
+        <!-- BEGIN PROFILE CONTENT -->
+        <div class="profile-content">
+       
+            <div class="row">
+                <div class="col-md-12">
+                    {% comment %} <div class="row">
+                        <div class="col-md-2 me-4   ">
+                            <div class="form-greeoup">
+                                <select class="form-control" id="employee-select">
+                                    <option value="" disabled selected>Select an employee</option>
+                                    {% for employee in employees %}
+                                    <option value="{{ employee.id }}">{{ employee.person.first_name }} {{ employee.person.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                
+                        
+                                
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+                    <!-- BEGIN PROFILE SIDEBAR -->
+                    <div class="profile-sidebar">
+                        <div class="card card-topline-aqua">
+                            <div class="card-body no-padding height-9">
+                                <div class="row">
+                                    <div class="profile-userpic">
+                                        <img src="{% if profile.person.profile_image %}{{profile.person.profile_image.url}}{% else %}{% static 'admin/img/user.png' %}{% endif %}" class="img-responsive" alt="">
+                                    </div>
+                                </div>
+                                <div class="profile-usertitle">
+                                    <div class="profile-user-title">Personal details
+                                    </div>
+                                </div>
+                                <div class="user-details">
+                                    <div class="user-info">
+                                        <p class="user-profile-content">First
+                                            name<span>{% if profile.person.first_name %}{{profile.person.first_name}}{% endif %}</span></p>
+                                        <p class="user-profile-content">Last
+                                            name <span>{% if profile.person.last_name %}{{profile.person.last_name}}{% endif %}</span></p>
+                                        <p class="user-profile-content">Date of
+                                            birth<span>
+                                                {% if profile.date_of_birth %}{{profile.date_of_birth}}{% endif %}<span></span></span></p>
+                                        <p class="user-profile-content">
+                                            Gender<span>{% if profile.person.gender %}{{profile.person.gender}}{% endif %}</span></p>
+                                    </div>
+                                </div>
+                                <!-- END SIDEBAR USER TITLE -->
+
+                            </div>
+
+                        </div>
+                        <div class="card">
+                            <div class="card-head card-topline-aqua">
+                                <header>Contact info</header>
+                            </div>
+                            <div class="card-body no-padding height-9">
+                                <div class="row  m-t-10">
+                                    <div class="col-md-12">
+                                        <div class="user-details">
+                                            <div class="user-info">
+                                                <p class="user-profile-content">Email<span>{% if profile.person.email %}{{profile.person.email}}{% endif %}</span>
+                                                </p>
+                                                <p class="user-profile-content">Phone
+                                                    number<span>{% if profile.person.phone_number %}{{profile.person.phone_number}}{% endif %}</span></p>
+                                                <p class="user-profile-content">Address<span>{% if profile.address %}{{profile.address}}{% endif %}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END BEGIN PROFILE SIDEBAR -->
+                    <!-- BEGIN PROFILE CONTENT -->
+                    <div class="profile-content">
+                        <div class="row">
+                            <div class="card" style="width: 100%;">
+                                <div class="card-topline-aqua">
+                                    <header></header>
+                                </div>
+                                <div class="white-box ">
+                                    <!-- Nav tabs -->
+                                    <div class="p-rl-20">
+                                        {% include 'company_admin/employee/include/tabs-bar.html' %}
+                                    </div>
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+
+
+                                        {% if request.resolver_match.url_name == 'employee_profile_view' %}
+
+                                        <div class="tab-pane active fontawesome-demo">
+                                            <div class="row">
+                                                <div class="col-md-12 p-5">
+                                                    <div class="user-details">
+                                                        <div class="user-info">
+                                                            <p class="user-profile-content">
+                                                                Permission set<span>
+                                                                    {% if profile.template  %}
+                                                                    {{profile.template.name|split_string}}
+                                                                    {% endif %}
+
+                                                                </span></p>
+                                                                <p class="user-profile-content">
+                                                                    Employment type<span>
+                                                                        {{profile.employment_type}}
+    
+                                                                    </span></p>
+                                                            <p class="user-profile-content">
+                                                                Approved by admin<span>
+                                                                    {% if profile.person.is_active %}
+                                                                    Yes
+                                                                    {% else %}
+                                                                    No
+                                                                    {% endif %}
+                                                                </span></p>
+
+                                                         
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% if employee_id in show_eye_button_for %}
+                                            <div class="row">
+                                                <div class="col-lg-12 mt-5 text-center">
+                                                    <a href="{% url 'company:manager_employee_profile_edit' profile.id %}"
+                                                        class="btn btn-primary btn-xs" id="editBtn">
+                                                        Edit</i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        {% endif %}
+                                        
+                                        {% if request.resolver_match.url_name == 'company_employee_documents' %}
+                                        <div class="tab-pane active fontawesome-demo">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div id="accordion" style="width: 100%;">
+            
+                                                        <div class="card-2">
+                                                            <div class="card-header">
+                                                                <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                                                                    IDs and checks
+                                                                </a>
+                                                            </div>
+                                                            <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                                            
+                                                        
+                                                        <div class="card-body ">
+                        
+                                                                    <div class="table-scrollable">
+                                                                        <table
+                                                                            class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                            id="">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>S.no</th>
+                                                                                    <th>Document name</th>
+                                                                                    <th>Expiry date</th>
+                                                                                    <th style="width: 125px;">Status</th>
+                                                                                    <th>Action</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% if IDsAndChecksDocuments %}
+                                                                                {% for document in IDsAndChecksDocuments %}
+                                                                                <tr class="odd">
+                                                                                    <td>{{forloop.counter}}</td>
+                                                                                    <td>{{document.name}}</td>
+                                                                                    <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                                            <td>     
+                                                                                                <select class="form-control document-status-selector" data-document-id="{{ document.id }}"  {% if not can_approve_document %} disabled {% endif %} >
+                                                                                                    <option value="Pending" {% if document.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                                                                                    <option value="Approved" {% if document.status == 'Approved' %} selected {% endif %}>Approved</option>
+                                                                                                    <option value="Reject" {% if document.status == 'Reject' %} selected {% endif %}>Reject</option>
+                                                                                                </select>
+                                                                                    </td>
+                                                                                    <td class="d-flex"> 
+                                                                                        {% if document.file %}
+            
+                                                                                    <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs" style="height: fit-content;">
+                                                                                        <i class="fa fa-eye"></i>
+                                                                                    </a>
+                                                                                    {% endif %}
+                                                                                    
+                                                                                    {% if employee_id in show_delete_button_for %}
+                                                                                        {% comment %} {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' or  request.user|has_permission:'employee.delete_own_documents' %} {% endcomment %}
+
+                                                                                    <form id="deleteForm_{{ document.id }}" action="{% url 'company:company_manager_delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                                            {% csrf_token %}
+                                                                        
+                                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                                <i class="fa fa-trash-o"></i>
+                                                                                            </button>
+                                                                                        </form>
+                                                                                        {% endif %}
+                                                                                    {% comment %} {% endif %} {% endcomment %}
+                                                                                </td> 
+                                                                                </tr>
+                                                                                {% endfor %}
+                                                                                {% else %}
+                                                                                <tr class="odd">
+                                                                                <td colspan="5">
+                                                                                    <center>No data available</center>
+                                                                                </td>
+                                                                                </tr>
+                                                                                {% endif %}
+                                                                               
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        <div class="card-2">
+                                                            <div class="card-header ">
+                                                            <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
+                                                                Qualification
+                                                            </a>
+                                                            </div>
+                                                            <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                                            <div class="card-body ">
+                        
+                                                                    <div class="table-scrollable">
+                                                                        <table
+                                                                            class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                            id="">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>S.no</th>
+                                                                                    <th>Document name</th>
+                                                                                    <th>Expiry date</th>
+                                                                                    <th>Status</th>
+                                                                                    <th>Action</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% if QualificationDocuments %}
+                                                                                {% for document in QualificationDocuments %}
+            
+                                                                                <tr class="odd">
+                                                                                    <td>{{forloop.counter}}</td>
+                                                                                    <td>{{document.name}}</td>
+                                                                                    <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                                    <td>
+                                                                                        <select class="form-control document-status-selector" data-document-id="{{ document.id }}" {% if not can_approve_document %} disabled {% endif %}>
+                                                                                            <option value="Pending" {% if document.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                                                                            <option value="Approved" {% if document.status == 'Approved' %} selected {% endif %}>Approved</option>
+                                                                                            <option value="Reject" {% if document.status == 'Reject' %} selected {% endif %}>Reject</option>
+                                                                                        </select>
+                                                                                    </td>
+                                                                                    <td class="d-flex">
+                                                                                        {% if document.file %}
+                                                                                    <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs" style="height: fit-content;">
+                                                                                        <i class="fa fa-eye"></i>
+                                                                                    </a>
+                                                                                    {% endif %}
+
+                                                                                    {% comment %} {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' %} {% endcomment %}
+                                                                                    {% if employee_id in show_delete_button_for %}
+
+                                                                                  <form id="deleteForm_{{ document.id }}" action="{% url 'company:company_manager_delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                                        {% csrf_token %}
+                                                                    
+                                                                                        <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                            <i class="fa fa-trash-o"></i>
+                                                                                        </button>
+                                                                                    </form>
+                                                                                    {% endif %} 
+                                                                                    </td>
+                                                                                </tr>
+                                                                               
+                                                                                {% endfor %}
+                                                                                {% else %}
+                                                                                <tr class="odd">
+                                                                                <td colspan="5">
+                                                                                    <center>No data available</center>
+                                                                                </td>
+                                                                                </tr>
+                                                                                {% endif %}
+                                                                               
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+            
+                                                        <div class="card-2">
+                                                            <div class="card-header ">
+                                                                <a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
+                                                                    Other
+                                                                </a>
+                                                            </div>
+                                                            <div id="collapseThree" class="collapse" data-parent="#accordion">
+                                                            <div class="card-body ">
+                        
+                                                                    <div class="table-scrollable">
+                                                                        <table
+                                                                            class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                            id="">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>S.no</th>
+                                                                                    <th>Document name</th>
+                                                                                    <th>Expiry date</th>
+                                                                                    <th>Status</th>
+                                                                                    <th>Action</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% if OtherDocuments %}
+                                                                                {% for document in OtherDocuments %}
+            
+                                                                                <tr class="odd">
+                                                                                    <td>{{forloop.counter}}</td>
+                                                                                    <td>{{document.name}}</td>
+                                                                                    <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                                    <td>
+                                                                                        <select class="form-control document-status-selector" data-document-id="{{ document.id }}" {% if not can_approve_document %} disabled {% endif %}>
+                                                                                            <option value="Pending" {% if document.status == 'Pending' %} selected {% endif %}>Pending</option>
+                                                                                            <option value="Approved" {% if document.status == 'Approved' %} selected {% endif %}>Approved</option>
+                                                                                            <option value="Reject" {% if document.status == 'Reject' %} selected {% endif %}>Reject</option>
+                                                                                        </select>
+                                                                                    </td>
+                                                                                    
+                                                                                    <td class="d-flex">
+                                                                                        {% if document.file %}
+                                                                                    <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs" style="height: fit-content;">
+                                                                                        <i class="fa fa-eye"></i>
+                                                                                    </a>
+                                                                                    {% endif %}
+                                                                                    {% comment %} {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' %} {% endcomment %}
+                                                                                    {% if employee_id in show_delete_button_for %}
+
+                                                                                   <form id="deleteForm_{{ document.id }}" action="{% url 'company:company_manager_delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                                        {% csrf_token %}
+                                                                    
+                                                                                        <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                            <i class="fa fa-trash-o"></i>
+                                                                                        </button>
+                                                                                    </form>
+                                                                                    {% endif %}
+                                                                                    </td>
+                                                                                </tr>
+                                                                               
+                                                                                {% endfor %}
+                                                                                {% else %}
+                                                                                <tr class="odd">
+                                                                                <td colspan="5">
+                                                                                    <center>No data available</center>
+                                                                                </td>
+                                                                                </tr>
+                                                                                {% endif %}
+                                                                            
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+            
+                                                        </div>
+            
+                                                    </div>
+            
+                                                  </div>  
+                                                  {% if is_edit %}
+                                                    <div class="row">
+                                                        <div class="col-lg-12 mt-5 text-center">
+                                                        <a href="{% url 'company:company_employee_document' employee_id %}"
+                                                                                            class="btn btn-primary btn-xs" id="editBtn">
+                                                                                            Edit</i>
+                                                            </a> 
+                                                        </div>
+                                                        
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                      
+                                        {% if request.resolver_match.url_name == 'manager_employee_profile_clients' %}
+                                      
+                                            <div class="tab-pane active">
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        {% comment %} {% if not has_client_assignment %}
+                                                        <button
+                                                            type="button" class="btn btn-info" id="addRow"
+                                                            data-toggle="modal" data-target="#addclients">Connect clients
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                        {% elif not has_active_client_assignment %}
+                                                        <button
+                                                            type="button" class="btn btn-info" id="addRow"
+                                                            data-toggle="modal" data-target="#viewclients">Connect clients
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                        {% else %}
+                                                        <button
+                                                            type="button" class="btn btn-info" id="addRow"
+                                                            data-toggle="modal" data-target="#viewclients">Update clients
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        {% endif %} {% endcomment %}
+                                                        <div class="table-scrollable">
+                                                            <table
+                                                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                id="">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>S.no</th>
+                                                                        <th>Client name</th>
+                                                                        <th>Preferred name</th>
+                                                                        <th>Address</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% if related_clients %}
+                                                                    {% for client in related_clients %}
+                                                                    <tr class="odd">
+                                                                        <td>{{ forloop.counter }}</td>
+                                                                        <td>{{client.person}}</td>
+                                                                        <td>{% if client.preferred_name %}{{client.preferred_name}}{% endif %}</td>
+                                                                        <td>{% if client.residential_address %}{{client.residential_address}}{% endif %}</td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                    {% else %}
+                                                                    <tr class="odd">
+                                                                        <td colspan="4">No clients found</td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal" id="addclients">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <div class="card-body pb-2">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" id="search-client-modal" class="form-control pl-3" name="search" placeholder="Enter client Name"  style="border-radius:4px ;">
+                                                                    <span span class="input-group-append">
+                                                                        <button class="btn ripple btn-secondary" id="add-clear-search-btn" type="button" style="display: none;">
+                                                                            <i class="fa fa-times"></i>
+                                                                        </button>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="table-scrollable">
+                                                                <form id="client-form" class="disable-on-submit">
+                                                                    {% csrf_token %}
+                                                                    <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle text-center" id="client-table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th><input id="checkbox1" type="checkbox">&nbsp; Select all</th>
+                                                                                <th>S.no</th>
+                                                                                <th>Client name</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for client in clients %}
+                                                                            <tr class="client-row">
+                                                                                <td><input type="checkbox" class="client-checkbox" name="clients" value="{{ client.id }}"></td>
+                                                                                <td>{{ forloop.counter }}</td>
+                                                                                <td class="client-name">{{ client.person.first_name }}</td>
+                                                                            </tr>
+                                                                            {% endfor %}
+                                                                            <tr id="no-clients-row" style="display: none;">
+                                                                                <td colspan="3">No clients found</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <input type="hidden" id="emp_id" name="employee" value="{{ employee_id }}">
+                                                                    <div class="col-lg-12 p-t-20 text-center fix-button">
+                                                                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue add-selected-clients">Add</button>
+                                                                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default btn-close" data-dismiss="modal" id="addCancelBtn">Cancel</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                            
+
+
+                                            <div class="modal" id="viewclients">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <div class="card-body pb-2">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" id="search-update-client-modal" class="form-control pl-3" name="search" placeholder="Enter client Name"  style="border-radius:4px ;">
+                                                                    <span span class="input-group-append">
+                                                                        <button class="btn ripple btn-secondary" id="clear-search-btn" type="button" style="display: none;">
+                                                                            <i class="fa fa-times"></i>
+                                                                        </button>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <form id="update-client-form" class="disable-on-submit">
+                                                                {% csrf_token %}
+                                                                <div class="table-scrollable">
+                                                                    <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle text-center" id="update-client-table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th><input id="checkbox2" class="related_clients_checkbox select-all-checkbox" type="checkbox" value="select-all">&nbsp;Select all</th>
+                                                                                <th>S.no</th>
+                                                                                <th>Client name</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for client in related_clients %}
+                                                                            <tr class="client-row">
+                                                                                <td><input type="checkbox" class="update-client-checkbox related_clients_checkbox" id="checkbox{{ forloop.parentloop.counter }}_{{ forloop.counter }}" name="client_ids[]" checked value="{{ client.id }}"></td>
+                                                                                <td>{{ forloop.counter }}</td>
+                                                                                <td class="client-name">{{ client.person.first_name }}</td>
+                                                                            </tr>
+                                                                            {% endfor %}
+                                                                            {% with related_clients_count=related_clients.count %}
+                                                                            {% for client in clients %}
+                                                                            {% with counter=forloop.counter0|add:related_clients_count|add:1 %}
+                                                                            <tr class="client-row">
+                                                                                <td><input type="checkbox" class="update-client-checkbox" id="checkbox{{ forloop.parentloop.counter }}_{{ counter }}" name="client_ids[]" value="{{ client.id }}"></td>
+                                                                                <td>{{ counter }}</td>
+                                                                                <td class="client-name">{{ client.person.first_name }}</td>
+                                                                            </tr>
+                                                                            {% endwith %}
+                                                                            {% endfor %}
+                                                                            {% endwith %}
+                                                                            <tr id="no-update-clients-row" style="display: none; background-color: #dee2e6;">
+                                                                                <td colspan="3">No clients found</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                    <div class="col-lg-12 p-t-20 text-center">
+                                                                        {% if not has_active_client_assignment %}
+                                                                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue">Connect</button>
+                                                                        {% else %}
+                                                                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue" >Update</button>
+                                                                        {% endif %}
+                                                                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default btn-close " data-dismiss="modal" id="cancelBtn" onclick="closemodal()">Cancel</button>
+                                                                    </div>
+                                                                
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% endif %}
+
+
+                                        {% if request.resolver_match.url_name == 'company_employee_document' %}
+                                        <div class="tab-pane active">
+                                            <form action="{% url 'company:company_employee_document' employee_id %}" method="POST", enctype="multipart/form-data" class="disable-on-submit">
+                                            {% csrf_token %}
+                        
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="card-box">
+                                                        <div class="card-body">
+                        
+                                                            <div class="row">
+                                                                <div id="accordion" style="width: 100%;">
+                                        
+                                                                    <div class="card-2">
+                                                                        <div class="card-header">
+                                                                            <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                                                                                IDs and checks
+                                                                            </a>
+                                                                        </div>
+                                                                        <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                                                            <div class="card-body row">
+                                                                                <div class="col-lg-4 p-t-20">
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                        <h4 class="our-profile-info">Document name</h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-lg-4 p-t-20">
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                        <h4 class="our-profile-info">Expiry date </h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-lg-4 p-t-20">
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                                        <h4 class="our-profile-info">Upload </h4>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {{ idschecksformset.management_form }}
+                                                                                {% for form in idschecksformset.forms %}
+                                                                            
+                                                                                {% render_field form.id %}
+                                                                                {% render_field form.employee %}
+                                                                                {% render_field form.status %}
+
+                                                                              <div class="col-lg-4 p-t-20">
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            {% render_field form.name class="mdl-textfield__input" %}
+                                                                                            
+                                        
+                                        
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-lg-4 p-t-20">
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                        {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                                                    </div>
+                                                                                </div>
+                        
+                                                                                <div class="col-lg-4 p-t-20 file_id" >
+                                                                                    <div
+                                                                                        class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center our-profile-upload-file">
+                                                                                      
+                                                                                        {% if form.initial.id %}
+                                                                                            <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                                                <i class="fa fa-eye"></i>
+                                                                                            </a>
+                        
+                                                                                            {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' or  request.user|has_permission:'employee.delete_own_documents' %}
+                                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="managerdetailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                                                <i class="fa fa-trash-o"></i>
+                                                                                            </button>
+                                                                                            {% endif %}
+                                                                                        
+                                                                                            {% else %} 
+                        
+                                                                                            {% render_field form.file class="mdl-textfield__input hidden" onchange="IDgetCurrentfile(this)" accept=".pdf" %}
+                                                                                            <label
+                                                                                            class="btn btn-round btn-success" for="id_idschecks-{{ forloop.counter0 }}-file">Upload</label>
+                                                                                            <p id="ids_checks-div-{{ forloop.counter0 }}"></p>
+                                                                                        {% endif %}  
+                                                                                    </div>
+                                                                                    
+                        
+                                                                                </div> 
+                        
+                                                                            
+                                                                                {% endfor %}
+                        
+                                                                                
+                                        
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="card-2">
+                                                                            <div class="card-header ">
+                                                                                <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
+                                                                                    Qualification
+                                                                                </a>
+                                                                            </div>
+                                                                          
+                                                                            <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                                                                
+                                                                                <div class="card-body row">
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            <h4 class="our-profile-info">Document name</h4>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            <h4 class="our-profile-info">Expiry date </h4>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                                            <h4 class="our-profile-info">Upload </h4>
+                                                                                        </div>
+                                                                                    </div>
+                        
+                        
+                        
+                        
+                                                                                    {{ qualificationFormSet.management_form }}
+                        
+                                                                                    {% for form in qualificationFormSet.forms %}
+                                                                                    {% render_field form.id %}
+                                                                                    {% render_field form.status %}
+
+                                                                                    {% render_field form.employee %}
+                        
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                                {% render_field form.name class="mdl-textfield__input" %}
+                                        
+                                        
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                                            {% if form.initial.id %}
+                                                                                            <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                                                <i class="fa fa-eye"></i>
+                                                                                            </a>
+                        
+                                                                                          
+                                                                                            {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' or  request.user|has_permission:'employee.delete_own_documents' %}
+
+                                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="managerdetailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                                                <i class="fa fa-trash-o"></i>
+                                                                                            </button>
+                                                                                            {% endif %}
+                                                                            
+                                                                                        
+                                                                                            {% else %} 
+                        
+                                                                                            {% render_field form.file class="mdl-textfield__input hidden" onchange="QualificationgetCurrentfile(this)" accept=".pdf" %}
+                                                                                            <label
+                                                                                            class="btn btn-round btn-success" for="id_qualification-{{ forloop.counter0 }}-file">Upload</label>
+                                                                                            <p id="qualification_checks-div-{{ forloop.counter0 }}"></p>
+                         
+                                                                                           {% endif %}
+                                                                                              
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    {% endfor %}
+                        
+                                                                                </div>
+                                                                            </div>
+                        
+                                                                        </div>
+                        
+                        
+                                                                        <div class="card-2">
+                                                                            <div class="card-header ">
+                                                                                <a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
+                                                                                    Other
+                                                                                </a>
+                                                                            </div>
+                                                                            <div id="collapseThree" class="collapse" data-parent="#accordion">
+                                                                                <div class="card-body row">
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            <h4 class="our-profile-info">Document name</h4>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            <h4 class="our-profile-info">Expiry date </h4>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                                            <h4 class="our-profile-info">Upload </h4>
+                                                                                        </div>
+                                                                                    </div>
+                        
+                        
+                        
+                                                                                    {{ otherFormSet.management_form }}
+                        
+                                                                                    {% for form in otherFormSet.forms %}
+                                                                                    {% render_field form.employee %}
+                                                                                    {% render_field form.status %}
+
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                                {% render_field form.name class="mdl-textfield__input" %}
+                        
+                                        
+                                        
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                                            {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-4 p-t-20">
+                                                                                        <div
+                                                                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                        
+                                                                                            {% if form.initial.id %}
+                                                                                            <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                                                <i class="fa fa-eye"></i>
+                                                                                            </a>
+                        
+                                                                                          
+                                                                                            {% if request.user|has_permission:'employee.delete_all_documents' or  request.user|has_permission:'employee.delete_team_documents' or  request.user|has_permission:'employee.delete_own_documents' %}
+
+                                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="managerdetailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                                                <i class="fa fa-trash-o"></i>
+                                                                                            </button>
+                                                                                            {% endif %}
+                                                                                        
+                                                                                            {% else %} 
+                        
+                                                                                            {% render_field form.file class="mdl-textfield__input hidden" onchange="OthergetCurrentfile(this)" accept=".pdf" %}
+                                                                                            <label
+                                                                                            class="btn btn-round btn-success" for="id_other-{{ forloop.counter0 }}-file">Upload</label>
+                                                                                            <p id="other_checks-div-{{ forloop.counter0 }}"></p>
+                        
+                                                                                             {% endif %}
+                                                                                        </div>
+                                                                                    </div>
+                        
+                                                                                    {% endfor %}
+                                                                                    
+                                        
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                        
+                                                                </div>
+                                        
+                                                            </div>
+                                                        </div>
+                                                        <!-- </div> -->
+                                                        <div class="col-lg-12 p-t-20 text-center">
+                                                            <button type="submit"
+                                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue">Submit</button>
+                                                        <a href="{% url 'company:company_employee_documents' employee_id %}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                        
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        </div>
+
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END PROFILE CONTENT -->
+            </div>
+        </div>
+        <!-- END PROFILE CONTENT -->	
+    </div>
+</div>
+
+<!---delete confirm popup-->
+<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-alert">
+                <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                </div>
+                <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+            </div>
+            <div class="modal-body">
+                You won't be able to revert it!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="deleteConfirmed">Yes, delete it!</button>
+                <button type="button" class="btn" data-dismiss="modal" id="deleteCanceled">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---delete confirm popup-->
+<div class="modal fade delete-confirmation-modal" id="managerdetaildeleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="icon-alert">
+            <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+            </div>
+            <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+        </div>
+        <div class="modal-body">
+            You won't be able to revert it!
+        </div>
+        <input type="hidden" id="employee_id" name="employee">
+        <input type="hidden" id="document_id" name="document">
+        <div class="modal-footer">
+            <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised " id="managerdetaildeleteConfirmed">Yes, delete it!</button>
+            <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--pop up end-->
+
+<!--pop up end-->
+{% endblock %}
+{% block javascripts %}
+<!-- <script>
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        $('#deleteConfirmed').click(function () {
+            $('#deleteForm_' + document_id).submit();
+        });
+    }
+</script> -->
+
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + document_id).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+</script>
+
+<script>
+    document.querySelectorAll('.document-status-selector').forEach(selectElement => {
+        selectElement.addEventListener('change', function () {
+            const documentId = this.dataset.documentId;
+            const newStatus = this.value;
+    
+            fetch('/employee-profile/document/update/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  
+                },
+                body: JSON.stringify({
+                    document_id: documentId,
+                    status: newStatus
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const employeeSelect = document.getElementById('employee-select');
+        
+        const savedEmployeeId = localStorage.getItem('selectedEmployeeId');
+        const referrer = document.referrer;
+
+        if (referrer.endsWith('/employee/list/')) {
+            localStorage.removeItem('selectedEmployeeId');
+        } else if (savedEmployeeId) {
+            employeeSelect.value = savedEmployeeId;
+        }
+
+        employeeSelect.addEventListener('change', function () {
+            console.log('Employee selected');
+            const employeeId = this.value;
+            console.log('Selected Employee ID:', employeeId);
+            
+            localStorage.setItem('selectedEmployeeId', employeeId);
+            
+            if (employeeId) {
+                const url = `/employee-profile/${employeeId}/`;
+                console.log('Navigating to URL:', url);
+                window.location.href = url;
+            }
+        });
+    });
+</script>
+<script>
+    function managerdetailconfirmDelete(emp_id, document_id) {
+        $('#managerdetaildeleteConfirmationModal').modal('show');
+        $('#employee_id').val(emp_id)
+        $('#document_id').val(document_id)
+    }
+</script>
+<script>
+    $(document).ready(function() {
+        $('#managerdetaildeleteConfirmed').click(function (event) {
+            event.preventDefault(); 
+            
+            var emp_id = $('#employee_id').val();
+            var document_id = $('#document_id').val();
+            
+            $.ajax({
+                url: '/employee-profile/document/delete/' + emp_id + '/' + document_id + '/',
+                method: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}' 
+                },
+                success: function (response) {
+                    window.location.reload(); 
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+    function IDgetCurrentfile(input) {
+        var file = input.files[0];
+        var inputId = input.id;
+        var numericPart = inputId.match(/\d+/)[0];
+        var IdChecks = "ids_checks-div-" + numericPart; 
+        var idcheck = document.getElementById(IdChecks);            
+        if (idcheck) {
+            idcheck.innerHTML = "Current Selected File: " + file.name;
+        }
+    }
+    function QualificationgetCurrentfile(input) {
+        var file = input.files[0];
+        var inputId = input.id;
+        var numericPart = inputId.match(/\d+/)[0];
+        var IdChecks = "qualification_checks-div-" + numericPart; 
+        var idcheck = document.getElementById(IdChecks);            
+        if (idcheck) {
+            idcheck.innerHTML = "Current Selected File: " + file.name;
+        }
+    }
+
+    function OthergetCurrentfile(input) {
+        var file = input.files[0];
+        var inputId = input.id;
+        var numericPart = inputId.match(/\d+/)[0];
+        var IdChecks = "other_checks-div-" + numericPart; 
+        var idcheck = document.getElementById(IdChecks);            
+        if (idcheck) {
+            idcheck.innerHTML = "Current Selected File: " + file.name;
+        }
+    }
+</script>
+
+
+<!---add clients js -->
+
+<script>
+    $(document).ready(function() {
+        $('#checkbox1').change(function() {
+            $('.client-checkbox').prop('checked', $(this).prop('checked'));
+        });
+
+        $('#client-form').submit(function() {
+            var selectedClients = [];
+            $('.client-checkbox:checked').each(function() {
+                selectedClients.push($(this).val());
+            });
+            var employee = $('#emp_id').val();
+
+            var dataString = 'employee=' + employee;
+            selectedClients.forEach(function(clientId) {
+                dataString += '&clients=' + clientId;
+            });
+
+            const cancelBtn = document.getElementById('cancelBtn')
+
+            $.ajax({
+                url: '{% url "company:company_client_assignment" %}',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: dataString,
+                success: function(response){
+                    window.location.reload()
+                },
+                error: function(xhr, errmsg, err){
+                    alert("This client already assigned to employee")
+                },
+            });
+            
+            return false;
+        });
+
+        $('.client-checkbox').change(function() {
+            if (!$(this).prop('checked')) {
+                $('#checkbox1').prop('checked', false);
+            }
+        });
+    });
+</script>
+
+<script>
+    var uncheckedClientIds = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.related_clients_checkbox');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const value = this.value;
+                if (value === 'select-all') {
+                    
+                    const isChecked = this.checked;
+                    const clientCheckboxes = document.querySelectorAll('.update-client-checkbox');
+                    clientCheckboxes.forEach(function(clientCheckbox) {
+                        clientCheckbox.checked = isChecked;
+                        const clientId = clientCheckbox.value;
+                        if (!isChecked && !uncheckedClientIds.includes(clientId)) {
+                            uncheckedClientIds.push(clientId);
+                        } else if (isChecked) {
+                            const index = uncheckedClientIds.indexOf(clientId);
+                            if (index !== -1) {
+                                uncheckedClientIds.splice(index, 1);
+                            }
+                        }
+                    });
+                } else {
+                    
+                    const clientId = value;
+                    if (!this.checked) {
+                        if (!uncheckedClientIds.includes(clientId)) {
+                            uncheckedClientIds.push(clientId);
+                        }
+                    } else {
+                        const index = uncheckedClientIds.indexOf(clientId);
+                        if (index !== -1) {
+                            uncheckedClientIds.splice(index, 1);
+                        }
+                    }
+                }
+                console.log(uncheckedClientIds); 
+            });
+        });
+    });
+    
+
+
+    $(document).ready(function() {
+        $('#update-client-form').submit(function(event) {
+            event.preventDefault(); 
+            var selectedClients = [];
+            $('.update-client-checkbox:checked').each(function() {
+                selectedClients.push($(this).val());
+            });
+
+            var employee = $('#emp_id').val();
+            var dataString = 'employee=' + employee;
+            
+            selectedClients.forEach(function(clientId) {
+                dataString += '&clients=' + clientId;
+            });
+
+            uncheckedClientIds.forEach(function(clientId) {
+                dataString += '&unchecked_clients=' + clientId;
+            });
+
+
+            $.ajax({
+                url: '{% url "company:update_company_client_assignment" %}',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: dataString,uncheckedClientIds,
+
+                success: function(response) {
+                    window.location.reload();
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log('Error:', errmsg);
+                }
+            });
+        });
+
+        $('#checkbox2').change(function() {
+            $('.update-client-checkbox').prop('checked', $(this).prop('checked'));
+        });
+
+        $('.update-client-checkbox').change(function() {
+            if (!$(this).prop('checked')) {
+                $('#checkbox2').prop('checked', false);
+            }
+        });
+    });
+</script> 
+<script>
+    const addsearchInput = document.getElementById('search-client-modal');
+    const addclearSearchBtn = document.getElementById('add-clear-search-btn');
+    const addnoClientsRow = document.getElementById('no-clients-row');
+
+    addsearchInput.addEventListener('keyup', function() {
+        const query = addsearchInput.value.trim().toLowerCase(); 
+        const clientRows = document.querySelectorAll('#client-table tbody .client-row'); 
+        let visibleClients = 0;
+
+        if (query.length > 0) {
+            addclearSearchBtn.style.display = 'inline-block';
+        } else {
+            addclearSearchBtn.style.display = 'none';
+        }
+
+        clientRows.forEach(function(row) {
+            const clientName = row.querySelector('.client-name').textContent.toLowerCase();  
+            if (clientName.includes(query)) {
+                row.style.display = '';  
+                visibleClients++;
+            } else {
+                row.style.display = 'none';  
+            }
+        });
+
+        if (visibleClients === 0) {
+            addnoClientsRow.style.display = ''; 
+            addnoClientsRow.style.backgroundColor = '#e1e5ec';
+        } else {
+            addnoClientsRow.style.display = 'none'; 
+        }
+    });
+
+    addclearSearchBtn.addEventListener('click', function() {
+        addsearchInput.value = '';  
+        addclearSearchBtn.style.display = 'none';  
+        
+        const clientRows = document.querySelectorAll('#client-table tbody .client-row');
+        
+        clientRows.forEach(function(row) {
+            row.style.display = '';  
+        });
+
+        addnoClientsRow.style.display = 'none'; 
+    });
+</script>
+
+<script>
+    const searchInput = document.getElementById('search-update-client-modal');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const noClientsRow = document.getElementById('no-update-clients-row');
+
+    searchInput.addEventListener('keyup', function() {
+        const query = searchInput.value.trim().toLowerCase();
+        const clientRows = document.querySelectorAll('#update-client-table tbody .client-row');
+        let visibleClients = 0;
+
+        if (query.length > 0) {
+            clearSearchBtn.style.display = 'inline-block';
+        } else {
+            clearSearchBtn.style.display = 'none';
+        }
+
+        clientRows.forEach(function(row) {
+            const clientName = row.querySelector('.client-name').textContent.toLowerCase();
+            if (clientName.includes(query)) {
+                row.style.display = ''; 
+                visibleClients++;
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+
+        if (visibleClients === 0) {
+            noClientsRow.style.display = ''; 
+            noClientsRow.style.backgroundColor = '#e1e5ec';
+        } else {
+            noClientsRow.style.display = 'none';         }
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = ''; 
+        clearSearchBtn.style.display = 'none'; 
+        const clientRows = document.querySelectorAll('#update-client-table tbody .client-row');
+        clientRows.forEach(function(row) {
+            row.style.display = '';         });
+
+        noClientsRow.style.display = 'none';     });
+</script>
+<!--end -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('editBtn')
+    // const cancelBtn = document.getElementById('cancelBtn')
+
+    editBtn.addEventListener('click',function() {
+         
+        editBtn.disabled = true;
+        editBtn.innerHTML = '<span class="loader edit-btn"></span>';
+        setTimeout(() => {
+                editBtn.disabled = false;
+                editBtn.innerHTML = 'Edit';
+            }, 300);
+    });
+
+    
+});
+</script>
+<script>
+    function closemodal(){
+        cancelBtn.disabled = true;
+        cancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+        setTimeout(function() {
+            cancelBtn.disabled = false;
+            cancelBtn.innerHTML = 'Cancel'; 
+            $('#viewclients').modal('hide');
+        }, 500);
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const addCancelBtn = document.getElementById('addCancelBtn')
+
+    addCancelBtn.addEventListener('click',function(){
+        addCancelBtn.disabled = true;
+        addCancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+        setTimeout(function() {
+            addCancelBtn.disabled = false;
+            addCancelBtn.innerHTML = 'Cancel'; 
+            $('#addclients').modal('hide');
+        }, 500);
+    
+    });
+});  
+</script>
+{% endblock javascripts %}

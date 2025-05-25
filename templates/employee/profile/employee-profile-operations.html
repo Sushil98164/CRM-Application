@@ -1,0 +1,802 @@
+{% extends "base_company_admin.html" %}
+{% block title %} 
+My Profile
+{% endblock title %}
+{% block stylesheets %}
+<style>
+    .our-profile-info {
+        font-weight: 400;
+    }
+    .card-2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-2 .card-link {
+        color: #000;
+        font-size: 20px;
+        text-decoration: none;
+        width: 100% !important;
+        display: flex;
+    }
+  
+    label.upload-files {
+        font-size: 24px;
+        font-weight: 500;
+    }
+    .upload-sec {
+        justify-content: center;
+        align-items: center;
+        padding-top: 43px;
+
+    }
+
+    .modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+		button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 24px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		border-radius: 5px;
+		margin-right: 20px;
+		}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1.25em auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed {
+		border-radius: 0.25em;
+		background: initial;
+		display: inline-block;
+		background-color: rgb(48, 133, 214);
+		border-left-color: rgb(48, 133, 214);
+		border-right-color: rgb(48, 133, 214);
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}   
+        .profile-userpic-2 img {
+            border: 3px solid rgb(210, 214, 222);
+            margin: auto;
+        }
+</style>
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            {% if request.resolver_match.url_name == 'employee_profile_edit' %}
+            <div class="page-title">Profile information</div>
+            {% elif request.resolver_match.url_name == 'employee_document' %}
+            <div class="page-title">Documents information</div>
+
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            {% if request.resolver_match.url_name == 'employee_profile_edit' %}
+            <li><a class="parent-item" href="{% url 'employee:employee_profile' %}">Employee</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'employee:employee_profile' %}">My Profile</a>&nbsp;<i class="fa fa-angle-right"></i>
+            <li class="active">Edit</li>
+            
+            {% elif request.resolver_match.url_name == 'employee_document' %}
+            <li><a class="parent-item" href="{% url 'employee:employee_profile' %}">Employee</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'employee:employee_documents' %}">My documents</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            
+            <li class="active">Upload Documents</li>
+            {% endif %}
+
+        </ol>
+    </div>
+</div>
+<div class="row">
+    {% if messages %}
+<div class="container-fluid">
+    <ul class="list-unstyled">
+    {% for message in messages %}
+        <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<script>
+    // Automatically close alerts after 5 seconds
+    window.setTimeout(function () {
+        $(".alert").fadeTo(500, 0).slideUp(500, function () {
+        $(this).remove();
+        });
+    }, 5000);
+    </script>
+{% endif %}
+    <div class="col-md-12">
+        <div class="tabbable-line"> 
+            <ul class="nav customtab nav-tabs" role="tablist">
+                {% include 'employee/profile/includes/tabs-bar.html' %}
+            </ul>
+            <div class="tab-content">
+                {% if request.resolver_match.url_name == 'employee_profile_edit' %}
+                <div class="tab-pane active fontawesome-demo">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card-box">
+                                <div class="card-head">
+                                    <header>Employee information</header>
+                                    <!--  -->
+                                </div>
+                                <form method="POST" enctype="multipart/form-data" class="disable-on-submit">
+                                    {% csrf_token %}
+                                    {% render_field personform.is_active %}
+
+                                    <div class="card-body row">
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.first_name class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">First name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.last_name class="mdl-textfield__input"%}
+
+                                                <label class="mdl-textfield__label">Last name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.email class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">Email</label>
+                                                <span class="mdl-textfield__error">Enter valid email address!</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.phone_number class="mdl-textfield__input" pattern="[0-9]{10}" maxlength="10" title="Please enter a 10-digit phone number." %}
+                                                <label class="mdl-textfield__label" for="text5">Mobile number</label>
+                                                <span class="mdl-textfield__error">Phone number must be numeric and have a length 10.</span>
+                                            </div>
+                                        </div>
+
+                                        {{employee_formset.management_form}}
+                                        {% for form in employee_formset %}
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field form.date_of_birth placeholder="" class="mdl-textfield__input" %}
+                                                {% render_field form.id %}
+                                                {% render_field form.company %}
+                                                {% render_field form.template %}
+                                                {% render_field form.employment_type %}
+                                                {% render_field form.role %}
+                                                {{ form.departments.as_hidden }}
+
+                                                <label class="mdl-textfield__label">Birth date</label>
+                                                <span class="focus-input100 error-label" id="end_date_id" style="color: red; font-size: 13px; position: absolute; padding-top: 5px;" data-field="end_date_time" data-placeholder="&#xf191;">{{ form.date_of_birth.errors|join:"" }}</span>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                        
+                                                {% render_field personform.gender placeholder=""  class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">Gender</label> 
+                                            </div>
+                                        </div>
+                        
+                                
+                                        <div class="col-lg-12 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield txt-full-width">
+                                                {% render_field form.address class="mdl-textfield__input" oninput="autoExpand(this)" %}
+                                                <label class="mdl-textfield__label" for="text7">Address</label>
+                                            </div>
+                                        </div>
+                                        {% endfor %} 
+
+        
+
+                                        <div class="col-lg-12 p-t-20">
+                                            <label class="control-label col-md-3" for="id_profile_image">Upload photo</label>
+                                            <div class="col-md-12 dropzone upload-sec text-center">
+                                                {% render_field personform.profile_image class="mdl-textfield__input hidden" %}
+                                        
+                                                <label for="id_profile_image" class="upload-files">Drop files here to upload</label>
+                                            </div>
+                                            <div id="currentFileContainer"></div>
+                                        </div>
+                                    
+                                
+
+                                        <div class="col-lg-12 p-t-20 text-center">
+                                            <button type="submit"
+                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue">Submit</button>
+                                                <a href="{% url 'employee:employee_profile' %}"
+                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                                            
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% comment %} {% if request.resolver_match.url_name == 'employee_document' %}
+                <div class="tab-pane active">
+                    <form action="{% url 'employee:employee_document' employee_id %}" method="POST", enctype="multipart/form-data" class="disable-on-submit">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card-box">
+                                <div class="card-body">
+
+                                    <div class="row">
+                                        <div id="accordion" style="width: 100%;">
+                
+                                            <div class="card-2">
+                                                <div class="card-header">
+                                                    <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                                                        IDs and checks
+                                                    </a>
+                                                </div>
+                                                <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                                    <div class="card-body row">
+                                                        <div class="col-lg-4 p-t-20">
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                <h4 class="our-profile-info">Document name</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 p-t-20">
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                <h4 class="our-profile-info">Expiry date </h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 p-t-20">
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                <h4 class="our-profile-info">Upload </h4>
+                                                            </div>
+                                                        </div>
+                                                        {{ idschecksformset.management_form }}
+                                                        {% for form in idschecksformset.forms %}
+                                                    
+                                                        {% render_field form.id %}
+                                                        {% render_field form.employee %}
+                                                      <div class="col-lg-4 p-t-20">
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    {% render_field form.name class="mdl-textfield__input" %}
+                                                                    
+                
+                
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 p-t-20">
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-4 p-t-20 file_id" >
+                                                            <div
+                                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center our-profile-upload-file">
+                                                              
+                                                                {% if form.initial.id %}
+                                                                    <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </a>
+
+                                                                  
+
+                                                                    <button type="button" class="btn btn-danger btn-xs" onclick="detailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                        <i class="fa fa-trash-o"></i>
+                                                                    </button>
+                                                    
+                                                                
+                                                                    {% else %} 
+
+                                                                    {% render_field form.file class="mdl-textfield__input hidden" onchange="IDgetCurrentfile(this)" accept=".pdf" %}
+                                                                    <label
+                                                                    class="btn btn-round btn-success" for="id_idschecks-{{ forloop.counter0 }}-file">Upload</label>
+                                                                    <p id="ids_checks-div-{{ forloop.counter0 }}"></p>
+                                                                {% endif %}  
+                                                            </div>
+                                                            
+
+                                                        </div> 
+
+                                                    
+                                                        {% endfor %}
+
+                                                        
+                
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="card-2">
+                                                    <div class="card-header ">
+                                                        <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
+                                                            Qualification
+                                                        </a>
+                                                    </div>
+                                                  
+                                                    <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                                        
+                                                        <div class="card-body row">
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    <h4 class="our-profile-info">Document name</h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    <h4 class="our-profile-info">Expiry date </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                    <h4 class="our-profile-info">Upload </h4>
+                                                                </div>
+                                                            </div>
+
+
+
+
+                                                            {{ qualificationFormSet.management_form }}
+
+                                                            {% for form in qualificationFormSet.forms %}
+                                                            {% render_field form.id %}
+
+                                                            {% render_field form.employee %}
+
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                        {% render_field form.name class="mdl-textfield__input" %}
+                
+                
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                    {% if form.initial.id %}
+                                                                    <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </a>
+
+                                                                  
+
+                                                                    <button type="button" class="btn btn-danger btn-xs" onclick="detailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                        <i class="fa fa-trash-o"></i>
+                                                                    </button>
+                                                    
+                                                                
+                                                                    {% else %} 
+
+                                                                    {% render_field form.file class="mdl-textfield__input hidden" onchange="QualificationgetCurrentfile(this)" accept=".pdf" %}
+                                                                    <label
+                                                                    class="btn btn-round btn-success" for="id_qualification-{{ forloop.counter0 }}-file">Upload</label>
+                                                                    <p id="qualification_checks-div-{{ forloop.counter0 }}"></p>
+ 
+                                                                   {% endif %}
+                                                                      
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="card-2">
+                                                    <div class="card-header ">
+                                                        <a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
+                                                            Other
+                                                        </a>
+                                                    </div>
+                                                    <div id="collapseThree" class="collapse" data-parent="#accordion">
+                                                        <div class="card-body row">
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    <h4 class="our-profile-info">Document name</h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    <h4 class="our-profile-info">Expiry date </h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+                                                                    <h4 class="our-profile-info">Upload </h4>
+                                                                </div>
+                                                            </div>
+
+
+
+                                                            {{ otherFormSet.management_form }}
+
+                                                            {% for form in otherFormSet.forms %}
+                                                            {% render_field form.employee %}
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                        {% render_field form.name class="mdl-textfield__input" %}
+
+                
+                
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                    {% render_field form.expiry_date class="mdl-textfield__input" %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 p-t-20">
+                                                                <div
+                                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width text-center">
+
+                                                                    {% if form.initial.id %}
+                                                                    <a href="{{form.initial.file.url}}" target="_blank" class="btn btn-primary btn-xs">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </a>
+
+                                                                  
+
+                                                                    <button type="button" class="btn btn-danger btn-xs" onclick="detailconfirmDelete('{{ employee_id }}', '{{ form.initial.id }}')">
+                                                                        <i class="fa fa-trash-o"></i>
+                                                                    </button>
+                                                    
+                                                                
+                                                                    {% else %} 
+
+                                                                    {% render_field form.file class="mdl-textfield__input hidden" onchange="OthergetCurrentfile(this)" accept=".pdf" %}
+                                                                    <label
+                                                                    class="btn btn-round btn-success" for="id_other-{{ forloop.counter0 }}-file">Upload</label>
+                                                                    <p id="other_checks-div-{{ forloop.counter0 }}"></p>
+
+                                                                     {% endif %}
+                                                                </div>
+                                                            </div>
+
+                                                            {% endfor %}
+                                                            
+                
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                
+                                        </div>
+                
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+                                <div class="col-lg-12 p-t-20 text-center">
+                                    <button type="submit"
+                                        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue">Submit</button>
+                                <a href="{% url 'employee:employee_documents' %}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default" id="cancelBtn">Cancel</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                </div>
+                {% endif %} {% endcomment %}
+
+                {% if request.resolver_match.url_name == 'client_view' %}
+                {% include 'employee/profile/client/client-view.html' %}
+                {% endif %}
+           
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+           <!---delete confirm popup-->
+           <div class="modal fade delete-confirmation-modal" id="detaildeleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="icon-alert">
+                        <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                        </div>
+                        <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+                    </div>
+                    <div class="modal-body">
+                        You won't be able to revert it!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised " id="detaildeleteConfirmed">Yes, delete it!</button>
+                        <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    <!--pop up end-->
+
+
+
+{% block javascripts %}
+<!-- <script>
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        $('#deleteConfirmed').click(function () {
+            $('#deleteForm_' + document_id).submit();
+        });
+    }
+</script> -->
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + document_id).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function hideClearCheckbox() {
+            var clearCheckbox = document.getElementById("profile_image-clear_id");
+            if (clearCheckbox) {
+                clearCheckbox.style.display = "none";
+                var clearLabel = document.querySelector("label[for='profile_image-clear_id']");
+                if (clearLabel) {
+                    clearLabel.style.display = "none";
+                }
+            }
+        }
+        hideClearCheckbox();
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fileInput = document.getElementById("id_profile_image");
+        var currentFileContainer = document.getElementById("currentFileContainer");
+
+        fileInput.addEventListener("change", function() {
+            if (fileInput.files.length > 0) {
+                currentFileContainer.textContent = "Currently selected file: " + fileInput.files[0].name;
+            } else {
+                currentFileContainer.textContent = "No file selected";
+            }
+        });
+    });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var clearCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="-file-clear"]');
+    var clearLabels = document.querySelectorAll('label[for$="-file-clear_id"]');
+    
+    clearCheckboxes.forEach(function(checkbox) {
+        checkbox.remove();
+    });
+    
+    clearLabels.forEach(function(label) {
+        label.remove();
+    });
+});
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var textareas = document.querySelectorAll('textarea[id^="id_"]');
+        textareas.forEach(function(textarea) {
+            autoExpand(textarea);
+        });
+    });
+    
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+    </script>
+
+    <script>
+        function detailconfirmDelete(emp_id, document_id) {
+            $('#detaildeleteConfirmationModal').modal('show');
+    
+            $('#detaildeleteConfirmed').click(function () {
+                $.ajax({
+                    url: '/my-profile/document/delete/' + emp_id + '/' + document_id + '/',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        window.location.reload(); 
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        }
+    </script>
+    <script>
+        function IDgetCurrentfile(input) {
+            var file = input.files[0];
+            var inputId = input.id;
+            var numericPart = inputId.match(/\d+/)[0];
+            var IdChecks = "ids_checks-div-" + numericPart; 
+            var idcheck = document.getElementById(IdChecks);            
+            if (idcheck) {
+                idcheck.innerHTML = "Current Selected File: " + file.name;
+            }
+        }
+        function QualificationgetCurrentfile(input) {
+            var file = input.files[0];
+            var inputId = input.id;
+            var numericPart = inputId.match(/\d+/)[0];
+            var IdChecks = "qualification_checks-div-" + numericPart; 
+            var idcheck = document.getElementById(IdChecks);            
+            if (idcheck) {
+                idcheck.innerHTML = "Current Selected File: " + file.name;
+            }
+        }
+
+        function OthergetCurrentfile(input) {
+            var file = input.files[0];
+            var inputId = input.id;
+            var numericPart = inputId.match(/\d+/)[0];
+            var IdChecks = "other_checks-div-" + numericPart; 
+            var idcheck = document.getElementById(IdChecks);            
+            if (idcheck) {
+                idcheck.innerHTML = "Current Selected File: " + file.name;
+            }
+        }
+    </script>
+    <script>
+        window.urlNameToPath = {
+            'employee_documents': "{% url 'employee:employee_documents' %}",
+        };
+    </script>
+    
+{% endblock javascripts %}
+{% endblock %}

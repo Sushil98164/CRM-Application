@@ -1,0 +1,184 @@
+{% load company_admin_tags %}
+<div class="white-box row">
+    <div class="tab-content col-lg-12   ">
+        <div class="tab-pane active fontawesome-demo" id="tab3">
+            <div id="biography">
+
+                {% for emergency_detail in client.emergency_contact_details.all %}
+                {% if emergency_detail.is_authorised_representative  %}
+                
+                <div class="row">
+                        
+                    </div>
+                <div class="row mt-4">
+                        <div class="user-details">
+                            <div class="user-info-2 tml-one ">
+                                <p class="user-profile-content-2 mb-2 hundred">Does client have an authorised representative?<span>{% if emergency_detail.is_authorised_representative  %}Yes {% else %} No{% endif %}</span></p>
+                            </div>
+                                <div class="user-info-2 tml-one">
+                                    <p class="user-profile-content-2">Name<span>{% if emergency_detail.emergency_name %}{{emergency_detail.emergency_name|title}}{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Email<span>{% if emergency_detail.emergency_mail %}{{emergency_detail.emergency_mail}}{% endif %}</span></p>
+                                </div>
+                                <div class="user-info-2 tml-one">
+                                    <p class="user-profile-content-2">Phone number<span>{% if emergency_detail.emergency_phone_number %}{{emergency_detail.emergency_phone_number}}{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Fix line<span>{% if emergency_detail.emergency_fix_line %}{{emergency_detail.emergency_fix_line}}{% endif %}<span></p>
+                                </div>
+                                
+                            
+                        </div>       
+                    </div>
+                {% else %}
+                <div class="row">
+                    <div class="user-details">
+                        <div class="user-info-2">
+                            <p class="user-profile-content-2 mb-2">Does client have an authorised representative?<span>No</span></p>  
+                        </div>
+                    </div> 
+                </div>
+                {% endif %}
+
+                {% endfor %}
+
+                {% for ndis_detail in client.ndis_details.all %}
+                {% if ndis_detail.is_individual_ndis_participant  %}
+                <div class="row">
+                    
+                    <div class="user-details">
+                        <h4 class="NDIS-heading">Service request form</h4>
+                            <div class="user-info-2">
+                                <p class="user-profile-content-2">How is service funded ?<span>{% if ndis_detail.service_fund_type %}{{ndis_detail.service_fund_type}}{% endif %}</span></p>
+                                {% if ndis_detail.ndis_services %}<p class="user-profile-content-2">NDIS Services<span>{% if ndis_detail.ndis_services %}{{ndis_detail.ndis_services}}{% endif %}</span></p>{% endif %}
+                                <p class="user-profile-content-2">Description for requested Service<span>{% if ndis_detail.description %}{{ndis_detail.description}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Hours requested<span>{% if ndis_detail.hours_requested %}{{ndis_detail.hours_requested}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Is the individual NDIS participant?<span>{% if ndis_detail.is_individual_ndis_participant  %}Yes {% else %} No{% endif %}</span></p>
+
+                                <div class="user-info-2 tml-one">
+                                    <p class="user-profile-content-2 hundred">NDIS participant number<span>{% if ndis_detail.participant_number %}{{ndis_detail.participant_number}}{% endif %}</span></p>
+                                </div>
+                                <div class="user-info-2 tml-one">
+                                    <p class="user-profile-content-2">Start date <span>{% if ndis_detail.plan_start_date %}{{ndis_detail.plan_start_date|date:"d/m/Y" }}{% endif %}</span></p>
+                                    <p class="user-profile-content-2">End date <span>{% if ndis_detail.plan_end_date %}{{ndis_detail.plan_end_date|date:"d/m/Y" }}{% endif %}</span></p>
+                                </div>
+                                <div class="user-info-2 tml-two">
+                                    <p class="user-profile-content-2">Plan, goals and objectives<span>{% if ndis_detail.plan_goals_and_objectives %}{{ndis_detail.plan_goals_and_objectives}}{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Funding allocations<span>{% if ndis_detail.plan_funding_allocation %}{{ndis_detail.plan_funding_allocation}}{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Has the client made any service allocations?<span>{% if ndis_detail.is_any_service_agreements  %}Yes {% else %} No{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Does client have any consents obtained?<span>{% if ndis_detail.is_any_consents_obtained  %}Yes {% else %} No{% endif %}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                {% else %}
+                <div class="row">
+                    
+                    <div class="user-details">
+                        <h4 class="NDIS-heading">Service request form</h4>
+                            <div class="user-info-2 tml-two">
+                                <p class="user-profile-content-2">How is service funded ?<span>{% if ndis_detail.service_fund_type %}{{ndis_detail.service_fund_type}}{% endif %}</span></p>
+                                {% if ndis_detail.ndis_services %}<p class="user-profile-content-2">NDIS Services<span>{% if ndis_detail.ndis_services %}{{ndis_detail.ndis_services}}{% endif %}</span></p>{% endif %}
+                                <p class="user-profile-content-2">Description for requested Service<span>{% if ndis_detail.description %}{{ndis_detail.description}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Hours requested<span>{% if ndis_detail.hours_requested %}{{ndis_detail.hours_requested}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Is the individual NDIS participant?<span>No</span></p>
+                                <p class="user-profile-content-2">Plan, goals and objectives<span>{% if ndis_detail.plan_goals_and_objectives %}{{ndis_detail.plan_goals_and_objectives}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Funding allocations<span>{% if ndis_detail.plan_funding_allocation %}{{ndis_detail.plan_funding_allocation}}{% endif %}</span></p>
+                                <p class="user-profile-content-2">Has the client made any service allocations?<span>{% if ndis_detail.is_any_service_agreements  %}Yes {% else %} No{% endif %}</span></p>
+                                <p class="user-profile-content-2">Does client have any consents obtained?<span>{% if ndis_detail.is_any_consents_obtained  %}Yes {% else %} No{% endif %}</span></p>
+                                
+                            </div>
+                        </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+
+                {% for medical in client.medical_details.all %}
+
+                <div class="row">
+                    {% if medical.is_any_disabilities  %}
+                        <div class="user-details">
+                            <h4 class="NDIS-heading">Health and medical information</h4>
+                                <div class="user-info-2 tml-two">
+                                    <p class="user-profile-content-2">Does client have any disabilities?<span>{% if medical.is_any_disabilities  %}Yes {% else %} No{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Primary disability<span>{{medical.primary_disability}}</span></p>
+                                    <p class="user-profile-content-2">Secondary disability<span>{{medical.secondary_disability}}</span></p>
+                                    <p class="user-profile-content-2">Medical history<span>{{medical.medical_history}}</span></p>
+                                    <p class="user-profile-content-2">Is there any medication (restricted regulated practices)<span>{% if medical.is_any_medication  %}Yes {% else %} No{% endif %}</span></p>
+                                    {% if medical.is_any_medication  %}
+                                    <p class="user-profile-content-2">If yes, which one?<span>{{medical.medication_details}}</span></p>
+                                    {% endif %}
+                                    <p class="user-profile-content-2">Is it regulated practice and the doctor has signed the form?<span>{% if medical.doctor_consent  %}Yes {% else %} No{% endif %}</span></p>
+                                    <p class="user-profile-content-2">Any allergies and sensitivties?<span>{{medical.allergies_and_sensitives}}</span></p>
+                                    <p class="user-profile-content-2">Healthcare providers and specialists contact information<span>{{medical.healthcare_provider_info}}</span></p>
+                                    
+                                </div>
+                        </div>
+                    </div>
+                   {% else %}
+                <div class="user-details">
+                    <h4 class="NDIS-heading">Health and medical information</h4>
+                        <div class="user-info-2 tml-two">
+                            <p class="user-profile-content-2">Does client have any disabilities?<span>No</span></p>
+                            <p class="user-profile-content-2">Medical history<span>{{medical.medical_history}}</span></p>
+                            <p class="user-profile-content-2">Is there any medication (restricted regulated practices)<span>{% if medical.is_any_medication  %}Yes {% else %} No{% endif %}</span></p>
+                            {% if medical.is_any_medication  %}
+                            <p class="user-profile-content-2">If yes, which one?<span>{{medical.medication_details}}</span></p>
+                            {% endif %}
+                            <p class="user-profile-content-2">Is it regulated practice and the doctor has signed the form?<span>{% if medical.doctor_consent  %}Yes {% else %} No{% endif %}</span></p>
+                            <p class="user-profile-content-2">Any allergies and sensitivties?<span>{{medical.allergies_and_sensitives}}</span></p>
+                            <p class="user-profile-content-2">Healthcare providers and specialists contact information<span>{{medical.healthcare_provider_info}}</span></p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% if client.emergency_contact_details.all or client.ndis_details.all or client.medical_details.all  %}
+
+                <div class="row">
+                        <div class="user-details tml-two">
+                            <h4 class="NDIS-heading">Billing information</h4>
+                                <div class="user-info-2">
+                                    <p class="user-profile-content-2">How clients NDIS fund managed?<span>{{client.fund_management_by}}</span></p>
+                                    
+                                </div>
+                        </div>
+                </div>
+                {% endif %}
+                
+                {% if client.emergency_contact_details.all or client.ndis_details.all or client.medical_details.all  %}
+                {% if client_id in  show_update_button_for %}
+                <div class="row">
+                    <div class="col-lg-12 p-t-20 text-center">
+                        <a type="submit" href="{% url 'company:client_edit' client_id %}" class="btn btn-primary btn-xs" data-upgraded=",MaterialButton" id="editBtn">Edit</a>
+
+                    </div>
+                {% endif %}
+                {% else %}
+                This profile is incomplete. Please add details about client's NDIS plan details, health and medical information and billing information.                <div class="row">
+                    <div class="col-lg-12 p-t-20 text-center">
+                        <a type="submit" href="{% url 'company:client_edit' client_id %}" class="btn btn-primary btn-xs" data-upgraded=",MaterialButton" id="editBtn">Edit</a>
+
+                    </div>
+                {% endif %}
+                </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const editBtn = document.getElementById('editBtn')
+
+        editBtn.addEventListener('click',function() {
+            editBtn.disabled = true;
+            editBtn.innerHTML = '<span class="loader"></span>';
+            setTimeout(() => {
+                editBtn.disabled = false;
+                editBtn.innerHTML = 'Edit';
+            }, 300);
+        });
+
+    });
+    </script>

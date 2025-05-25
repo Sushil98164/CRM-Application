@@ -1,0 +1,466 @@
+{% extends "base_company_admin.html" %}
+{% block title %}
+{% if request.resolver_match.url_name == 'dailyshift_add_employee' %}
+Add Shift Note
+{% elif request.resolver_match.url_name == 'dailyshift_edit_employee' or request.resolver_match.url_name == 'dailyshift_edit' %}
+Edit Shift Note
+{% else %}
+View shift note
+{% endif %} 
+{% endblock title %}
+{% block stylesheets %}
+<style>
+    .mdl-textfield {
+        width: 100%;
+    }
+    .capitalize {
+        text-transform: capitalize;
+    }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+{% load widget_tweaks %}
+
+<!-- start widget -->
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            {% if request.resolver_match.url_name == 'dailyshift_add_employee' %}
+            <div class="page-title">Add shift note</div>
+            {% elif request.resolver_match.url_name == 'dailyshift_edit' or  request.resolver_match.url_name == 'dailyshift_edit_employee'%}
+            <div class="page-title">Edit shift note</div>
+            {% else %}
+            <div class="page-title">View shift note</div>
+
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            {% if request.resolver_match.url_name == 'dailyshift_edit' %}
+            <li><a class="parent-item"
+                    href="{% url 'rostering:employee_shifts_list_view' %}">Roster</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            {% else %}
+            <li><a class="parent-item"
+                href="{% url 'company:daily_shift_note_dashboard' %}">Progress note and timesheet</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            {% endif %}
+        
+            {% if request.resolver_match.url_name == 'dailyshift_add' or request.resolver_match.url_name == 'dailyshift_add_employee'  %}
+            <li class="active">Add </li>
+            {% elif request.resolver_match.url_name == 'dailyshift_edit' or request.resolver_match.url_name == 'dailyshift_edit_employee' %}
+            <li class="active">Edit </li>
+            {% else %}
+            <li class="active">View </li>
+            {% endif %}
+        </ol>
+
+        
+    </div>
+</div>
+<div class="row">
+    {% if messages %}
+      <div class="container-fluid">
+        <ul class="list-unstyled">
+          {% for message in messages %}
+            <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <script>
+        // Automatically close alerts after 5 seconds
+        window.setTimeout(function () {
+          $('.alert')
+            .fadeTo(500, 0)
+            .slideUp(500, function () {
+              $(this).remove()
+            })
+        }, 5000)
+      </script>
+    {% endif %}
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="card-head">
+                <header class="" >Progress notes and timesheet</header>
+      
+            </div>
+            <form method="POST" enctype="multipart/form-data"  id="form_validation" class="disable-on-submit">
+                {% csrf_token %}
+                <div class="card-body row">
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" style="line-height: 16px;" type="text" id="txtFirstName" value = "{{request.user.first_name}} {{request.user.last_name}}" readonly>
+                            <label class="mdl-textfield__label">Employee name</label>
+                        </div>
+                    </div>
+                    {% if request.resolver_match.url_name == 'dailyshift_add' or  request.resolver_match.url_name == 'dailyshift_add_employee'%}
+
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.client class="mdl-textfield__input" placeholder=""%} 
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.client.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Client name</label>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-6 p-t-20 dis-fields">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.client class="mdl-textfield__input" placeholder="" %} 
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.client.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Client name</label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.start_date_time class="mdl-textfield__input" placeholder="" id="id_start_date_time" %} 
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.start_date_time.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift start date and time</label>
+                        </div>
+                    </div>
+                    {% if request.resolver_match.url_name == 'dailyshift_add' or  request.resolver_match.url_name == 'dailyshift_edit_employee'%}
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.end_date_time class="mdl-textfield__input"  placeholder="" readonly="readonly" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.end_date_time.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift end date and time</label>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.end_date_time class="mdl-textfield__input"  placeholder="" id="id_end_date_time"%}
+                            <span class="focus-input100 error-label"   style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.end_date_time.errors.0 }}
+                            </span>
+                            <label class="mdl-textfield__label ">Shift end date and time</label>
+                        </div>
+                    </div>
+                    {% endif %} 
+                    
+                    {% if request.resolver_match.url_name == 'dailyshift_add' or request.resolver_match.url_name == 'dailyshift_edit' or request.resolver_match.url_name == 'dailyshift_add_employee' or request.resolver_match.url_name == 'dailyshift_edit_employee' %}
+
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.vehicle_used class="mdl-textfield__input"  placeholder="" readonly="readonly" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.vehicle_used.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Whether a vehicle was used?</label>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-6 p-t-20 dis-fields">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.vehicle_used class="mdl-textfield__input"  placeholder=""%}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.vehicle_used.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Whether a vehicle was used?</label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if request.resolver_match.url_name == 'dailyshift_add_employee' or request.resolver_match.url_name == 'dailyshift_edit_employee' or request.resolver_match.url_name == 'dailyshift_view'  %}
+                    
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field employee_shift_form.shift_type class="mdl-textfield__input"  placeholder=""  %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.shift_type.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift Type</label>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.distance_traveled class="mdl-textfield__input cls_distance_traveled"  placeholder="" onkeypress="return event.charCode &gt;= 48 &amp;&amp; event.charCode &lt;= 57" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.distance_traveled.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Distance traveled</label>
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.description class="mdl-textfield__input" oninput="autoExpand(this)" %}
+
+                            <label class="mdl-textfield__label">Description</label>
+                            <span class="focus-input100 error-label"  id="storyOfIncidentValidation"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.description.errors.0 }}</span>
+                            {% render_field shift_form.shift %}
+                            {% render_field shift_form.company %}
+                            {% render_field shift_form.employee %}
+                            {% comment %} {% render_field shift_form.sno %} {% endcomment %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.file class="mdl-textfield__input" placeholder="" style="border-bottom:none;"%} 
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.client.errors.0 }}</span>
+                            <label class="mdl-textfield__label">File Upload</label>
+                        </div>
+                    </div>
+
+                    {% if shift_form.non_field_errors %}
+                        <div class="error-message" style="color:red;">
+                            {% for error in shift_form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="col-lg-12 p-t-20 text-center">
+
+                        
+                        {% if request.resolver_match.url_name == 'dailyshift_add' or request.resolver_match.url_name == 'dailyshift_edit' or request.resolver_match.url_name == 'dailyshift_add_employee' or request.resolver_match.url_name == 'dailyshift_edit_employee' %}
+                        <button type="submit"
+                         class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue">Submit</button>
+                        {% endif %}
+                        
+                        {% if request.resolver_match.url_name == 'dailyshift_add'  or request.resolver_match.url_name == 'dailyshift_edit'  %}
+                        <a href="{% url 'rostering:employee_shifts_list_view' %}" class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default" id="punchOutCancelBtn">Cancel</a>
+                        {% endif %} 
+                        
+                        {% if request.resolver_match.url_name == 'dailyshift_add_employee' or request.resolver_match.url_name == 'dailyshift_edit_employee'  or request.resolver_match.url_name == 'dailyshift_view' %}
+                        <a href="{% url 'company:daily_shift_note_dashboard' %}" class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+
+<!-- <script>
+    {% comment %} function wordLimitCheck() {
+
+        let inputValue = document.getElementById('id_description').value;
+        let lengthOfInput = inputValue.split(/\s+/);
+        let storyOfIncidentValidation = document.getElementById('storyOfIncidentValidation');
+    
+        if (lengthOfInput.length <= 50) {
+            storyOfIncidentValidation.innerText = "It should be more than 50 words";
+            return false;
+        } else {
+            storyOfIncidentValidation.innerText = "";
+            return true;
+        }
+    }
+    
+    document.getElementById('form_validation').addEventListener('submit', function (event) {
+        if (!wordLimitCheck()) {
+            event.preventDefault();  
+        }
+    }); {% endcomment %}
+    function wordLimitCheck() {
+        var currentUrl = window.location.href;
+        console.log(currentUrl);
+    
+        // Check if the URL contains "shift/add/"
+        if (currentUrl.includes("shift/add/")) {
+            // Bypass the word limit check
+            return true;
+        }
+    
+        let inputValue = document.getElementById('id_description').value;
+        let lengthOfInput = inputValue.split(/\s+/);
+        let storyOfIncidentValidation = document.getElementById('storyOfIncidentValidation');
+    
+        if (lengthOfInput.length <= 50) {
+            storyOfIncidentValidation.innerText = "It should be more than 50 words";
+            return false;
+        } else {
+            storyOfIncidentValidation.innerText = "";
+            return true;
+        }
+    }
+    
+    document.getElementById('form_validation').addEventListener('submit', function (event) {
+        if (!wordLimitCheck()) {
+            event.preventDefault();  
+        }
+    });
+    
+    
+</script> -->
+<script>
+    var prevStartValue = '';
+    var prevEndValue = '';
+
+    var startDateTimeInput = document.getElementById('id_start_date_time');
+    var endDateTimeInput = document.getElementById('id_end_date_time');
+
+    startDateTimeInput.addEventListener('change', handleDateChange);
+    startDateTimeInput.addEventListener('input', handleDateChange);
+    endDateTimeInput.addEventListener('change', handleDateChange);
+    endDateTimeInput.addEventListener('input', handleDateChange);
+
+    function handleDateChange(e) {
+        var inputField = e.target;
+        var prevValue = inputField === startDateTimeInput ? prevStartValue : prevEndValue;
+        
+        if (inputField.value !== prevValue && inputField.value !== '') {
+            if (inputField === startDateTimeInput) {
+                prevStartValue = inputField.value;
+            } else {
+                prevEndValue = inputField.value;
+            }
+            
+            setTimeout(function() {
+                if (navigator.userAgent.indexOf('iPhone') > -1 || navigator.userAgent.indexOf('iPad') > -1) {
+                    document.activeElement.blur();
+                } else {
+                    inputField.blur();
+                }
+            }, 10);
+        }
+    }
+</script>
+<script>
+    window.addEventListener("pageshow", function(event) {
+        if (performance.navigation.type == performance.navigation.TYPE_BACK_FORWARD) {
+            window.location.reload(); 
+        }
+        
+        if (event.persisted) {
+            window.location.reload();  
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        function handleVisibility(selectedValue) {
+            var distanceField = $('.cls_distance_traveled');
+
+            if(selectedValue == 'True') {
+                if (!distanceField.val()) { 
+                $('.cls_distance_traveled').attr('required', true);
+                $('.cls_distance_traveled').parent().addClass('is-invalid').show();
+                }
+                else{
+                    $('.cls_distance_traveled').parent().show();
+                }
+            } else {
+                $('.cls_distance_traveled').val('');
+                $('.cls_distance_traveled').removeAttr('required');
+                $('.cls_distance_traveled').parent().removeClass('is-invalid').hide();
+            }
+        }
+    
+        $('#id_vehicle_used').on('change', function(){
+            var selectedValue = $(this).val();
+            handleVisibility(selectedValue);
+        });
+    
+        var initialValue = $('#id_vehicle_used').val();
+        handleVisibility(initialValue);
+    });
+    
+    
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var textarea = document.getElementById('id_description');
+        autoExpand(textarea);
+    });
+    
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+    </script>
+
+
+<!-- rosterinng js-->
+<!-- Punch In and Punch Out JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateTimeInput = document.querySelector('input[name="start_date_time"]');
+        const endDateTimeInput = document.querySelector('input[name="end_date_time"]');
+        const punchInButton = document.getElementById('punch-in-btn');
+        const punchOutButton = document.getElementById('punch-out-btn');
+
+        if (startDateTimeInput.value) {
+            startDateTimeInput.style.display = 'block';
+            punchInButton.style.display = 'none';
+            punchOutButton.disabled = false;
+        }
+
+        if (endDateTimeInput.value) {
+            endDateTimeInput.style.display = 'block';
+            punchOutButton.style.display = 'none';
+        }
+
+        punchInButton.addEventListener('click', function() {
+            const currentDate = new Date();
+            const formattedDateTime = formatDate(currentDate);
+            startDateTimeInput.value = formattedDateTime;
+            startDateTimeInput.style.display = 'block';
+            punchInButton.style.display = 'none';
+            punchOutButton.disabled = false;
+        });
+
+        punchOutButton.addEventListener('click', function() {
+            const currentDate = new Date();
+            const formattedDateTime = formatDate(currentDate);
+            endDateTimeInput.value = formattedDateTime;
+            endDateTimeInput.style.display = 'block';
+            punchOutButton.style.display = 'none';
+        });
+    });
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+</script>
+<script>
+    window.urlNameToPath = {
+        'dailyshift_add_employee': "{% url 'employee:dailyshift_add_employee' %}",
+        
+    };
+</script>
+<Script>
+            const cancelBtn = document.getElementById('cancelBtn')
+            const punchOutCancelBtn = document.getElementById('punchOutCancel')
+
+            cancelBtn.addEventListener('click',function(){
+                 
+                cancelBtn.disabled = true;
+                cancelBtn.innerHTML='<span class="loader cancel-btn"></span>';
+                setTimeout(() => {
+                cancelBtn.disabled = false;
+                cancelBtn.innerHTML = 'Cancel';
+                }, 300);
+
+            });
+            punchOutCancelBtn.addEventListener('click',function(){
+                 
+                punchOutCancelBtn.disabled = true;
+                punchOutCancelBtn.innerHTML='<span class="loader cancel-btn"></span>';
+                setTimeout(() => {
+                    punchOutCancelBtn.disabled = false;
+                    punchOutCancelBtn.innerHTML = 'Cancel';
+                }, 300);
+
+            });
+
+           
+            
+            
+</Script>
+
+
+
+{% endblock javascripts %}

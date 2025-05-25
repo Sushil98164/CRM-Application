@@ -1,0 +1,877 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+
+{% block title %}
+{% if request.resolver_match.url_name == 'incident_add' %}
+Add Incident
+{% else %}
+View Incident
+{% endif %}
+
+{% endblock title %}
+{% block stylesheets %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<style>
+    .entry.input-group.upload-input-group {
+        margin-bottom: 10px;
+    }
+    .capitalize {
+        text-transform: capitalize;
+    }
+
+      
+/* Custom Button Styles */
+button.btn.btn-secondary {
+	background-color: #188AE2;
+	color: #FEFEFC;
+	font-family: Inter;
+	font-size: 24px;
+	font-weight: 700;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 5px;
+	margin-right: 20px;
+}
+
+
+
+.entry.input-group.upload-input-group {
+    margin-bottom: 10px;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.fix-button {
+    padding-top: 20px;
+    text-align: center;
+}
+
+/* General Modal Styling */
+.confirmation-modal {
+    padding: 0.625em !important;
+}
+
+.confirmation-modal .modal-dialog.modal-dialog-centered {
+    margin: 0 auto;
+    max-width: 32em;
+    display: flex;
+    justify-content: center;
+}
+
+.confirmation-modal .modal-content {
+    width: 80% !important;
+    padding: 1.25em;
+    border-radius: 0.3125em;
+}
+
+.confirmation-modal .modal-header {
+    border: none;
+    text-align: center;
+    padding-bottom: 0;
+    display: block;
+}
+
+.confirmation-modal .icon-alert {
+    border-radius: 50px;
+    width: 77px;
+    height: 77px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.875em;
+    border: 0.25em solid #facea8;
+    color: #f8bb86;
+}
+
+.confirmation-modal .modal-header h2 {
+    text-align: center;
+    font-weight: 600;
+    color: #595959;
+    font-size: 30px;
+    margin: 0 0 0.4em;
+}
+
+.confirmation-modal .modal-body {
+    text-align: center;
+    font-size: 1.125em;
+    font-weight: 400;
+    color: #545454;
+    line-height: normal;
+    padding: 0;
+}
+
+.confirmation-modal .modal-footer {
+    text-align: center;
+    display: block;
+    border: none;
+    padding: 0;
+    margin: 1.25em auto 0;
+}
+
+.confirmation-modal .modal-footer button {
+    display: inline-block;
+    background-color: rgb(221, 51, 51);
+    border: none;
+    border-radius: 0.25em;
+    color: #fff;
+    font-size: 1.0625em;
+    margin: 0.3125em;
+    padding: 8px 16px;
+    box-shadow: none;
+    font-weight: 500;
+    min-height: 36px;
+    text-transform: unset !important;
+}
+
+.confirmation-modal .modal-footer button:hover {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+
+.custom-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    color: red;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.custom-close:hover {
+    color: darkred;
+}
+
+</style>
+
+
+{% endblock stylesheets %}
+{% block content %}
+{% load widget_tweaks %}
+
+<!-- start widget -->
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        
+        <div class=" pull-left">
+            {% if request.resolver_match.url_name == 'incident_add' %}
+            <div class="page-title">Add incident</div>
+            {% else %}
+            <div class="page-title">View incident</div>
+
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><i class="fa fa-home"></i>&nbsp;<a class="parent-item"
+                    href="{% url 'employee:incident_list' %}">Incidents list</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            {% if request.resolver_match.url_name == 'incident_add' %}
+            <li class="active">View</li>
+
+            {% else %}
+            <li class="active">View</li>
+            {% endif %}
+        </ol>
+    </div>
+</div>
+
+<ul class="nav customtab nav-tabs " role="tablist">
+    {% if not request.resolver_match.url_name == 'incident_add' %}
+    <li class="nav-item mb-2">
+        <a href="{% url 'employee:incident_edit' incident_id %}" class="nav-link {% if request.resolver_match.url_name == 'incident_edit'  %}active{% endif %}">
+            Incident
+        </a>
+    </li>
+    
+    <li class="nav-item">
+            <a href="{% url 'employee:employee_tag_employee_view'  %}?incident_id={{incident_id}}&client_id={{client_id}}" class="nav-link {% if request.resolver_match.url_name == 'employee_tag_employee_view' %}active{% endif %}" tabindex="-1">
+                Tag{% if request.resolver_match.url_name == 'incident_edit'%}ged{% endif %} Employee
+            </a>
+    </li>
+    {% else %}
+    <li class="nav-item mb-2">
+        <a href="" class="nav-link {% if request.resolver_match.url_name == 'incident_add' %}active{% endif %}">
+            Incident
+        </a>
+    </li>
+    
+    <li class="nav-item">
+        {% if request.session.incident_id and request.session.employee_id and request.session.client_id %}
+
+            <a href="{% url 'employee:employee_tag_employee' %}" class="nav-link {% if request.resolver_match.url_name == 'employee_tag_employee' %}active{% endif %}" tabindex="-1">
+                Tag Employee
+            </a>
+        {% endif %}
+    </li>
+    {% endif %}
+
+</ul>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="card-head">
+                <header>Incident information</header>
+      
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="form_validation" class="disable-form">
+                {% csrf_token %}
+      
+                <div class="card-body row">
+                    {% if request.resolver_match.url_name == 'incident_edit' %}
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="text" id="txtFirstName" value = "{{employee.person.first_name}}" readonly>
+                            <label class="mdl-textfield__label">Employee name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="text"
+                                 id="text5" value = "{% if employee.person.phone_number %}{{employee.person.phone_number}} {% endif %}" readonly>
+                            <label class="mdl-textfield__label" for="text5">Employee phone number</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="email" id="txtemail" value="{{employee.person.email}}" readonly>
+                            <label class="mdl-textfield__label">Employee email</label>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="text" id="txtFirstName" value = "{{request.user.first_name}}" readonly>
+                            <label class="mdl-textfield__label">Employee name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="text"
+                                 id="text5" value = "{% if request.user.phone_number %}{{request.user.phone_number}} {% endif %}" readonly>
+                            <label class="mdl-textfield__label" for="text5">Employee phone number</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="email" id="txtemail" value="{{request.user.email}}" readonly>
+                            <label class="mdl-textfield__label">Employee email</label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-lg-12 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.client class="mdl-textfield__input"  placeholder=""%}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.client.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Client name</label>
+                            {% render_field incident_form.employee %}
+                            {% render_field incident_form.company %}
+                            {% comment %} {% render_field incident_form.sno %}
+                            {% render_field incident_form.report_code %} {% endcomment %}
+                            {% render_field incident_form.status %}
+                            {% render_field incident_form.report_type %}
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.incident_location class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_location.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Place of incident occurred</label>
+                        </div>
+                    </div>
+                    
+         
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                            <div class="form-control-wrapper">
+                                {% render_field incident_form.incident_date_time class="mdl-textfield__input datetimepicker" placeholder=""%}
+
+                                <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_date_time.errors.0 }}</span>
+                                <label class="mdl-textfield__label ">Date and time of the incident</label>
+                            </div>
+                        </div>
+                    </div>
+              
+                    <div class="col-lg-12 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.is_injured  class="mdl-textfield__input" %}
+                            <label class="mdl-textfield__label ">Is anyone injured in the incident?</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20 cl_is_injured ">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.injured_person  class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "   data-placeholder="&#xf191;" >{{ incident_form.injured_person.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Name of the injured person</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20 cl_is_injured">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.action_taken  class="mdl-textfield__input " oninput="autoExpand(this)" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.action_taken.errors.0 }}</span>
+                            <label class="mdl-textfield__label " for="text7">What actions were taken after the injury was noticed?</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20 ">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.any_witness  class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.any_witness.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Is there a witness?</label>
+                        </div>
+                    </div>
+
+                   
+
+                    <div class="col-lg-6 p-t-20 incident_witness_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.witness_name class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.witness_name.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Witness name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20 incident_witness_div">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.witness_phone_number class="mdl-textfield__input" pattern="[0-9]{10}" maxlength="10" title="Please enter a 10-digit phone number." %}
+                            <label class="mdl-textfield__label">Witness phone number</label>
+                            <span class="mdl-textfield__error ">Please enter a valid 10-digit phone number.</span>
+                            <span style="color:red">{{ personform_errors.phone_number.0 }}</span>
+                        </div>
+                    </div> 
+                    <div class="col-lg-6 p-t-20 incident_witness_div">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.witness_email class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.witness_email.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Witness email</label>
+                        </div>
+                    </div>             
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.pre_incident_details  class="mdl-textfield__input" onkeyup="" oninput="autoExpand(this)"  %}
+
+                            <span class="focus-input100 error-label" id="preIncidentDetails"   style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.pre_incident_details.errors.0 }}</span>
+                            <label class="mdl-textfield__label " for="text7">What happened before the incident and what actions did you take?</label>
+                        </div>
+                    </div>
+              
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.inbetween_incident_details  class="mdl-textfield__input" onkeyup="" oninput="autoExpand(this)" %}
+
+                            <span class="focus-input100 error-label" id="inbetweenIncidentDetails" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;"  >{{ incident_form.inbetween_incident_details.errors.0 }}</span>
+                            <label class="mdl-textfield__label " for="text7">What happened during the incident and what actions did you take?</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.post_incident_details  class="mdl-textfield__input" onkeyup="" oninput="autoExpand(this)" %}
+
+                            <span class="focus-input100 error-label" id="postIncidentDetails" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;"  >{{ incident_form.post_incident_details.errors.0 }}</span>
+                            <label class="mdl-textfield__label " for="text7">What happened after the incident and what actions did you take?</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.incident_severity_level class="mdl-textfield__input" id="incident_severity_level" placeholder="" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ incident_form.incident_severity_level.errors.0 }}</span>
+                            <label class="mdl-textfield__label">According to your observation- please define incident severity level</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 p-t-20" id="specific_severity_level_container" style="display: none;">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.specific_severity_level class="mdl-textfield__input" placeholder="" id="specific_severity_level" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ incident_form.specific_severity_level.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Select severity</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.incident_category class="mdl-textfield__input" id="incident_category" placeholder="" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ incident_form.incident_category.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Incident category</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20" id="define_other_category_container" style="display:none;">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.define_other_category class="mdl-textfield__input" id="define_other_category" placeholder="" oninput="autoExpand(this)" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ incident_form.define_other_category.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Define the category</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.incident_classification class="mdl-textfield__input" id="incident_classification" placeholder="" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ incident_form.incident_classification.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Incident classification</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20 d-none">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field incident_form.employees_involved class="mdl-textfield__input" id="wereEmployeesPresent" placeholder=""%}
+                            <label class="mdl-textfield__label"> Were any other employees present during the incident?</label>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal col-md-12">
+                        <div class="row form-group">
+                          <div class="col-12 col-md-12">
+                            <div class="control-group" id="fields">
+                              <div class="controls">
+                                <div class="entry input-group upload-input-group">
+                                  {% render_field attachment_form.file class="form-control" name="fields[]" %}
+                                  <button class="btn btn-upload btn-success btn-add" type="button">
+                                    <i class="fa fa-plus"></i>
+                                  </button>
+                                </div>
+                                <span class="focus-input100 error-label" style="color: red; font-size:13px;  position: absolute; padding-top:5px;"  data-placeholder="&#xf191;" >{{ attachment_form.file.errors }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    {% if attachment_data %}
+                        <div class="row-3">
+                            <input type="hidden" name="deleteAttachmentFile" value="" id="deleteAttachmentFile">
+                            {% for file in attachment_data %}
+                                {% csrf_token %}
+                                <input type="hidden" value="{{file.id}}"  id="attachment_file_id"  name="file_id">
+                                <div class="col attachment-item"  data-file-id="{{file.id}}">
+                                    <span class="mdl-chip mdl-chip--deletable">
+                                        <span class="mdl-chip__text" style="text-align:center;"><a href="{{file.file.url}}" target="_blank">{{file.file.name|truncatechars:100}}</a></span>
+                                        <button type="button" id="deleteAttachment" class="mdl-chip__action deleteAttachment"><i class="material-icons">cancel</i></button>
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="col-lg-12 p-t-20 text-center">
+                        {% if request.resolver_match.url_name == 'incident_add' %}
+                        <button type="submit"
+                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue" id="employee_incident_submit_button">Submit</button>
+                        {% endif %}
+                            <a href="{% url 'employee:incident_list' %}" class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                    </div>
+                </div>
+            </form> 
+        </div>
+    </div>
+</div>
+
+  
+  <!-- Modal -->
+
+  <div class="modal fade confirmation-modal" id="confirmationModal" tabindex="-1" role="dialog"
+  aria-labelledby="confirmationModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h2 class="modal-title" id="confirmationModalTitle">Were any other employees present during the incident?</h2>
+                  <button type="button" class="custom-close" data-dismiss="modal" aria-label="Close">&times;</button>
+
+              </div>
+              <div class="modal-body">
+              </div>
+              <div class="modal-footer">
+                  <button type="button" id="yesBtn" class="btn btn-secondary" data-dismiss="modal">Yes</button>
+                  <button type="button" id="noBtn" class="btn btn-primary">No</button>
+              </div>
+          </div>
+  </div>
+</div>
+<!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const severityLevels = {{ severity_levels_json|safe }};
+
+    $(document).ready(function() {
+        function populateSpecificLevels(selectedLevel, specificLevelDropdown, selectedSpecificLevel = null) {
+            specificLevelDropdown.empty();
+
+            if (severityLevels[selectedLevel]) {
+                severityLevels[selectedLevel].forEach(function(option) {
+                    let optionElement = new Option(option[1], option[0]);
+                    if (selectedSpecificLevel === option[0]) {
+                        optionElement.selected = true;
+                    }
+                    specificLevelDropdown.append(optionElement);
+                });
+            }
+        }
+
+        function toggleSpecificSeverityLevelContainer() {
+            let selectedLevel = $('#incident_severity_level').val().trim();
+            if (selectedLevel && selectedLevel !== 'Not applicable') {
+                $('#specific_severity_level_container').show();
+            } else {
+                $('#specific_severity_level_container').hide();
+            }
+        }
+
+        $('#incident_severity_level').change(function() {
+            let selectedLevel = $(this).val().trim();
+            const specificLevelDropdown = $('#specific_severity_level');
+            populateSpecificLevels(selectedLevel, specificLevelDropdown);
+            toggleSpecificSeverityLevelContainer();
+        });
+
+        // Initialize specific severity level dropdown if a value is already selected
+        let selectedLevel = $('#incident_severity_level').val().trim();
+        let selectedSpecificLevel = '{{ incident_form.initial.specific_severity_level|default_if_none:"" }}'; // Ensure this value is properly fetched from your backend or form initial data
+        const specificLevelDropdown = $('#specific_severity_level');
+        populateSpecificLevels(selectedLevel, specificLevelDropdown, selectedSpecificLevel);
+        toggleSpecificSeverityLevelContainer();
+    });
+   
+
+    $(document).ready(function() {
+        $('.deleteAttachment').on('click', function() {
+            var file_id = $(this).closest('.attachment-item').data('file-id');
+            updateAttachmentList(file_id);
+        });
+
+        function updateAttachmentList(file_id) {
+            var attachment_file_data = document.getElementById('deleteAttachmentFile');
+            let current_attachment_file_data  = attachment_file_data.value.split(',');
+            if (current_attachment_file_data.indexOf(file_id) === -1){
+
+                current_attachment_file_data.push(file_id);
+
+            }
+            attachment_file_data.value = current_attachment_file_data.join(',');
+            $('.attachment-item[data-file-id="' + file_id + '"]').hide();
+
+        }
+
+        
+    });
+
+
+    $(function () {
+        $(document).on('click', '.btn-add', function (e) {
+            e.preventDefault();
+
+            var controlForm = $('.controls:first'),
+                currentEntry = $(this).parents('.entry:first'),
+                newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+            newEntry.find('input').val('');
+            controlForm.find('.entry:not(:last) .btn-add')
+                .removeClass('btn-add').addClass('btn-remove')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="fa fa-trash"></span>');
+        }).on('click', '.btn-remove', function (e) {
+            $(this).parents('.entry:first').remove();
+
+            e.preventDefault();
+            return false;
+        });
+    });
+
+    // function wordLimitCheck() {
+    //     let inputValue = document.getElementById('id_pre_incident_details').value;
+    //     let lengthOfInput = inputValue.split(/\s+/);
+    //     let storyOfIncidentValidation = document.getElementById('storyOfIncidentValidation');
+    
+    //     if (lengthOfInput.length <= 50) {
+    //         storyOfIncidentValidation.innerText = "It should be more than 50 words";
+    //         return false;
+    //     } else {
+    //         storyOfIncidentValidation.innerText = "";
+    //         return true;
+    //     }
+    // }
+
+    // function wordLimitCheck(event) {
+    //     let inputField = event.target;  
+    //     let inputValue = inputField.value; 
+    //     let lengthOfInput = inputValue.split(/\s+/).length;
+    //     let errorSpanId = inputField.id === 'id_pre_incident_details' ? 'preIncidentDetails' :
+    //                     inputField.id === 'id_inbetween_incident_details' ? 'inbetweenIncidentDetails' :
+    //                     'postIncidentDetails'; 
+        
+    //     let errorSpan = document.getElementById(errorSpanId);
+
+    //     if (lengthOfInput <= 20) {
+    //         errorSpan.innerText = "It should be more than 20 words";
+    //     } else {
+    //         errorSpan.innerText = "";
+    //     }
+    // }
+
+    // document.getElementById('form_validation').addEventListener('submit', function (event) {
+    //     if (!wordLimitCheck()) {
+    //         event.preventDefault();  // Prevent form submission if word limit check fails
+    //     }
+    // });
+  
+    $(document).ready(function() {
+        function handleWitness() {
+            var selectedValue = $('#id_any_witness').val();
+            var witnessName = $('#id_witness_name').val().trim();
+    
+            if (selectedValue == 'True') {
+                if (witnessName === '') {
+                    $('#id_witness_name').attr('required', 'true').parent().addClass('is-invalid');
+                    $('.incident_witness_div').show();
+                } else {
+                    $('#id_witness_name').removeAttr('required').parent().removeClass('is-invalid');
+                    $('.incident_witness_div').show();
+                }
+            } else {
+                $('#id_witness_name').removeAttr('required').parent().removeClass('is-invalid');
+                $('.incident_witness_div').hide();
+            }
+        }
+    
+        $('#id_any_witness').on('change', function() {
+            handleWitness();
+        });
+    
+        $('#id_witness_name').on('keyup', function() {
+            handleWitness();
+        });
+    
+        handleWitness();
+    });
+    
+    $(document).ready(function() {
+        function handleIsInjured() {    
+            var selectedValue = $('#id_is_injured').val();
+            if (selectedValue == 'True') {
+                $('.cl_is_injured').show();
+    
+                var injuredPerson = $('#id_injured_person').val().trim();
+                var actionTaken = $('#id_action_taken').val().trim();
+    
+                if (injuredPerson === '') {
+                    $('#id_injured_person').attr('required', 'true');
+                    $('#id_injured_person').parent().addClass('is-invalid').show();
+                } else {
+                    $('#id_injured_person').removeAttr('required');
+                    $('#id_injured_person').parent().removeClass('is-invalid').show();
+                }
+    
+                if (actionTaken === '') {
+                    $('#id_action_taken').attr('required', 'true');
+                    $('#id_action_taken').parent().addClass('is-invalid').show();
+                } else {
+                    $('#id_action_taken').removeAttr('required');
+                    $('#id_action_taken').parent().removeClass('is-invalid').show();
+                }
+            } else {
+                $('.cl_is_injured').hide();
+    
+                $('#id_injured_person').removeAttr('required');
+    
+                $('#id_injured_person').parent().removeClass('is-invalid').hide();
+                $('#id_action_taken').removeAttr('required');
+                $('#id_action_taken').parent().removeClass('is-invalid').hide();
+            }
+        }
+    
+        $('#id_is_injured').on('change', function() {
+            handleIsInjured();
+        });
+    
+        handleIsInjured();
+    });
+    
+
+</script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var textareas = document.querySelectorAll('textarea[id^="id_"]');
+        textareas.forEach(function(textarea) {
+            autoExpand(textarea);
+        });
+    });
+    
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+    </script>
+    <script>
+        window.urlNameToPath = {
+            'incident_add': "{% url 'employee:incident_add' %}",
+        };
+    </script>
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form.disable-form');
+
+    forms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+               
+    
+            if (!wordLimitCheck()) {
+                event.preventDefault();  
+                return;  
+            }
+        
+            const submitBtn = form.querySelector('button[id="submit"]');
+            submitBtn.disabled = true; 
+            submitBtn.innerHTML = '<span class="loader"></span>'; 
+        });
+    });
+});
+</script> -->
+
+<script>
+
+
+    // function wordLimitCheckk(event) {
+    //     let inputField = event.target;  
+    //     let inputValue = inputField.value; 
+    //     let lengthOfInput = inputValue.split(/\s+/).length;
+    
+    //     // Determine the error span ID based on the input field ID
+    //     let errorSpanId = inputField.id === 'id_pre_incident_details' ? 'preIncidentDetails' :
+    //                       inputField.id === 'id_inbetween_incident_details' ? 'inbetweenIncidentDetails' :
+    //                       'postIncidentDetails'; 
+    
+    //     let errorSpan = document.getElementById(errorSpanId);
+    
+    //     // Check the word limit and update the error message accordingly
+    //     if (lengthOfInput <= 20) {
+    //         errorSpan.innerText = "It should be more than 20 words";
+    //         return false; // Indicate that the check failed
+    //     } else {
+    //         errorSpan.innerText = "";
+    //         return true; // Indicate that the check passed
+    //     }
+    // }
+    
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form.disable-form');
+            const cancelBtn = document.getElementById('cancelBtn')
+        
+            form.addEventListener('submit', function(event) {
+                        
+                const submitBtn = form.querySelector('button[id="employee_incident_submit_button"]');
+                submitBtn.disabled = true; 
+                submitBtn.innerHTML = '<span class="loader"></span>'; 
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Submit';
+                }, 300);
+                // let isValid = true;
+                // const inputFields = ['id_pre_incident_details', 'id_inbetween_incident_details', 'id_post_incident_details'];
+                // inputFields.forEach(id => {
+                // const inputField = document.getElementById(id);
+                // if (inputField) {
+                //         const result = wordLimitCheckk({ target: inputField });
+                //         if (!result) {
+                //             isValid = false;
+                //         }
+                //     }
+                // });
+            });
+            cancelBtn.addEventListener('click',function() {
+             
+            cancelBtn.disabled = true;
+            cancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+            setTimeout(() => {
+                cancelBtn.disabled = false;
+                cancelBtn.innerHTML = 'Cancel';
+                }, 300);
+        });
+        });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const incidentCategoryField = document.getElementById("incident_category");
+                const defineOtherCategoryContainer = document.getElementById("define_other_category_container");
+                const defineOtherCategoryField = document.getElementById("define_other_category");
+            
+                function toggleDefineOtherCategory() {
+                    if (incidentCategoryField.value === "Other") {
+                        defineOtherCategoryContainer.style.display = "block";
+                    } else {
+                        defineOtherCategoryContainer.style.display = "none"; 
+                        defineOtherCategoryField.value = ""; 
+                    }
+                }
+            
+                toggleDefineOtherCategory();
+            
+                incidentCategoryField.addEventListener("change", toggleDefineOtherCategory);
+            });
+            </script>
+        
+
+            <script>   
+                const form = document.getElementById('form_validation');
+                const bootstrapModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                const yesButton = document.getElementById('yesBtn');
+                const noButton = document.getElementById('noBtn');
+                const wereEmployeesPresent = document.getElementById("wereEmployeesPresent");
+                const submitButton = document.getElementById('employee_incident_submit_button');
+        
+                submitButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+        
+                    if (form.checkValidity()) {
+                        bootstrapModal.show();
+                    } else {
+                        form.reportValidity();
+                    }
+                });
+        
+                yesButton.addEventListener('click', function () {
+                    wereEmployeesPresent.value = "yes"; 
+                    bootstrapModal.hide();
+                    form.submit(); 
+                });
+        
+                noButton.addEventListener('click', function () {
+                    wereEmployeesPresent.value = "no"; 
+                    bootstrapModal.hide();
+                    form.submit(); 
+                });
+            </script>
+<script>
+    $(document).ready(function() {
+        $(".datetimepicker").datetimepicker({
+            format: "Y-m-d H:i",
+            onSelectDate: function(ct, $input) {
+                $input.datetimepicker("hide");  // Closes calendar after selecting date
+            },
+            onSelectTime: function(ct, $input) {
+                $input.datetimepicker("hide");  // Closes calendar after selecting time
+            }
+        });
+    });
+    
+</script>
+{% endblock javascripts %}

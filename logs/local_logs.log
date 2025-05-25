@@ -1,0 +1,2 @@
+2025-01-03 00:03:17 [INFO    ] Watching for file changes with StatReloader [/home/codigo/Desktop/workspace/bell/env/lib/python3.9/site-packages/django/utils/autoreload.py:668]
+2025-01-03 00:05:59 [INFO    ] /home/codigo/Desktop/workspace/bell/BellsCRM/bellsCRM/settings.py changed, reloading. [/home/codigo/Desktop/workspace/bell/env/lib/python3.9/site-packages/django/utils/autoreload.py:266]

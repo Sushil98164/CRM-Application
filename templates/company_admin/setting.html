@@ -1,0 +1,32 @@
+{% comment %} {% extends "base_company_admin.html" %}
+{% block title %} Admin {% endblock title %}
+{% block stylesheets %}
+{% endblock stylesheets %}
+{% block content %}
+<div class="page-bar">
+    <script>
+        "{% if messages %}"
+        "{% for message in messages %}"
+			alert("{{ message}}");
+        "{% endfor %}"
+        "{% endif %}"
+    </script>
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Setting</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+   
+            <li class="active">Setting</li>
+        </ol>
+    </div>
+</div>
+
+<!-- start widget -->
+
+<!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock javascripts %} {% endcomment %}

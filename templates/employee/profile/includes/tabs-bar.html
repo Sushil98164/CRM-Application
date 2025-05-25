@@ -1,0 +1,35 @@
+{% load company_admin_tags %}
+{% can_access_own_data request.user employee_id=request.user.employee.id company_id=request.user.employee.company.id as can_access %}
+
+<div class="col-md-12">
+       <div class="p-rl-20">
+        <ul class="nav customtab nav-tabs" role="tablist">
+            {% if request.resolver_match.url_name == 'employee_profile' or request.resolver_match.url_name == 'employee_profile_edit' %}
+                    <li class="nav-item"><a href="{% url 'employee:employee_profile' %}" class="nav-link active"
+                    >Employee profile</a></li>
+                    <li class="nav-item"><a href="{% url 'employee:employee_documents' %}" class="nav-link"
+                        >Documents</a></li>
+                    <li class="nav-item"><a href="{% url 'employee:my_clients' %}" class="nav-link"
+                        >Clients</a></li>  
+            {% endif %}
+            
+            {% if request.resolver_match.url_name == 'employee_documents' or request.resolver_match.url_name == 'employee_document' %}
+                 <li class="nav-item"><a href="{% url 'employee:employee_profile' %}" class="nav-link "
+                 >Employee profile</a></li>
+                 <li class="nav-item"><a href="{% url 'employee:employee_documents' %}" class="nav-link active"
+                    >Documents</a></li>
+                <li class="nav-item"><a href="{% url 'employee:my_clients' %}" class="nav-link"
+                    >Clients</a></li>  
+            {% endif %}
+            {% if request.resolver_match.url_name == 'my_clients' %}
+                <li class="nav-item"><a href="{% url 'employee:employee_profile' %}" class="nav-link "
+                    >Employee profile</a></li>
+
+                    <li class="nav-item"><a href="{% url 'employee:employee_documents' %}" class="nav-link"
+                >Documents</a></li>
+                <li class="nav-item"><a href="{% url 'employee:my_clients' %}" class="nav-link active"
+                        >Clients</a></li>    
+            {% endif %}
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+{% extends "company_admin/hierarchy/email/base_email.html" %}
+{% block content %}
+        
+    <div class="content">
+        <h2 style="color: #000;
+        font-family: Poppins;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;">Hi Admin,</h2>
+        
+        <p>This is an automated reminder that only {{days_remaining}} days are left for {{subsitute_name|title}} serving as the substitute owner for {{owner_name|title}} in the investigation hierarchy.</p>
+        
+        <p>If you wish to extend the current assignment, please update the timeline accordingly in the system before it expires.</p>
+        
+        <p>Best regards<br><b>Team BellsCRM</b></p>
+        
+        <a href="" class="button" style="
+        display: flex;
+        padding: 10px 20px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        background: #188AE1;
+        color: #FFF;
+        font-family: Poppins;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        width: fit-content;
+        text-decoration: none;
+        align-content: center;">Click here to update the assignment timeline</a>
+        
+        <div>
+            <p style="color: #000;
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal; margin-bottom: 60px;">This link will take you directly to the relevant page to help you complete the task quickly and efficiently.</p>
+        </div>
+    </div>
+{% endblock %}
+{% block footer %}
+
+<div class="footer-links">
+    <a href="{{ protocol }}://{{ domain }}{% url 'employee:employee_privacy_policy' %}">Privacy policy</a>
+    <a href="{{ protocol }}://{{ domain }}{% url 'user_auth:login' %}">Manage your account</a>
+    <a href="{{ protocol }}://{{ domain }}{% url 'employee:employee_terms_and_conditions' %}">Terms & conditions</a>
+</div>
+{% endblock %}

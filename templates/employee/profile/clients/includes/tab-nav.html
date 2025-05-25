@@ -1,0 +1,142 @@
+{% load company_admin_tags %}
+{% can_access_self_risk_assessment_data request.user client_id=client_id company_id=request.user.employee.company.id as can_access %}
+
+<ul class="nav customtab nav-tabs" role="tablist">
+    {% if request.resolver_match.url_name == 'client_detail_view' %}
+        <li class="nav-item">
+            <a href="{% url 'employee:client_detail_view' client_id %}" class="nav-link newtab tab1-client-profile active">Client profile</a>
+        </li>
+        {% if can_access %}
+
+        <li class="nav-item">
+            <a href="{% url 'employee:client_risk_assessment_list_view' client_id %}" class="nav-link"  >Risk assessment</a>
+        </li>        
+        {% endif %}  
+        {% if  request.user|has_permission:'company_admin.view_incident_own' or  request.user|has_permission:'company_admin.view_incident_all' or  request.user|has_permission:'company_admin.view_incident_own_team'  %}
+      
+        <li class="nav-item">
+            <a href="{% url 'employee:client_profile_incident_list' client_id %}" class="nav-link newtab"  >Incident</a>
+        </li>        
+         {% endif %} 
+         {% if  request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' or request.user|has_permission:'company_admin.view_progress_notes_own'  %}
+ 
+        <li class="nav-item">
+            <a href="{% url 'employee:client_progress_note_list_view' client_id %}" class="nav-link newtab"  >Progress notes and timesheet</a>
+        </li> 
+        {% endif%}              
+    </li>
+    {% endif %} 
+    
+    {% if request.resolver_match.url_name == 'client_employee_risk_assessment_add' or request.resolver_match.url_name == 'client_risk_assessment_list_view' or   request.resolver_match.url_name == 'client_risk_assessment_edit'  %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_detail_view' client_id %}" class="nav-link newtab tab1-client-profile ">Client profile</a>
+    </li>
+    {% if can_access %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_risk_assessment_list_view' client_id %}" class="nav-link newtab active" >Risk assessment</a>
+    </li> 
+    {% endif %}
+    {% if  request.user|has_permission:'company_admin.view_incident_own' or  request.user|has_permission:'company_admin.view_incident_all' or  request.user|has_permission:'company_admin.view_incident_own_team'  %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_profile_incident_list' client_id %}" class="nav-link newtab"  >Incident</a>
+    </li>        
+    {% endif %} 
+    {% if  request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' or request.user|has_permission:'company_admin.view_progress_notes_own'  %}
+    <li class="nav-item">
+        <a href="{% url 'employee:client_progress_note_list_view' client_id %}" class="nav-link newtab"  >Progress notes and timesheet</a>
+    </li>
+    {% endif %}
+    {% endif %}
+    {% if request.resolver_match.url_name == 'client_progress_note_list_view' or request.resolver_match.url_name == 'client_progress_note_detail'  %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_detail_view' client_id %}" class="nav-link newtab tab1-client-profile ">Client profile</a>
+    </li>
+    {% if can_access %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_risk_assessment_list_view' client_id %}" class="nav-link newtab" >Risk assessment</a>
+    </li> 
+    {% endif %}
+    {% if  request.user|has_permission:'company_admin.view_incident_own' or  request.user|has_permission:'company_admin.view_incident_all' or  request.user|has_permission:'company_admin.view_incident_own_team'  %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_profile_incident_list' client_id %}" class="nav-link newtab"  >Incident</a>
+    </li>        
+     {% endif %} 
+     {% if  request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' or request.user|has_permission:'company_admin.view_progress_notes_own'  %}
+    <li class="nav-item">
+        <a href="{% url 'employee:client_progress_note_list_view' client_id %}" class="nav-link active"  >Progress notes and timesheet</a>
+    </li>  
+    {% endif %}
+    {% endif %}
+
+
+    {% if request.resolver_match.url_name == 'client_profile_incident_list' or request.resolver_match.url_name == 'employee_client_profile_incident_detail' %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_detail_view' client_id %}" class="nav-link newtab tab1-client-profile ">Client profile</a>
+    </li>
+    {% if can_access %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_risk_assessment_list_view' client_id %}" class="nav-link newtab" >Risk assessment</a>
+    </li> 
+    {% endif %}
+    {% if  request.user|has_permission:'company_admin.view_incident_own' or  request.user|has_permission:'company_admin.view_incident_all' or  request.user|has_permission:'company_admin.view_incident_own_team'  %}
+    <li class="nav-item">
+        <a href="{% url 'employee:client_profile_incident_list' client_id %}" class="nav-link active"  >Incident</a>
+    </li>        
+     {% endif %}  
+        {% if  request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' or request.user|has_permission:'company_admin.view_progress_notes_own'  %}
+    <li class="nav-item">
+        <a href="{% url 'employee:client_progress_note_list_view' client_id %}" class="nav-link"  >Progress notes and timesheet</a>
+    </li>  
+    {% endif %}
+    {% endif %}
+
+
+    {% if request.resolver_match.url_name == 'employee_client_profile_mandatory_incident_list' or request.resolver_match.url_name == 'employee_client_profile_mandatory_incident_detail' %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_detail_view' client_id %}" class="nav-link newtab tab1-client-profile ">Client profile</a>
+    </li>
+    {% if can_access %}
+
+    <li class="nav-item">
+        <a href="{% url 'employee:client_risk_assessment_list_view' client_id %}" class="nav-link newtab" >Risk assessment</a>
+    </li>
+    {% endif %} 
+    </li> 
+    <li class="nav-item">
+        <a href="{% url 'employee:client_profile_incident_list' client_id %}" class="nav-link"  >Incident</a>
+    </li>        
+     
+    <li class="nav-item">
+        <a href="{% url 'employee:client_progress_note_list_view' client_id %}" class="nav-link"  >Progress notes and timesheet</a>
+    </li>  
+    {% endif %}
+
+ </ul>
+
+<!-- <script>
+    function back_btn(){
+        window.history.back();
+    };
+</script>   -->
+
+<script>
+    function back_btn() {
+         
+        const cancelBtn = document.getElementById('cancelBtn');
+        cancelBtn.disabled = true;
+        cancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+        
+        setTimeout(function() {
+            window.history.back();
+        }, 500); 
+    }
+</script>

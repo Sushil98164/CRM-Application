@@ -1,0 +1,138 @@
+{% extends 'base_company_admin.html' %}
+{% block title %}
+Documents
+{% endblock %}
+{% block stylesheets %}
+<style>
+    .table-checkable tr>td:first-child, .table-checkable tr>th:first-child {
+    
+    max-width: 100%!important;
+    min-width: 100% !important;
+}
+</style>
+{% endblock %}
+{% load company_admin_tags %}
+{% block content %}
+
+<!-- startwidget -->
+<div class="page-bar">
+	<div class="page-title-breadcrumb">
+		<div class=" pull-left">
+			<div class="page-title">Settings</div>
+		</div>
+		<ol class="breadcrumb page-breadcrumb pull-right">
+		
+			<li><a class="parent-item" href="#">Settings</a>&nbsp;
+			</li>
+			{% comment %} <li class="active">Company policies</li> {% endcomment %}
+		</ol>
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="col-md-12">
+		{% if messages %}
+        <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+		<ul class="nav customtab nav-tabs" role="tablist">
+        </ul>
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+                        <div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+                                </div>
+                                <div class="card-body ">
+                                    <div class="table-scrollable">
+										<table
+											class="table table-bordered table-striped table-hover "
+											>
+											<thead>
+												<tr>
+													<th class="col-md-1">S.no</th>
+													<th class="col-md-7 text-left">Setting</th>
+													<th class="col-md-4 w-100" style="width: 100% !important;">Action </th>
+												</tr>
+											</thead>
+											<tbody>
+ 												
+                                                <tr class="odd gradeX">
+													<td>
+														{% counter %}
+													</td>
+													<td class="col-md-8 text-left">
+                                                        Company policies
+													</td>
+                                                    <td class="col-md-4 w-100" style="width: 100% !important;">
+														{% if request.user|has_permission:'company_admin.view_terms_and_conditions_all' or request.user|has_permission:'company_admin.update_terms_and_conditions_all' or request.user|has_permission:'company_admin.view_privacy_policy_all' or request.user|has_permission:'company_admin.update_privacy_policy_all' %}
+                                                        <a href="{% url 'company:company_documents' %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a>
+														{% endif %}
+                                                    </td>
+                                                </tr>
+												{% if request.user|has_permission:'userauth.create_templates' or request.user|has_permission:'userauth.update_templates' or request.user|has_permission:'userauth.read_templates'  %}
+                                                <tr>
+													<td>
+														{% counter %}
+													</td>
+                                                    <td class="col-md-9 text-left">
+                                                        Permission sets
+                                                    </td>
+                                                    <td class="col-md-3 w-100" style="width: 100% !important;">
+                                                        <a href="{% url 'company:users_template_list' %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a>
+                                                    </td>
+                                                </tr>
+												{% endif %} 
+												{% if request.user|has_permission:'company_admin.update_incident_investigation_all' or request.user|has_permission:'company_admin.update_incident_investigation_own_team' or request.user|has_permission:'company_admin.update_incident_investigation_self'  %}
+												<tr>
+													<td>
+														{% counter %}
+													</td>
+                                                    <td class="col-md-9 text-left">
+                                                        Hierarchy
+                                                    </td>
+                                                    <td class="col-md-3 w-100" style="width: 100% !important;">
+                                                        <a href="{% url 'company:company_hierarchy_list' %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a>
+                                                    </td>
+                                                </tr> 
+												{% endif %} 
+                                            </tbody> 
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    $('#example4').DataTable({
+    paging: false,
+    info: false
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,1365 @@
+{% extends "base_rostering.html" %}
+{% load static %}
+{% load company_admin_tags%}
+{% block title %}
+Rostering
+{% endblock title %}
+{% block stylesheets %}
+<style>
+	
+    #deleteConfirmationModal.modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+
+    .fc .fc-createShiftButton-button{
+            background-color: #3ac9d6 !important;
+            border: 1px solid #3ac9d6 !important;
+            color: #fff !important;
+    }
+
+
+		#deleteConfirmationModal button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 24px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		border-radius: 5px;
+		margin-right: 20px;
+		}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+        #deleteConfirmationModal .modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		.modal-content{
+			width: 80% !important;
+		}
+		.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+			margin: 0 auto;
+			max-width: 32em;
+			display: flex;
+			justify-content: center;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+			padding: 8px 16px;
+			min-height: 36px;
+			font-size: 14px;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}
+	
+		@media screen and (max-width: 678px) {
+			.modal-content {
+				width: 100% !important;
+			}
+	
+		}
+	
+
+    .dtp {
+        z-index: 99999;
+    }
+
+    li {
+        list-style: none;
+    }
+    .mdl-textfield__input:focus-visible {
+        outline: 0 !important;
+    }
+    @media screen and (max-width: 768px) {
+         #eventModal .modal-dialog{
+            margin: 0px !important;
+            padding: 5px !important;
+        }
+        
+    }
+</style>
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Rostering</div>
+
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="">Rostering</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">Dashboard</li>
+
+
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="card-box">
+            <div class="card-head">
+                <header>Shifts Calendar</header>
+            </div>
+            <div class="card-body ">
+                <div class="[panel-body d-flex row">
+                    <div id="calendar" class="has-toolbar col-md-12"> </div>
+                    <!-- <div class="col-md-2"> -->
+                        <!-- <div class="btn-group mb-2">
+                            <a data-toggle="modal" data-target="#createshift" id="addRow" class="btn btn-info p-1">
+                                Create Shift <i class="fa fa-plus"></i>
+                            </a>
+                        </div> -->
+
+                        <!-- <div class="form-group mb-1">
+                            <input class="form-control p-1" type="date" id="datefilter" placeholder="Date filter">
+
+                        </div>
+                        <div class="form-group mb-1">
+                            <select id="employee-client-select" class="form-control h-auto p-1">
+                                <option value="both">Employee/Client</option>
+                                <option value="employee">Employee</option>
+                                <option value="client">Client</option>
+                            </select>
+                        </div> -->
+                        <!-- <div id="list-container" class="border p-2 h-auto" style="display: none;">
+                            <ul id="dynamic-list" class="p-0">
+                            </ul>
+                        </div> -->
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!---modals-->
+
+
+
+<div class="modal fade" id="createshift">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+
+            <!-- Modal Header -->
+            <div class="modal-header card-head">
+                <header>Create shift</header>
+                
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="p-0">
+                {% include "rostering/admin/dashboard/create-shift-form.html" %}
+                <div style="color:red" id="errorContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="edit-shift-form">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit shift</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="update-shift-modal">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+            <span class="close">&times;</span>
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit shift</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+        
+        </div>
+    </div>
+</div>
+
+<!--endif-->
+<!---first -->
+
+<!-- Modal for displaying shift details -->
+
+<!--end -->
+
+
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Your existing HTML code -->
+
+<!-- Edit Shift Modal -->
+<div class="modal fade" id="editShiftModal" tabindex="-1" role="dialog" aria-labelledby="editShiftModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editShiftModalLabel">Edit Shift</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit shift form will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditShiftBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="editShiftdiv">
+
+</div>
+<input type="hidden" value="{{is_create_access}}" id="is_create_access">
+
+{% endblock %}
+
+{% block javascripts %}
+
+
+
+<!--Filtering employee based upon client-->
+<script>
+    $(document).ready(function () {
+    
+        $('.select-client').change(function () {
+
+            var clientId = $(this).val();
+            var url = '{% url "rostering:filter_employees_by_client" %}';
+
+            $.ajax({
+                url: url,
+                data: {
+                    'client_id': clientId
+                },
+                success: function (data) {
+                    $('#hide_employee_div').hide();
+                    $('#display_employee_div').show();
+
+                    var $employeeSelect = $('#id_employee');
+                    $employeeSelect.empty();
+                    if (data.employees.length > 0) {
+                        $employeeSelect.append($('<option>', {
+                            value: '',
+                            text: 'Select an employee',
+                            disabled: true,
+                            selected: true 
+                        }));
+                    
+                        $.each(data.employees, function (index, employee) {
+                            $employeeSelect.append($('<option>', {
+                                value: employee.id,
+                                text: employee.name
+                            }));
+                        });
+                    } else {
+                        $employeeSelect.append($('<option>', {
+                            value: '',
+                            text: 'No employee found related to client'
+                        }));
+                    }
+                    
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Filtering employee based upon client end -->
+
+<!--create employee shift -->
+<!-- <script>
+    // $(document).ready(function () {
+    //     $('.shift-form').on('submit', function (e) {
+    //         e.preventDefault();
+
+    //         var formData = $(this).serialize();
+
+    //         var csrftoken = $('[name=csrfmiddlewaretoken]').val();
+
+    //         $.ajax({
+    //             type: 'POST',
+    //             url: '{% url "rostering:create_employee_shift" %}',
+    //             data: formData,
+    //             beforeSend: function (xhr, settings) {
+    //                 xhr.setRequestHeader('X-CSRFToken', csrftoken);
+    //             },
+    //             success: function (response) {
+    //                 window.location.reload();
+    //             },
+    //             error: function (xhr, errmsg, err) {
+    //                 let errorData = xhr.responseJSON;
+    //                 if (errorData.error) {
+    //                     alert(errorData.error);
+    //                 } else if (errorData.errors) {
+    //                     let formErrors = JSON.parse(errorData.errors);
+    //                     const errorContainer = document.getElementById('errorContainer');
+    //                     errorContainer.innerHTML = '';
+
+    //                     for (const key in formErrors) {
+    //                         if (formErrors.hasOwnProperty(key)) {
+    //                             const errors = formErrors[key];
+    //                             for (const error of errors) {
+    //                                 const errorElement = document.createElement('p');
+    //                                 errorElement.textContent = error.message;
+    //                                 errorContainer.appendChild(errorElement);
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         });
+    //     });
+    // });
+
+    
+</script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        const form = document.querySelector('.shift-form');
+
+        if (form) {
+            const publishButton = document.getElementById('publishButton');
+            const loaderContainer = document.getElementById('reloadbtn');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const url = window.urlNameToPath['create_employee_shift'];
+
+                if (url) {
+                    publishButton.classList.add('d-none');
+                    loaderContainer.classList.remove('d-none');
+
+                    const formData = new FormData(form);
+                    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                window.location.reload();
+                            } else {
+                                handleFormErrors(form, response);
+                            }   
+                        },
+                        error: function (xhr, errmsg, err) {
+                        // Check if xhr.responseJSON is defined
+                        let errorData = xhr.responseJSON || {}; // Use an empty object if it's undefined
+                        if (errorData.errors) {
+                            let formErrors = JSON.parse(errorData.errors);
+
+                            const errorContainer = document.getElementById('errorContainer');
+                            errorContainer.innerHTML = '';
+
+                            for (const key in formErrors) {
+                                if (formErrors.hasOwnProperty(key)) {
+                                    const errors = formErrors[key];
+                                    for (const error of errors) {
+                                        const errorElement = document.createElement('p');
+                                        errorElement.textContent = error.message;
+                                        errorContainer.appendChild(errorElement);
+                                    }
+                                }
+                            }
+                        } else {
+                            const errorContainer = document.getElementById('errorContainer');
+                            errorContainer.innerHTML = '<p>An unexpected error occurred. Please try again.</p>';
+                        }
+                        publishButton.classList.remove('d-none');
+                        loaderContainer.classList.add('d-none');
+                    }
+
+                    });
+                }
+            });
+        }
+    });
+    
+function handleFormErrors(form, errorData) {
+
+    const errorContainer = document.getElementById('errorContainer');
+
+    errorContainer.innerHTML = '';
+
+    if (errorData.errors) {
+        let formErrors = JSON.parse(errorData.errors);
+
+        for (const key in formErrors) {
+            if (formErrors.hasOwnProperty(key)) {
+                const errors = formErrors[key];
+                for (const error of errors) {
+                    const errorElement = document.createElement('p');
+                    errorElement.textContent = error.message;
+                    errorContainer.appendChild(errorElement);
+                }
+            }
+        }
+    }
+}
+</script>
+
+
+<!--list client and employee based upon selection-->
+
+
+ <script>
+    $('#datefilter').on('change', function () {
+        var selectedDate = new Date($(this).val());
+        var formattedDate = selectedDate.toISOString().slice(0, 10);
+        var month = selectedDate.getMonth() + 1;
+        var formattedMonth = ('0' + month).slice(-2);
+
+
+        fetchUnassignedClientsEmployees(formattedDate, formattedMonth);
+    });
+
+    var unassignedClientsEmployeesListUrl = "{% url 'rostering:unassigned_clients_employees_list' %}";
+
+    function fetchUnassignedClientsEmployees(date, month) {
+        var selectedValue = $('#employee-client-select').val();
+        $.ajax({
+            url: unassignedClientsEmployeesListUrl,
+            type: 'GET',
+            data: { date: date, month: month, selection: selectedValue },
+            success: function (response) {
+                if (response.data) {
+                    var list = $('#dynamic-list');
+                    list.empty();
+                    response.data.forEach(function (item) {
+                        list.append('<li class="border-bottom p-2">' + item.person__first_name + ' ' + item.person__last_name + '</li>');
+                    });
+                    $('#list-container').show();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('#employee-client-select').change(function () {
+            var selectedValue = $(this).val();
+            if (selectedValue === 'employee' || selectedValue === 'client') {
+                var selectedDate = new Date($('#datefilter').val());
+                var formattedDate = $('#datefilter').val() ? selectedDate.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+                var month = $('#datefilter').val() ? selectedDate.getMonth() + 1 : new Date().getMonth() + 1;
+                var formattedMonth = ('0' + month).slice(-2);
+
+                fetchUnassignedClientsEmployees(formattedDate, formattedMonth);
+            } else {
+                $('#list-container').hide();
+            }
+        });
+    });
+</script>
+
+
+<!--Fetch all shift objects to map in calender-->
+
+
+<script >
+ 
+var shiftDetailsUrl = "{% url 'rostering:shift_details' %}";
+var editshiftDetailsURL = "{% url 'rostering:edit_shift_details' %}";
+
+var AppCalendar = function () {
+    return {
+       init: function () {
+          this.initCalendar(new Date());
+          this.initDateFilter();
+
+       },
+       initCalendar: function (date) {
+          if (!date) {
+             date = new Date(); 
+          }
+ 
+          if (jQuery().fullCalendar) {
+             var e = new Date,
+                t = e.getDate(),
+                a = e.getMonth(),
+                n = e.getFullYear(),
+                r = {};
+
+                var createShiftButton = {
+                    text: 'Create Shift ',
+                    click: function() {
+                        $('#createshift').modal('show'); // Open the modal with id 'createshift'
+                    },
+                    
+                };
+                
+            var isCreateAccess = document.getElementById("is_create_access").value;
+
+             $("#calendar").removeClass("mobile"), r = {
+                left: "prev,next,today",
+                center: "title",
+                //right: "month,agendaWeek,agendaDay"
+                //right: "month | createShiftButton"
+                right: isCreateAccess === "False" ? "month" : "month | createShiftButton" 
+
+             };
+
+
+            
+             var l = function (e) {
+                   var t = {
+                      title: $.trim(e.text())
+                   };
+                   e.data("eventObject", t);
+
+               
+                },
+                o = function (e) {
+                   e = 0 === e.length ? "Untitled Event" : e;
+                   var t = $('<div class="external-event label label-event-' + e + '">' + e + "</div>");
+                   jQuery("#event_box").append(t), l(t);
+                };
+             $("#external-events div.external-event").each(function () {
+                l($(this));
+             }), $("#event_add").unbind("click").click(function () {
+                var e = $("#event_title").val();
+                o(e);
+             }), $("#event_box").html(""), o("holiday"), o("birthday"), o("meeting"), o("competition"), o("dinner"), o("party"), $("#calendar").fullCalendar("destroy"), $("#calendar").fullCalendar({
+                header: r,
+                defaultView: "month",
+                slotMinutes: 15,
+                editable: false, 
+                droppable: false,
+
+
+                customButtons: {
+                    createShiftButton: createShiftButton
+                },
+                
+                displayEventTime: false,
+                drop: function (e, t) {
+                   var a = $(this).data("eventObject"),
+                      n = $.extend({}, a);
+                   n.start = e, n.allDay = t, n.className = $(this).attr("data-class"), $("#calendar").fullCalendar("renderEvent", n, !0), $("#drop-remove").is(":checked") && $(this).remove();
+                },
+                displayEventTime: false,
+                eventClick: function (event, jsEvent, view) {
+                    $('#eventModal').modal('show');
+                    $('#eventModalLabel').text('Shift Details');
+                    let formattedStartDate = event.start.format('YYYY-MM-DDTHH:mm:ss');
+                    let eventStatus = event.title === 'In Progress' ? 'Ongoing' : event.title;
+                    const closeBtn = document.getElementById('closeBtn')
+                    
+                    $.ajax({
+                        url: shiftDetailsUrl,
+                        type: 'GET',
+                        data: {
+                            eventId: event.id,
+                            status: eventStatus,
+                            start_date: formattedStartDate
+                        },
+                        success: function (data) {
+                            if (data.error) {
+                                $('.modal-body').html(`<p>${data.error}</p>`);
+                            } else {
+                                // Check if any shifts can be updated
+                                const hasEditableShifts = data.shifts.some(shift => shift.can_update);
+                
+                                let shiftHtml = `
+                                    <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle text-center" id="client-table">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>Client Name</th>
+                                                <th>Start Date Time</th>
+                                                <th>End Date Time</th>
+                                                ${hasEditableShifts ? '<th>Action</th>' : ''}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                `;
+                                for (let i = 0; i < data.shifts.length; i++) {
+                                    const shift = data.shifts[i];
+                                    shiftHtml += `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${shift.clientName}</td>
+                                            <td>${shift.startDateTime}</td>
+                                            <td>${shift.endDateTime}</td>
+                                            ${hasEditableShifts ? 
+                                                `<td>
+                                                    ${shift.can_see ? 
+                                                        `<a href="#" class="edit-shift-btn" data-shift-id="${shift.shift_id}">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>` : 
+                                                        ''
+                                                    }
+                                                </td>` : 
+                                                ''
+                                            }
+                                        </tr>
+                                    `;
+                                }
+                                shiftHtml += `
+                                        </tbody>
+                                    </table>
+                                `;
+                                $('.modal-body').html(shiftHtml);
+                            }
+                        }
+                    });
+                }
+                
+             });
+ 
+             $("#calendar").fullCalendar('gotoDate', date);
+          }
+       },
+       initDateFilter: function () {
+          var self = this;
+          $('#datefilter').on('change', function () {
+             var selectedDate = new Date($(this).val());
+             self.initCalendar(selectedDate);
+          });
+       }
+    }
+ }();
+
+
+jQuery(document).ready(function () {
+   'use strict';
+   AppCalendar.init();
+
+   $(".fc-createShiftButton-button")
+       .html('Create Shift <i class="fa fa-plus"></i>');
+
+});
+
+$('#eventModal').on('click', '.edit-shift-btn', function () {
+   const shiftId = $(this).data('shift-id');
+   sendEditShiftRequest(shiftId);
+});
+
+//Appending shift instance to modal 
+
+function sendEditShiftRequest(shiftId) {
+   $('#eventModal').modal('hide');
+   $('#edit-shift-form').modal('show');
+   $.ajax({
+      url: editshiftDetailsURL,
+      type: 'GET',
+      data: {
+         shiftId: shiftId
+      },
+      success: function (response) {
+         $('#edit-shift-form .modal-body').html('');
+         $('#edit-shift-form .modal-body').append(response);
+
+      },
+      error: function (error) {
+         console.error(error);
+      }
+   });
+}
+// End appending shift instance to modal 
+    
+//Fetching employee shifts to calender
+    $(document).ready(function () {
+    fetchShiftsURL = "{% url 'rostering:fetch_shifts_to_calendar' %}";
+    $('#datefilter').on('change', function () {
+
+        var calendar_view = 'month';
+
+        function handleCalendarView(view) {
+            calendar_view = view;
+            onclicksendDataToBackend();
+        }
+      
+        $(".fc-month-button").click(function() {
+            handleCalendarView('month');
+        });
+      
+        $(".fc-agendaWeek-button").click(function() {
+            handleCalendarView('week');
+        });
+      
+        $(".fc-agendaDay-button").click(function() {
+            handleCalendarView('day');
+        });
+      
+
+        var selectedDate = new Date($(this).val());
+        var formattedDate = selectedDate.toISOString().slice(0, 10); 
+        var month = selectedDate.getMonth() + 1; 
+        var formattedMonth = ('0' + month).slice(-2); 
+        function onclicksendDataToBackend() {
+
+            $.ajax({
+                url: fetchShiftsURL,
+                method: 'GET',
+                data: {
+                    calendar_view: calendar_view
+                },
+                success: function(data) {
+                    $("#calendar").fullCalendar("removeEvents");
+            
+                    const parsed = JSON.parse(data);
+                    const currentView = parsed.current_view;
+                    let assignedShifts, ongoingShifts,pendingShifts, completedShifts;
+            
+                    let allEvents = [];
+            
+                    if ('assigned_shifts' in parsed) {
+                        assignedShifts = parsed.assigned_shifts;
+            
+                        if (currentView === 'month') {
+                            // Group events by date
+                            const eventsByDate = {};
+            
+                            // Populate eventsByDate for assignedShifts
+                            for (let i = 0; i < Object.keys(assignedShifts).length; i++) {
+                                const startDate = new Date(assignedShifts[i]['start_date_time']).toDateString();
+                                if (!eventsByDate[startDate]) {
+                                    eventsByDate[startDate] = {
+                                        assigned: null,
+                                        ongoing: null,
+                                        pending: null,
+                                        completed: null
+                                    };
+                                }
+                                if (!eventsByDate[startDate].assigned) {
+                                    const newEvent = {
+                                        title: `Assigned`,
+                                        start: assignedShifts[i]['start_date_time'],
+                                        backgroundColor: '#DC35A9',
+                                        allDay: true,
+                                        order: 1
+                                    };
+                                    eventsByDate[startDate].assigned = newEvent;
+                                    allEvents.push(newEvent);
+                                }
+                            }
+                        } else {
+                            // Show all objects for other views
+                            for (let i = 0; i < Object.keys(assignedShifts).length; i++) {
+                                var newEvent = {
+                                    title: `Assigned`,
+                                    start: assignedShifts[i]['start_date_time'],
+                                    backgroundColor: '#DC35A9',
+                                    allDay: false,
+                                    order: 1
+                                };
+                                newEvent.end = assignedShifts[i]['end_date_time'];
+                                allEvents.push(newEvent);
+                            }
+                        }
+                    }
+            
+                    if ('ongoing_shifts' in parsed) {
+                        ongoingShifts = parsed.ongoing_shifts;
+            
+                        if (currentView === 'month') {
+                            // Group events by date
+                            const eventsByDate = {};
+            
+                            // Populate eventsByDate for ongoingShifts
+                            for (let i = 0; i < Object.keys(ongoingShifts).length; i++) {
+                                const startDate = new Date(ongoingShifts[i]['start_date_time']).toDateString();
+                                if (!eventsByDate[startDate]) {
+                                    eventsByDate[startDate] = {
+                                        assigned: null,
+                                        ongoing: null,
+                                        pending: null,
+                                        completed: null
+                                    };
+                                }
+                                if (!eventsByDate[startDate].ongoing) {
+                                    const newEvent = {
+                                        title: `In Progress`,
+                                        start: ongoingShifts[i]['start_date_time'],
+                                        backgroundColor: '#FFA447',
+                                        allDay: true,
+                                        order: 2
+                                    };
+                                    eventsByDate[startDate].ongoing = newEvent;
+                                    allEvents.push(newEvent);
+                                }
+                            }
+                        } else {
+                            // Show all objects for other views
+                            for (let i = 0; i < Object.keys(ongoingShifts).length; i++) {
+                                var newEvent = {
+                                    title: `In Progress`,
+                                    start: ongoingShifts[i]['start_date_time'],
+                                    backgroundColor: '#FFA447',
+                                    allDay: false,
+                                    order: 2
+                                };
+                                newEvent.end = ongoingShifts[i]['end_date_time'];
+                                allEvents.push(newEvent);
+                            }
+                        }
+                    }
+
+                    if ('pending_shifts' in parsed) {
+                        pendingShifts = parsed.pending_shifts;
+            
+                        if (currentView === 'month') {
+                            // Group events by date
+                            const eventsByDate = {};
+            
+                            // Populate eventsByDate for pendingShifts
+                            for (let i = 0; i < Object.keys(pendingShifts).length; i++) {
+                                const startDate = new Date(pendingShifts[i]['start_date_time']).toDateString();
+                                if (!eventsByDate[startDate]) {
+                                    eventsByDate[startDate] = {
+                                        assigned: null,
+                                        ongoing: null,
+                                        pending: null,
+                                        completed: null
+                                    };
+                                }
+                                if (!eventsByDate[startDate].pending) {
+                                    const newEvent = {
+                                        title: `Pending`,
+                                        start: pendingShifts[i]['start_date_time'],
+                                        backgroundColor: '#c01902',
+                                        allDay: true,
+                                        order: 2
+                                    };
+                                    eventsByDate[startDate].pending = newEvent;
+                                    allEvents.push(newEvent);
+                                }
+                            }
+                        } else {
+                            // Show all objects for other views
+                            for (let i = 0; i < Object.keys(pendingShifts).length; i++) {
+                                var newEvent = {
+                                    title: `Pending`,
+                                    start: pendingShifts[i]['start_date_time'],
+                                    backgroundColor: '#c01902',
+                                    allDay: false,
+                                    order: 2
+                                };
+                                newEvent.end = pendingShifts[i]['end_date_time'];
+                                allEvents.push(newEvent);
+                            }
+                        }
+                    }
+            
+                    if ('completed_shifts' in parsed) {
+                        completedShifts = parsed.completed_shifts;
+            
+                        if (currentView === 'month') {
+                            // Group events by date
+                            const eventsByDate = {};
+            
+                            // Populate eventsByDate for completedShifts
+                            for (let i = 0; i < Object.keys(completedShifts).length; i++) {
+                                const startDate = new Date(completedShifts[i]['start_date_time']).toDateString();
+                                if (!eventsByDate[startDate]) {
+                                    eventsByDate[startDate] = {
+                                        assigned: null,
+                                        ongoing: null,
+                                        pending: null,
+                                        completed: null
+                                    };
+                                }
+                                if (!eventsByDate[startDate].completed) {
+                                    const newEvent = {
+                                        title: completedShifts[i]['title'],
+                                        start: completedShifts[i]['start_date_time'],
+                                        backgroundColor: '#1BBC9B',
+                                        allDay: true,
+                                        order: 3
+                                    };
+                                    eventsByDate[startDate].completed = newEvent;
+                                    allEvents.push(newEvent);
+                                }
+                            }
+                        } else {
+                            // Show all objects for other views
+                            for (let i = 0; i < Object.keys(completedShifts).length; i++) {
+                                var newEvent = {
+                                    title: completedShifts[i]['title'],
+                                    start: completedShifts[i]['start_date_time'],
+                                    backgroundColor: '#1BBC9B',
+                                    allDay: false,
+                                    order: 3
+                                };
+                                newEvent.end = completedShifts[i]['end_date_time'];
+                                allEvents.push(newEvent);
+                            }
+                        }
+                    }
+            
+                    allEvents.sort((a, b) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(a.start) - new Date(b.start);
+                    });
+            
+                    $.each(allEvents, function(index, event) {
+                        $("#calendar").fullCalendar("renderEvent", event, true);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+            }
+        
+
+         onclicksendDataToBackend();
+
+    });
+   
+  // Attach event listeners to buttons to log the current view on click
+
+  var calendar_view = 'month';
+
+  function handleCalendarView(view) {
+      calendar_view = view;
+      sendDataToBackend();
+  }
+
+  $(".fc-month-button").click(function() {
+      handleCalendarView('month');
+  });
+
+  $(".fc-agendaWeek-button").click(function() {
+      handleCalendarView('week');
+  });
+
+  $(".fc-agendaDay-button").click(function() {
+      handleCalendarView('day');
+  });
+
+  
+
+  function sendDataToBackend() {
+    $.ajax({
+        url: fetchShiftsURL,
+        method: 'GET',
+        data: {
+            calendar_view: calendar_view
+        },
+        success: function(data) {
+            $("#calendar").fullCalendar("removeEvents");
+    
+            const parsed = JSON.parse(data);
+            const currentView = parsed.current_view;
+            let assignedShifts, ongoingShifts,pendingShifts, completedShifts;
+    
+            let allEvents = [];
+    
+            if ('assigned_shifts' in parsed) {
+                assignedShifts = parsed.assigned_shifts;
+    
+                if (currentView === 'month') {
+                    // Group events by date
+                    const eventsByDate = {};
+    
+                    // Populate eventsByDate for assignedShifts
+                    for (let i = 0; i < Object.keys(assignedShifts).length; i++) {
+                        const startDate = new Date(assignedShifts[i]['start_date_time']).toDateString();
+                        if (!eventsByDate[startDate]) {
+                            eventsByDate[startDate] = {
+                                assigned: null,
+                                ongoing: null,
+                                pending: null,
+                                completed: null
+                            };
+                        }
+                        if (!eventsByDate[startDate].assigned) {
+                            const newEvent = {
+                                title: `Assigned`,
+                                start: assignedShifts[i]['start_date_time'],
+                                backgroundColor: '#DC35A9',
+                                allDay: true,
+                                order: 1
+                            };
+                            eventsByDate[startDate].assigned = newEvent;
+                            allEvents.push(newEvent);
+                        }
+                    }
+                } else {
+                    // Show all objects for other views
+                    for (let i = 0; i < Object.keys(assignedShifts).length; i++) {
+                        var newEvent = {
+                            title: `Assigned`,
+                            start: assignedShifts[i]['start_date_time'],
+                            backgroundColor: '#DC35A9',
+                            allDay: false,
+                            order: 1
+                        };
+                        newEvent.end = assignedShifts[i]['end_date_time'];
+                        allEvents.push(newEvent);
+                    }
+                }
+            }
+    
+            if ('ongoing_shifts' in parsed) {
+                ongoingShifts = parsed.ongoing_shifts;
+    
+                if (currentView === 'month') {
+                    // Group events by date
+                    const eventsByDate = {};
+    
+                    // Populate eventsByDate for ongoingShifts
+                    for (let i = 0; i < Object.keys(ongoingShifts).length; i++) {
+                        const startDate = new Date(ongoingShifts[i]['start_date_time']).toDateString();
+                        if (!eventsByDate[startDate]) {
+                            eventsByDate[startDate] = {
+                                assigned: null,
+                                ongoing: null,
+                                pending: null,
+                                completed: null
+                            };
+                        }
+                        if (!eventsByDate[startDate].ongoing) {
+                            const newEvent = {
+                                title: `In Progress`,
+                                start: ongoingShifts[i]['start_date_time'],
+                                backgroundColor: '#FFA447',
+                                allDay: true,
+                                order: 2
+                            };
+                            eventsByDate[startDate].ongoing = newEvent;
+                            allEvents.push(newEvent);
+                        }
+                    }
+                } else {
+                    // Show all objects for other views
+                    for (let i = 0; i < Object.keys(ongoingShifts).length; i++) {
+                        var newEvent = {
+                            title: `In Progress`,
+                            start: ongoingShifts[i]['start_date_time'],
+                            backgroundColor: '#FFA447',
+                            allDay: false,
+                            order: 2
+                        };
+                        newEvent.end = ongoingShifts[i]['end_date_time'];
+                        allEvents.push(newEvent);
+                    }
+                }
+            }
+
+            if ('pending_shifts' in parsed) {
+                        pendingShifts = parsed.pending_shifts;
+            
+                        if (currentView === 'month') {
+                            // Group events by date
+                            const eventsByDate = {};
+            
+                            // Populate eventsByDate for pendingShifts
+                            for (let i = 0; i < Object.keys(pendingShifts).length; i++) {
+                                const startDate = new Date(pendingShifts[i]['start_date_time']).toDateString();
+                                if (!eventsByDate[startDate]) {
+                                    eventsByDate[startDate] = {
+                                        assigned: null,
+                                        ongoing: null,
+                                        pending: null,
+                                        completed: null
+                                    };
+                                }
+                                if (!eventsByDate[startDate].pending) {
+                                    const newEvent = {
+                                        title: `Pending`,
+                                        start: pendingShifts[i]['start_date_time'],
+                                        backgroundColor: '#c01902',
+                                        allDay: true,
+                                        order: 2
+                                    };
+                                    eventsByDate[startDate].pending = newEvent;
+                                    allEvents.push(newEvent);
+                                }
+                            }
+                        } else {
+                            // Show all objects for other views
+                            for (let i = 0; i < Object.keys(pendingShifts).length; i++) {
+                                var newEvent = {
+                                    title: `Pending`,
+                                    start: pendingShifts[i]['start_date_time'],
+                                    backgroundColor: '#c01902',
+                                    allDay: false,
+                                    order: 2
+                                };
+                                newEvent.end = pendingShifts[i]['end_date_time'];
+                                allEvents.push(newEvent);
+                            }
+                        }
+                    }
+            
+    
+            if ('completed_shifts' in parsed) {
+                completedShifts = parsed.completed_shifts;
+    
+                if (currentView === 'month') {
+                    // Group events by date
+                    const eventsByDate = {};
+    
+                    // Populate eventsByDate for completedShifts
+                    for (let i = 0; i < Object.keys(completedShifts).length; i++) {
+                        const startDate = new Date(completedShifts[i]['start_date_time']).toDateString();
+                        if (!eventsByDate[startDate]) {
+                            eventsByDate[startDate] = {
+                                assigned: null,
+                                ongoing: null,
+                                pending: null,
+                                completed: null
+                            };
+                        }
+                        if (!eventsByDate[startDate].completed) {
+                            const newEvent = {
+                                title: completedShifts[i]['title'],
+                                start: completedShifts[i]['start_date_time'],
+                                backgroundColor: '#1BBC9B',
+                                allDay: true,
+                                order: 3
+                            };
+                            eventsByDate[startDate].completed = newEvent;
+                            allEvents.push(newEvent);
+                        }
+                    }
+                } else {
+                    // Show all objects for other views
+                    for (let i = 0; i < Object.keys(completedShifts).length; i++) {
+                        var newEvent = {
+                            title: completedShifts[i]['title'],
+                            start: completedShifts[i]['start_date_time'],
+                            backgroundColor: '#1BBC9B',
+                            allDay: false,
+                            order: 3
+                        };
+                        newEvent.end = completedShifts[i]['end_date_time'];
+                        allEvents.push(newEvent);
+                    }
+                }
+            }
+    
+            allEvents.sort((a, b) => {
+                if (a.order !== b.order) {
+                    return a.order - b.order;
+                }
+                return new Date(a.start) - new Date(b.start);
+            });
+    
+            $.each(allEvents, function(index, event) {
+                $("#calendar").fullCalendar("renderEvent", event, true);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+}
+    sendDataToBackend();
+
+
+
+}); 
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function checkValidity(element, inputField) {
+            if (!inputField.value) {
+                element.classList.add('is-invalid');
+            } else {
+                element.classList.remove('is-invalid');
+            }
+        }
+        const requiredElements = document.querySelectorAll('.add_required');
+    
+        requiredElements.forEach(function(element) {
+            const inputField = element.querySelector('input[required], select[required]');
+    
+            if (inputField) {
+                checkValidity(element, inputField);
+    
+                inputField.addEventListener('input', function() {
+                    checkValidity(element, inputField);
+                });
+                inputField.addEventListener('change', function() {
+                    checkValidity(element, inputField);
+                });
+            }
+        });
+    });
+    
+</script>
+<script>
+    window.urlNameToPath = {
+            'create_employee_shift': "{% url 'rostering:create_employee_shift' %}",
+            'edit_employee_shift': "{% url 'rostering:edit_employee_shift' %}",
+
+        };
+</script>
+
+
+{% comment %} <script>
+    window.onload = function() {
+        var isCreateAccess = document.getElementById("is_create_access").value;
+        var shiftButton = $(".fc-createShiftButton-button")
+    
+        if (isCreateAccess === "False") {
+            shiftButton.style.display = "none";
+        }
+    };
+    
+</script> {% endcomment %}
+<script>
+    var prevStartValue = '';
+    var prevEndValue = '';
+
+    var startDateTimeInput = document.getElementById('shift_start_date_time');
+    var endDateTimeInput = document.getElementById('shift_end_date_time');
+
+    startDateTimeInput.addEventListener('change', handleDateChange);
+    startDateTimeInput.addEventListener('input', handleDateChange);
+    endDateTimeInput.addEventListener('change', handleDateChange);
+    endDateTimeInput.addEventListener('input', handleDateChange);
+
+    function handleDateChange(e) {
+        var inputField = e.target;
+        var prevValue = inputField === startDateTimeInput ? prevStartValue : prevEndValue;
+        
+        if (inputField.value !== prevValue && inputField.value !== '') {
+            if (inputField === startDateTimeInput) {
+                prevStartValue = inputField.value;
+            } else {
+                prevEndValue = inputField.value;
+            }
+            
+            setTimeout(function() {
+                if (navigator.userAgent.indexOf('iPhone') > -1 || navigator.userAgent.indexOf('iPad') > -1) {
+                    document.activeElement.blur();
+                } else {
+                    inputField.blur();
+                }
+            }, 10);
+        }
+    }
+</script>
+{% endblock javascripts %}

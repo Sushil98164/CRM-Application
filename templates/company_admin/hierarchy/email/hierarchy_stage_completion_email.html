@@ -1,0 +1,51 @@
+{% extends "company_admin/hierarchy/email/base_email.html" %}
+{% block content %}
+    <div class="content">
+        <h2 style="color: #000;
+        font-family: Poppins;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;">Hi  {{employee_first_name|title}} {{ employee_last_name|title }},</h2>
+        
+        <p>This is to inform you that the investigation for Incident report ID : {{incident_code}} has been successfully completed and is now marked as closed in the system.</p>
+        
+        <p>All required actions have been addressed as per the investigation workflow. No further steps are pending at this stage.</p>
+        
+        <p>Best regards<br><b>Team BellsCRM</b></p>
+        
+        <a href="{{ protocol }}{{ domain }}{% url 'company:admin_incident_edit' incident_id %}" class="button" style="
+        display: flex;
+        padding: 10px 20px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        background: #188AE1;
+        color: #FFF;
+        font-family: Poppins;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        width: fit-content;
+        text-decoration: none;
+        align-content: center;">Click here to view the investigation summary</a>
+        
+        <div>
+            <p style="color: #000;
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal; margin-bottom: 60px;">You can review the final details and closure notes directly through the above link.</p>
+        </div>
+    </div>
+{% endblock %}
+{% block footer %}
+
+<div class="footer-links">
+    <a href="{{ protocol }}{{ domain }}{% url 'employee:employee_privacy_policy' %}">Privacy policy</a>
+    <a href="{{ protocol }}{{ domain }}{% url 'user_auth:login' %}">Manage your account</a>
+    <a href="{{ protocol }}{{ domain }}{% url 'employee:employee_terms_and_conditions' %}">Terms & conditions</a>
+</div>
+{% endblock %}

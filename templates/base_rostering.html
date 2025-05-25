@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta name="author" content="Codigo Mantra Private Limited" />
+        <title>Bells |{% block title %}{% endblock %}</title>
+        <!-- google font -->
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" type="text/css" />
+        <!-- icons -->
+        <link href="{% static 'fonts/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'fonts/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'fonts/material-design-icons/material-icon.css' %}" rel="stylesheet" type="text/css" />
+        <!--bootstrap -->
+        <link href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/plugins/fullcalendar/fullcalendar.css' %}" rel="stylesheet" type="text/css" />
+
+        {% comment %} <link href="{% static 'assets/plugins/summernote/summernote.css' %}" rel="stylesheet"> {% endcomment %}
+        
+        <!-- Material Design Lite CSS -->
+        <link rel="stylesheet" href="{% static 'assets/plugins/material/material.min.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/material_style.css' %}">
+
+
+        <!-- inbox style -->
+        <link href="{% static 'assets/css/pages/inbox.min.css'%}" rel="stylesheet" type="text/css" />
+
+        <!-- Theme Styles -->
+        <link href="{% static 'assets/css/theme/light/theme_style.css' %}" rel="stylesheet" id="rt_style_components" type="text/css" />
+	    <link href="{% static 'assets/css/theme/light/style.css' %}" rel="stylesheet" type="text/css" />
+	    <link href="{% static 'assets/css/plugins.min.css' %}" rel="stylesheet" type="text/css" />
+	    <link href="{% static 'assets/css/responsive.css'%}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/theme/light/theme-color.css'%}" rel="stylesheet" type="text/css" />
+       
+    	<!-- favicon -->
+        <link rel="shortcut icon" href="{% static 'assets/img/new_logo.png' %}" />
+        <!-- data tables -->
+        <link href="{% static 'assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/plugins/datatables/export/buttons.dataTables.min.css'%}" rel="stylesheet" type="text/css" />
+        <!-- dropzone -->
+        <link href="{% static 'assets/plugins/dropzone/dropzone.css' %}" rel="stylesheet" media="screen">
+        <!-- Date Time item CSS -->
+        <link rel="stylesheet" href="{% static 'assets/plugins/flatpicker/css/flatpickr.min.css' %}" />
+        <link href="{% static 'assets/plugins/select2/css/select2.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/plugins/select2/css/select2-bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="{% static 'assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.css' %}" />
+        <link href="{% static 'assets/plugins/sweet-alert/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" >
+        <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'assets/js/form_submit.js' %}"></script>
+
+
+        <style type="text/css">
+            .table_column_edit{
+                background-color: white;
+                border: 1px solid red;
+            }
+            .dropdown-scrollbar{
+                height: 230px;
+                overflow: scroll;
+            }
+            .sidemenu-closed .page-content-wrapper .page-content {
+                min-height: calc(100vh - 60px) !important;
+            }
+       
+        </style>
+        
+        {% block stylesheets %}
+        {% endblock stylesheets %}
+        
+    </head>
+    <body class="page-header-fixed sidemenu-closed-hidelogo page-content-white page-md header-dark dark-sidebar-color logo-dark dark-theme">
+        <div class="page-wrapper">
+            <!-- start header -->
+            {% include 'includes/headers.html' %}
+            <!-- end header -->
+            <!-- start page container -->
+            <div class="page-container">
+                <!-- start sidebar menu -->
+                {% include 'includes/sidenav.html' %}
+                <!-- end sidebar menu -->
+                <!-- start page content -->
+                <div class="page-content-wrapper">
+                    <div class="page-content">
+                        <!-- add content here -->
+                        {% block content %}
+                        
+                        {% endblock %}
+                    </div>
+                </div>
+                <!-- end page content -->
+            </div>
+            <!-- end page container -->
+            <!-- start footer -->
+            {% include 'includes/footer.html' %}
+            <!-- end footer -->
+        </div>
+
+        <!-- jQuery -->
+        <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/dropzone/dropzone.js' %}"></script>
+        <script src="{% static 'assets/plugins/popper/popper.js' %}"></script>
+        <script src="{% static 'assets/plugins/jquery-blockui/jquery.blockui.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/jquery-slimscroll/jquery.slimscroll.js' %}"></script>
+        <script src="{% static 'assets/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+        <!-- bootstrap -->
+        <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+        <!-- calendar -->
+        <script src="{% static 'assets/plugins/moment/moment.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/fullcalendar/fullcalendar.min.js' %}"></script>
+        <script src="{% static 'assets/js/pages/calendar/calendar.min.js' %}"></script>
+        <!-- Common js-->
+        <script src="{% static 'assets/js/app.js' %}"></script>
+        <script src="{% static 'assets/js/layout.js' %}"></script>
+        <script src="{% static 'assets/js/theme-color.js' %}"></script>
+        <!-- Material -->
+        <script src="{% static 'assets/plugins/material-datetimepicker/moment-with-locales.min.js' %}"></script>
+        <script src="{% static 'assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.js' %}"></script>
+        <script src="{% static 'assets/plugins/material-datetimepicker/datetimepicker.js' %}"></script>
+
+        <!-- Specific JS goes HERE -->
+        {% block javascripts %}
+        {% endblock javascripts %}
+    </body>
+</html>

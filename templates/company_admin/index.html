@@ -1,0 +1,76 @@
+{% extends 'base_company_admin.html' %}
+{% load company_admin_tags %}
+{% block title %}
+  Dashboard
+{% endblock %}
+{% block stylesheets %}
+
+{% endblock %}
+{% block content %}
+  <div class="page-bar">
+    {% if messages %}
+      <div class="container-fluid">
+        <ul class="list-unstyled">
+          {% for message in messages %}
+            <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <script>
+        // Automatically close alerts after 5 seconds
+        window.setTimeout(function () {
+          $('.alert')
+            .fadeTo(500, 0)
+            .slideUp(500, function () {
+              $(this).remove()
+            })
+        }, 5000)
+      </script>
+    {% endif %}
+{% if request.user|has_permission:'company_admin.read_own_reports' or request.user|has_permission:'company_admin.read_all_reports' or request.user|has_permission:'company_admin.read_team_reports' or request.user|has_permission:'company_admin.read_no_access_to_reports' %}
+    <div class="page-bar">
+    
+    <div class="page-title-breadcrumb">
+      <div class="pull-left">
+        <div class="page-title">Incident report</div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-purple text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Total Incidents</h3>
+        <span class="font-32">{{ total_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-danger text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Logged Incidents</h3>
+        <span class="font-32">{{ new_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 label-warning text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Under Investigation</h3>
+        <span class="font-32">{{ in_progress_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner-max d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-success text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Completed Investigation</h3>
+        <span class="font-32">{{ completed_count }}</span>
+      </div>
+    </div>
+  </div>
+{% endif %}
+  <!-- start widget -->
+  <!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}

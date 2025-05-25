@@ -1,0 +1,163 @@
+<!-- start header -->
+{% load static %}
+{% load i18n %}
+<style>
+    .mobile-menu {
+        display: none;
+        }
+        .hide-on-desktop-view{
+		display: none;
+	}
+    @media only screen and (max-width: 768px){
+        .page-header.navbar .menu-toggler.responsive-toggler {
+            /* display: none; */
+            float: right;
+            margin: 0px;
+            padding: 42px 13px 0;
+        }
+        .page-header.navbar .page-logo {
+            width: 69%;
+        }
+        span.username {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 300;
+        }
+        .mobile-menu {
+        width: 31%;
+        display: flex;
+        justify-content: flex-end;
+        }
+        .mobile-menu a.dropdown-toggle {
+            margin-top: 21px;
+        }
+        ul.nav.navbar-nav.pull-right.hide-on-mobile-view {
+    display: none;
+}
+    }
+    .logo-icon.material-icons.fa-rotate-45 {
+        font-size: 0px;
+    }
+    @media (min-width: 769px) and (max-width: 991px) {
+        .mobile-menu {
+    display: block;
+}
+.page-header.navbar .menu-toggler.responsive-toggler {
+    display: block;
+    margin-top: 36px;
+}
+}
+</style>
+<div class="page-header navbar navbar-fixed-top">
+    <div class="page-header-inner ">
+        <!-- logo start -->
+        <div class="page-logo">
+            <a href="{% url 'company:dashboard' %}">
+                <!-- <span class="logo-icon material-icons fa-rotate-45">school</span> -->
+                <span class=""><img alt="" class=" " style="width: 30px;" src="{% static 'images/logo.png' %}" /></span>
+                <span class="logo-default">Bells CRM</span> </a>
+        </div>
+        <!-- logo end -->
+        <ul class="nav navbar-nav navbar-left in">
+            <li><a href="#" class="menu-toggler sidebar-toggler"><i class="icon-menu"></i></a></li>
+        </ul>
+        
+        <!-- start mobile menu -->
+         <!-- <div class="mobile-menu">
+               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                        data-close-others="true">
+                        {% comment %} <img alt="" class="img-circle " src="{% static 'assets/img/dp.jpg' %}" /> {% endcomment %}
+                        <span class="username "> {% if request.user.first_name %}{{request.user.first_name|title}}  {% else %}{{request.user.last_name|title}}{% endif %}  </span>
+                </a>
+                <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse"
+            data-target=".navbar-collapse">
+            <span></span>
+        </a>
+            </div> -->
+
+            <div class="mobile-menu">
+                <!-- <a href="{% url 'employee:employee_profile' %}" class="dropdown-toggle" >
+                         {% comment %} <img alt="" class="img-circle " src="{% static 'assets/img/dp.jpg' %}" /> {% endcomment %}
+                         <span class="username "> {% if request.user.first_name %}{{request.user.first_name|title}}  {% else %}{{request.user.last_name|title}}{% endif %}</span>
+                         
+                 </a> -->
+                 <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse"
+             data-target=".navbar-collapse">
+             <span></span>
+         </a>
+         </div>
+        <!-- <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse"
+            data-target=".navbar-collapse">
+            <span></span>
+        </a> -->
+        <!-- end mobile menu -->
+        <!-- start header menu -->
+        <div class="top-menu">
+            <ul class="nav navbar-nav pull-right hide-on-mobile-view">
+                
+                {% if request.user.is_authenticated %}
+                <li class="dropdown dropdown-user">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                        data-close-others="true">
+                        {% comment %} <img alt="" class="img-circle " src="{% static 'assets/img/dp.jpg' %}" /> {% endcomment %}
+                        <span class="username "> {% if request.user.first_name %}{{request.user.first_name|title}}  {% else %}{{request.user.last_name|title}}{% endif %}  </span>
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-default">
+                        {% comment %} <li>
+                            <a href="{% url 'company:profile' %}">
+                                <i class="icon-user"></i> Profile </a>
+                        </li> {% endcomment %}
+                        <li>
+                            <a href="{% url 'employee:employee_profile' %}">
+                                <i class="icon-user"></i> My profile </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'user_auth:change_password' %}">
+                                <i class="icon-lock"></i> Change password </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'user_auth:logout' %}">
+                                <i class="icon-logout"></i> Log out </a>
+                        </li>
+                        {% comment %} <li>
+                            <a href="{% url 'company:profile_setting' %}">
+                                <i class="icon-settings"></i> Settings
+                            </a>
+                        </li> {% endcomment %}
+                        {% comment %} <li>
+                            <a href="#">
+                                <i class="icon-directions"></i> Help
+                            </a>
+                        </li>
+                        <li class="divider"> </li>
+                        <li>
+                            <a href="lock_screen.html">
+                                <i class="icon-lock"></i> Lock
+                            </a>
+                        </li>  {% endcomment %}
+                        {% comment %} <li>
+                            <a href="{% url 'company:profile_setting' %}">
+                                <i class="icon-settings"></i>Settings</a>
+                        </li> {% endcomment %}
+                       
+                    </ul>
+                </li>
+                {% endif %}
+                
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- end header -->
+
+{% block javascripts %}
+{% comment %} <script>
+    $(document).ready(function(){
+        alert("Root is working")
+        function AddOutlet(id){
+            alert(id)
+        };
+    });
+</script> {% endcomment %}
+{% endblock javascripts %}

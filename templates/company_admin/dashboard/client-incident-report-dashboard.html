@@ -1,0 +1,672 @@
+{% extends 'base_company_admin.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% load company_admin_tags %}
+{% block title %}
+Incident Report
+{% endblock %}
+{% block stylesheets %}
+<style>
+  .capitalize {
+    text-transform: capitalize;
+}
+	.modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+		{% comment %} button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 12px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		margin-right: 20px;
+		} {% endcomment %}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		.modal-content{
+			width: 80% !important;
+		}
+		.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+			margin: 0 auto;
+			max-width: 32em;
+			display: flex;
+			justify-content: center;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		{% comment %} .delete-confirmation-modal.modal #deleteConfirmed {
+		border-radius: 0.25em;
+		background: initial;
+		display: inline-block;
+		background-color: rgb(48, 133, 214);
+		border-left-color: rgb(48, 133, 214);
+		border-right-color: rgb(48, 133, 214);
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		} {% endcomment %}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+			padding: 8px 16px;
+			min-height: 36px;
+			font-size: 14px;
+      text-transform: unset !important;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}
+	
+		@media screen and (max-width: 678px) {
+			.modal-content {
+				width: 100% !important;
+			}
+	
+		}
+    i.fa.fa-plus {
+      color: #fff;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="page-bar">
+    <div class="page-title-breadcrumb">
+      <div class="pull-left">
+        <div class="page-title">Incident report</div>
+      </div>
+      <ol class="breadcrumb page-breadcrumb pull-right">
+        <li class="active">Incident report</li>
+      </ol>
+    </div>
+  </div>
+  {% if  request.user|has_permission:'company_admin.read_all_reports' or request.user|has_permission:'company_admin.read_team_reports' or request.user|has_permission:'company_admin.read_own_reports'  or request.user|has_permission:'company_admin.read_no_access_to_reports' %}
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-purple text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Total Incidents</h3>
+        <span class="font-32">{{ total_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-danger text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Logged Incidents</h3>
+        <span class="font-32">{{ new_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 label-warning text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Under Investigation</h3>
+        <span class="font-32">{{ in_progress_count }}</span>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner-max d-flex flex-wrap">
+      <div class="w-100 analysis-box m-b-0 bg-success text-center analysis-box-dashboard">
+        <h3 class="text-white box-title text-center mb-1">Completed Investigation</h3>
+        <span class="font-32">{{ completed_count }}</span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tabbable-line">
+        <ul class="nav customtab nav-tabs" role="tablist"></ul>
+        <div class="tab-content">
+          <div class="tab-pane active fontawesome-demo" id="tab1">
+            {% if messages %}
+              <div class="container-fluid">
+                <ul class="list-unstyled">
+                  {% for message in messages %}
+                    <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <script>
+                // Automatically close alerts after 5 seconds
+                window.setTimeout(function () {
+                  $('.alert')
+                    .fadeTo(500, 0)
+                    .slideUp(500, function () {
+                      $(this).remove()
+                    })
+                }, 5000)
+              </script>
+            {% endif %}
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card card-box pr-3">
+                  <div class="card-head">
+                    <header>All incidents</header>
+                  </div>
+                  <!--Add new incident report button start here -->
+                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+                  <div class="card-body ">
+                    <div class="row">
+                      <div class="col-md-6 col-sm-6 col-6">
+                        {% if  request.user|has_permission:'company_admin.create_incident_all' or request.user|has_permission:'company_admin.create_incident_own_team' or request.user|has_permission:'company_admin.create_incident_there_own' %}
+                        <div class="btn-group">
+                          <a href="{% url 'company:admin_incident_add' %}" id="addRow"
+                            class="btn btn-info">
+                            Add new <i class="fa fa-plus"></i>
+                          </a>
+                        </div>
+                        {% endif %}
+                      </div>
+                      {% if  request.user|has_permission:'company_admin.export_incident_report_all' or request.user|has_permission:'company_admin.export_incident_report_own_team' %}
+
+                      <div class="col-md-6 col-sm-6 col-6">
+                        <div class="btn-group pull-right">
+                            <a class="btn deepPink-bgcolor btn-outline dropdown-toggle {% if not incidents %}disabled{% endif %}" data-toggle="dropdown" {% if not incidents %}disabled{% endif %}>
+                                Download reports
+                                <i class="fa fa-angle-down"></i>
+                            </a>
+                            <ul class="dropdown-menu download_report pull-right">
+                                <li>
+                                  <a href="javascript:;" data-file-type="all-csv">
+                                      <!-- <i class="fa fa-file-text-o"></i> Save as CSV -->
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 512 512">
+                                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM200 352l16 0c22.1 0 40 17.9 40 40l0 8c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-8c0-4.4-3.6-8-8-8l-16 0c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l16 0c4.4 0 8-3.6 8-8l0-8c0-8.8 7.2-16 16-16s16 7.2 16 16l0 8c0 22.1-17.9 40-40 40l-16 0c-22.1 0-40-17.9-40-40l0-80c0-22.1 17.9-40 40-40zm133.1 0l34.9 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-34.9 0c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1L304 512c-8.8 0-16-7.2-16-16s7.2-16 16-16l42.9 0c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16l0 31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66l0-31.6c0-8.8 7.2-16 16-16s16 7.2 16 16l0 31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6l0-31.6c0-8.8 7.2-16 16-16z"/>
+                                    </svg>
+                                    Save as CSV
+
+                                  </a>
+                              </li>
+                                {% comment %} <li>
+                                    <a href="javascript:;" data-file-type="csv">
+                                        <!-- <i class="fa fa-file-text-o"></i> Save as CSV -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 512 512">
+                                          <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                          <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM200 352l16 0c22.1 0 40 17.9 40 40l0 8c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-8c0-4.4-3.6-8-8-8l-16 0c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l16 0c4.4 0 8-3.6 8-8l0-8c0-8.8 7.2-16 16-16s16 7.2 16 16l0 8c0 22.1-17.9 40-40 40l-16 0c-22.1 0-40-17.9-40-40l0-80c0-22.1 17.9-40 40-40zm133.1 0l34.9 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-34.9 0c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1L304 512c-8.8 0-16-7.2-16-16s7.2-16 16-16l42.9 0c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16l0 31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66l0-31.6c0-8.8 7.2-16 16-16s16 7.2 16 16l0 31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6l0-31.6c0-8.8 7.2-16 16-16z"/>
+                                      </svg>
+                                       Save as CSV
+
+                                    </a>
+                                </li> {% endcomment %}
+                                <li>
+                                  <a href="javascript:;" data-file-type="all-excel">
+                                      <i class="fa fa-file-excel-o"></i> Save as Excel
+                                  </a>
+                              </li>
+                                {% comment %} <li>
+                                    <a href="javascript:;" data-file-type="excel">
+                                        <i class="fa fa-file-excel-o"></i> Save as Excel
+                                    </a>
+                                </li> {% endcomment %}
+                            </ul>
+                        </div>
+                      </div>
+                      {% endif%}
+                
+                    </div>
+              
+                  </div>
+
+                    <!--Add new incident report button end here -->
+                  <div class="filter-form" style="margin-left:25px;">
+                    <form action="" method="get" class="row disable-on-submit">
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="client">Client</label>
+                          {% render_field incident_form.client class="form-control" %}
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="Employee">Employee</label>
+                          {% render_field incident_form.employee class="form-control" %}
+                        
+
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label for="status">Status</label>
+                          {% render_field incident_form.status class="form-control" %}
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="status">Start date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="status">End date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="incident_category">Incident category</label>
+                            {% render_field incident_form.incident_category class="form-control" %}                        </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                          <label for="incident_classification">Incident classification</label>
+                          {% render_field incident_form.incident_classification class="form-control" %}                      </div>
+                  </div>
+                      <div class="col">
+                        <button type="submit" class="btn btn-primary" style="margin-top:31px;">Submit</button>
+                        <a href = "{% url 'company:client_incident_reports_dashboard'  %}" ><button type="button" class="btn btn-secondary" style="margin-top:31px;" id="clearFilterBtn">Clear filters</button></a>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-scrollable">
+                      <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle" id="example4">
+                        <thead>
+                          <tr class="">
+                      
+                            <th>S.no.</th>
+                            <th>Client name</th>
+                            <th>Report no</th>
+                            <th>Report owner</th>
+                            <th>Incident date and time</th>
+                            <th>Status</th>
+                            {% if  request.user|has_permission:'company_admin.view_incident_all' or request.user|has_permission:'company_admin.view_incident_own_team' or request.user|has_permission:'company_admin.view_incident_own' %}
+                            <th>Action</th>
+                            {% endif %}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for incident in incidents %}
+
+                            <tr class="odd gradeX">
+                              <input type="hidden" class="incident-id" value="{{ incident.id }}">
+
+                              <td class="patient-img">{% get_proper_counter forloop.counter incidents %}</td>
+
+                              <td>{% if  incident.client.person.first_name %} {{ incident.client.person.first_name }} {% endif %} {% if incident.client.person.last_name %} {{ incident.client.person.last_name }}{% endif %}</td>
+                              <td>{{incident.report_code}}</td>
+                              <td>{% if incident.employee.person.first_name %}{{ incident.employee.person.first_name }} {% endif %} {% if incident.employee.person.last_name %}{{ incident.employee.person.last_name }}{% endif %}</td>
+                              <td>{% if  incident.incident_date_time %} {{ incident.incident_date_time }}{% endif %}</td>
+                              <td>
+                                {% if incident.status == 'Closed' %}
+                                  <span class="label label-sm label-success">{{ incident.status }}</span>
+                                {% elif incident.status == 'InProgress' %}
+                                  <span class="label label-sm label-warning">{{ incident.status }}</span>
+                                {% else %}
+                                  <span class="label label-sm label-danger">{{ incident.status }}</span>
+                                {% endif %}
+                              </td>
+                              {% comment %} {% if  request.user|has_permission:'company_admin.update_incident_all' or request.user|has_permission:'company_admin.update_incident_own_team' or request.user|has_permission:'company_admin.delete_incident_report_all' or request.user|has_permission:'company_admin.delete_incident_report_own_team' %} {% endcomment %}
+
+                              <td>
+                                {% if incident.id in show_update_button_for %}
+                                <a href="{% url 'company:admin_incident_edit' incident.id %}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                                {% endif %}
+
+                                {% if  request.user|has_permission:'company_admin.view_incident_all' or request.user|has_permission:'company_admin.view_incident_own_team' or request.user|has_permission:'company_admin.view_incident_own' %}
+                                <a href="{% url 'company:admin_incident_view' incident.id %}" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></a>
+                                {% endif %}
+{% comment %}                                 
+                                {% if  request.user|has_permission:'company_admin.delete_incident_report_all' or request.user|has_permission:'company_admin.delete_incident_report_own_team' %}
+                                  <form id="deleteForm_{{ incident.id }}" action="{% url 'company:admin_incident_delete' incident.id %}" method="post" id="deleteForm">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ incident.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                      <i class="fa fa-trash-o"></i> 
+                                    </button>
+                                  </form>
+                                {% endif %} {% endcomment %}
+                              </td>
+                              {% comment %} {% endif %} {% endcomment %}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row">
+											<div class="col-sm-12 col-md-5">
+												<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+													Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+												</div>
+											</div>
+											<div class="col-sm-12 col-md-7">
+												<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+													<ul class="pagination float-right">
+														<!-- Previous Button -->
+														<li class="paginate_button page-item previous {% if not incidents.has_previous %}disabled{% endif %}">
+															{% if incidents.has_previous %}
+																<a href="?page={{ incidents.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Previous</a>
+															{% else %}
+																<a href="#" class="page-link">Previous</a>
+															{% endif %}
+														</li>
+
+														<!-- First Page -->
+														{% if incidents.number > 4 %}
+															<li class="paginate_button page-item">
+																<a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">1</a>
+															</li>
+															{% if incidents.number > 5 %}
+																<li class="paginate_button page-item disabled">
+																	<span class="page-link">...</span>
+																</li>
+															{% endif %}
+														{% endif %}
+
+														<!-- Page Numbers -->
+														{% for num in incidents.paginator.page_range %}
+															{% if num|add:"-3" <= incidents.number and num|add:"3" >= incidents.number %}
+																<li class="paginate_button page-item {% if incidents.number == num %}active{% endif %}">
+																	<a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ num }}</a>
+																</li>
+															{% endif %}
+														{% endfor %}
+
+														<!-- Last Page -->
+														{% if incidents.number < incidents.paginator.num_pages|add:"-3" %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+															<li class="paginate_button page-item">
+																<a href="?page={{ incidents.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ incidents.paginator.num_pages }}</a>
+															</li>
+														{% endif %}
+
+														<!-- Next Button -->
+														<li class="paginate_button page-item next {% if not incidents.has_next %}disabled{% endif %}">
+															{% if incidents.has_next %}
+																<a href="?page={{ incidents.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Next</a>
+															{% else %}
+																<a href="#" class="page-link">Next</a>
+															{% endif %}
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+                  </div>
+                </div>
+              </div>
+              		<!---delete confirm popup-->
+                  <div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <div class="icon-alert">
+                          <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                          </div>
+                          <h2 class="modal-title " id="exampleModalLongTitle">Are you sure?</h2>
+                        </div>
+                        <div class="modal-body ">
+                          You won't be able to revert it!
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised " id="deleteConfirmed">Yes, delete it!</button>
+                          <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal" id="deleteCanceled">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+							
+							<!--pop up end-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- start widget -->
+  <!-- end widget -->
+
+  	<!-- The Modal -->
+	<div class="modal fade" id="download-file">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content p-5">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Download files</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+			
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+<!-- <script>
+  function confirmDelete(incidentID) {
+      $('#deleteConfirmationModal').modal('show');
+      $('#deleteConfirmed').click(function () {
+          $('#deleteForm_' + incidentID).submit();
+      });
+  }
+</script> -->
+  <script>
+    const deleteConfirmButton = document.getElementById('deleteConfirmed')
+    const deleteCancelButton = document.getElementById('deleteCanceled')
+
+      function confirmDelete(incidentID) {
+          $('#deleteConfirmationModal').modal('show');
+          // $('#deleteConfirmed').click(function () {
+          //     $('#deleteForm_' + employeeId).submit();
+          // });
+      deleteConfirmButton.addEventListener('click',function(){
+        deleteConfirmButton.disabled = true;
+        deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+        $('#deleteForm_' + incidentID).submit();
+      });
+      deleteCancelButton.addEventListener('click',function(){
+         
+        deleteCancelButton.disabled = true;
+        deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+        setTimeout(function() {
+          deleteCancelButton.disabled = false;
+          deleteCancelButton.innerHTML = 'Cancel'; 
+          $('#deleteConfirmationModal').modal('hide');
+        }, 500);
+        
+      });
+      
+      }
+  </script>
+
+<!---downlaod report js -->
+ 
+ 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.download_report').addEventListener('click', function(event) {
+          
+            const target = event.target.closest('a');
+            if (target && target.dataset.fileType) {
+              event.preventDefault();
+              const selectedFileType = target.dataset.fileType;
+              const incidentIdElements = document.querySelectorAll('.incident-id');
+              const incidentIds = Array.from(incidentIdElements).map(element => element.value);
+              
+              // Get filter values only if the condition is met
+              const idClient = document.getElementById('id_client')?.value || '';
+              const idEmployee = document.getElementById('id_employee')?.value || '';
+              const startDate = document.getElementById('start_date')?.value || '';
+              const endDate = document.getElementById('end_date')?.value || '';
+              
+              if (incidentIds.length === 0) {
+                console.error('No incident IDs found');
+                return;
+              }
+              $.ajax({
+                url: "{% url 'company:download_incident_report' %}",
+                type: 'POST',
+                  headers: {
+                      'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                  },
+                  data: {
+                           incident_ids: incidentIds.join(','),
+                          file_type: selectedFileType,
+                          id_client: idClient,
+                          id_employee: idEmployee,
+                          start_date: startDate,
+                          end_date: endDate
+                  },
+                  xhrFields: {
+                      responseType: 'blob'
+                  },
+                  success: function(data, textStatus, jqXHR) {
+                      const fileType = jqXHR.getResponseHeader('X-File-Type');
+                      
+                      if(fileType=='csv' || fileType == 'all-csv'){
+                        const now = new Date();
+                        const day = String(now.getDate()).padStart(2, '0');
+                        const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+                        const year = now.getFullYear();
+                        const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+                        const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+                        //const filename = `incidents_report_${timestamp}.${selectedFileType === 'csv' ? 'csv' : 'xlsx'}`;
+                        const filename = `incidents_report_${timestamp}.${selectedFileType === 'csv' || selectedFileType === 'all-csv' ? 'csv' : 'xlsx'}`;
+
+                        //const blob = new Blob([data], { type: selectedFileType === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        const blob = new Blob([data], { 
+                          type: selectedFileType === 'csv' || selectedFileType === 'all-csv' 
+                              ? 'text/csv' 
+                              : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+    
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                      }
+                      else if(fileType=='excel' || fileType == 'all-excel'){
+                        const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                        const url = window.URL.createObjectURL(blob);
+          
+                        const now = new Date();
+                        const day = String(now.getDate()).padStart(2, '0');
+                        const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+                        const year = now.getFullYear();
+                        const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+                        const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+                        const filename = `incidents_report_${timestamp}.xlsx`;
+          
+          
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+          
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                      }
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('Error:', error);
+                      document.getElementById('date_error').textContent = 'No records available for the given date range.';
+                  }
+              });
+          }
+      });
+  });
+  $('#example4').DataTable({
+		paging: false,
+		info: false
+	});
+  </script> 
+<!--end -->
+
+
+{% endblock %}

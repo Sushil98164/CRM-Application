@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<meta name="author" content="CodigoMatra" />
+	<title>Bells | {% block title %}{% endblock %}</title>
+	<!-- google font -->
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
+		type="text/css" />
+	<!-- icons -->
+	<link href="{% static 'fonts/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="{% static 'assets/plugins/iconic/css/material-design-iconic-font.min.css' %}">
+	<!-- bootstrap -->
+	<link href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+	<!-- style -->
+	<link rel="stylesheet" href="{% static 'assets/css/pages/extra_pages.css' %}">
+	<!-- favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/img/new_logo.png' %}" />
+	<script src="{% static 'assets/js/form_submit.js' %}"></script>
+
+    {% block stylesheets %}
+        
+    {% endblock stylesheets %}
+</head>
+
+<body>
+    {% block content %}
+
+    {% endblock %}
+	
+	<!-- start js include path -->
+	<script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+	<!-- bootstrap -->
+	<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'assets/js/pages/extra-pages/pages.js' %}"></script>
+    <!-- end js include path -->
+    {% block javascripts %}{% endblock javascripts %}
+</body>
+
+</html>

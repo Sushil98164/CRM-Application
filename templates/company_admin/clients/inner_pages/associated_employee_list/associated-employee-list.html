@@ -1,0 +1,370 @@
+{% load widget_tweaks %}
+{% load company_admin_tags %}
+{% load rostering_tags %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+						{% if messages %}
+						<div class="container-fluid">
+						  <ul class="list-unstyled">
+							{% for message in messages %}
+							  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </li>
+							{% endfor %}
+						  </ul>
+						</div>
+						<script>
+							// Automatically close alerts after 5 seconds
+							window.setTimeout(function () {
+							  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+								$(this).remove();
+							  });
+							}, 5000);
+						  </script>
+					  {% endif %}
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Service delivery team</header>
+								
+								</div>
+								<div class="card-body ">
+									{% comment %} {% if  request.user|has_permission:'company_admin.update_all_services' %}	
+									<button
+									type="button" class="btn btn-info" id="assignEmployees"
+									data-toggle="modal" data-target="#assignEmployeesModal">{% if associated_employees %}Update{% else %}Assign{% endif%} Employees
+									<i class="fa fa-plus"></i>
+									</button>
+									{% endif %} {% endcomment %}
+									<button
+									type="button" class="btn btn-info" id="assignEmployees"
+									data-toggle="modal" data-target="#assignEmployeesModal">{% if associated_employees %}Update{% else %}Assign{% endif%} Employees
+									<i class="fa fa-plus"></i>
+									</button>
+									<div class="table-scrollable">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th>S.no.</th>
+													<th>First name </th>
+													<th>Last name</th>
+													<th>Email</th>
+													<th>Phone number</th>
+													<th>Address </th>
+													
+												</tr>
+											</thead>
+											<tbody>
+												{% for employee in associated_employees %}
+												<tr class="{% cycle 'odd' 'even' %}">
+                                                    <td>
+													{% get_proper_counter forloop.counter associated_employees %}
+													</td>
+													<td>{% if employee.person.first_name %}{{employee.person.first_name}} {% endif %} </td>
+													<td>{% if employee.person.last_name %}{{employee.person.last_name}}{% endif %}</td>
+													<td>{% if employee.person.email %}{{employee.person.email}}{% endif %}</td>
+                                                    <td>{% if employee.person.phone_number %}{{employee.person.phone_number}}{% endif %}</td>
+													<td>{% if employee.address %}{{employee.address}}{% endif %}</td>
+												</tr>
+												{% endfor %}
+								
+											</tbody>
+										</table>
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+										  <div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+											Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+										  </div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+										  <div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+											<ul class="pagination float-right">
+											  <!-- Previous Button -->
+											  <li class="paginate_button page-item previous {% if not associated_employees.has_previous %}disabled{% endif %}">
+												{% if associated_employees.has_previous %}
+												  <a href="?page={{ associated_employees.previous_page_number }}" class="page-link">Previous</a>
+												{% else %}
+												  <a href="#" class="page-link">Previous</a>
+												{% endif %}
+											  </li>
+											  <!-- First Page -->
+											  {% if associated_employees.number > 4 %}
+												<li class="paginate_button page-item">
+												  <a href="?page=1" class="page-link">1</a>
+												</li>
+												{% if associated_employees.number > 5 %}
+												  <li class="paginate_button page-item disabled">
+													<span class="page-link">...</span>
+												  </li>
+												{% endif %}
+											  {% endif %}
+											  <!-- Page Numbers -->
+											  {% for num in associated_employees.paginator.page_range %}
+												{% if num|add:"-3" <= associated_employees.number and num|add:"3" >= associated_employees.number %}
+												  <li class="paginate_button page-item {% if associated_employees.number == num %}active{% endif %}">
+													<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+												  </li>
+												{% endif %}
+											  {% endfor %}
+											  <!-- Last Page -->
+											  {% if associated_employees.number < associated_employees.paginator.num_pages|add:"-3" %}
+												<li class="paginate_button page-item disabled">
+												  <span class="page-link">...</span>
+												</li>
+												<li class="paginate_button page-item">
+												  <a href="?page={{ associated_employees.paginator.num_pages }}" class="page-link">{{ associated_employees.paginator.num_pages }}</a>
+												</li>
+											  {% endif %}
+											  <!-- Next Button -->
+											  <li class="paginate_button page-item next {% if not associated_employees.has_next %}disabled{% endif %}">
+												{% if associated_employees.has_next %}
+												  <a href="?page={{ associated_employees.next_page_number }}" class="page-link">Next</a>
+												{% else %}
+												  <a href="#" class="page-link">Next</a>
+												{% endif %}
+											  </li>
+											</ul>
+										  </div>
+										</div>
+									  </div>
+								</div>
+							</div>
+						</div>
+							<!---delete confirm popup-->
+							<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+											<h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+										</div>
+										<div class="modal-body">
+											You won't be able to revert it!
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-danger" id="deleteConfirmed">Yes, delete it!</button>
+											<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						<!--pop up end-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- end widget -->
+<div class="modal" id="assignEmployeesModal">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="card-body pb-2">
+					<div class="input-group mb-2">
+						<input type="text" id="search-employee-modal" class="form-control pl-3" name="search" placeholder="Enter Employee Name"  style="border-radius:4px ;">
+						<span span class="input-group-append">
+							<button class="btn ripple btn-secondary" id="assign-clear-search-btn" type="button" style="display: none;">
+								<i class="fa fa-times"></i>
+							</button>
+						</span>
+					</div>
+				</div>
+				<div class="table-scrollable">
+					<form id="assign-employee-form" class="disable-on-submit">
+						{% csrf_token %}
+						<table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle text-center" id="employee-table">
+							<thead>
+								<tr>
+									<th><input id="checkbox1" type="checkbox">&nbsp; Select all</th>
+									<th>S.no</th>
+									<th>Employee name</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for employee in employees %}
+								<tr class="employee-row">
+									<td><input type="checkbox" class="employee-checkbox" name="employees" value="{{ employee.id }}"
+									{% if employee.id in associated_employee_ids %}checked{% endif %}></td>
+									<td>{{ forloop.counter }}</td>
+									<td class="employee-name">{{ employee.person.first_name }} {{ employee.person.last_name }}</td>
+								</tr>
+								{% endfor %}
+								<tr id="no-employees-row" style="display: none;">
+									<td colspan="3">No Employees found</td>
+								</tr>
+							</tbody>
+						</table>
+						<input type="hidden" id="client_id" name="client" value="{{ client_id }}">
+						<div class="col-lg-12 p-t-20 text-center fix-button">
+							<button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue assign-selected-employees">Add</button>
+							<button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default btn-close" data-dismiss="modal" id="assignCancelBtn">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% block javascripts %}
+{% comment %} <script>
+    document.getElementById('checkbox1').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.employee-checkbox');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    document.querySelector('form').addEventListener('submit', function (event) {
+        let selected = [];
+        let unselected = [];
+
+        document.querySelectorAll('.employee-checkbox:checked').forEach(function (checkbox) {
+            selected.push(checkbox.value);
+        });
+
+        document.querySelectorAll('.employee-checkbox:not(:checked)').forEach(function (checkbox) {
+            unselected.push(checkbox.value);
+        });
+
+        document.getElementById('selected_employees').value = selected.join(',');
+        document.getElementById('unselected_employees').value = unselected.join(',');
+
+        console.log('Selected employees:', selected);
+        console.log('Unselected employees:', unselected);
+        this.submit();
+    });
+</script> {% endcomment %}
+<script>
+    const assignsearchInput = document.getElementById('search-employee-modal');
+    const assignclearSearchBtn = document.getElementById('assign-clear-search-btn');
+    const assignnoEmployeesRow = document.getElementById('no-employees-row');
+
+    assignsearchInput.addEventListener('keyup', function() {
+        const query = assignsearchInput.value.trim().toLowerCase(); 
+        const EmployeesRows = document.querySelectorAll('#employee-table tbody .employee-row'); 
+        let visibleEmployees = 0;
+
+        if (query.length > 0) {
+            assignclearSearchBtn.style.display = 'inline-block';
+        } else {
+            assignclearSearchBtn.style.display = 'none';
+        }
+
+        EmployeesRows.forEach(function(row) {
+            const employeeName = row.querySelector('.employee-name').textContent.toLowerCase();  
+            if (employeeName.includes(query)) { 
+                row.style.display = '';  
+                visibleEmployees++;
+            } else {
+                row.style.display = 'none';  
+            }
+        });
+
+        if (visibleEmployees === 0) {
+            assignnoEmployeesRow.style.display = ''; 
+            assignnoEmployeesRow.style.backgroundColor = '#e1e5ec';
+        } else {
+            assignnoEmployeesRow.style.display = 'none'; 
+        }
+    });
+
+    assignclearSearchBtn.addEventListener('click', function() {
+        assignsearchInput.value = '';  
+        assignclearSearchBtn.style.display = 'none';  
+        
+        const EmployeesRows = document.querySelectorAll('#employee-table tbody .employee-row');
+        
+        EmployeesRows.forEach(function(row) {
+            row.style.display = '';  
+        });
+
+        assignnoEmployeesRow.style.display = 'none'; 
+    });
+</script>
+<script>
+    const selectAllCheckbox = document.getElementById('checkbox1');
+    const employeeCheckboxes = document.querySelectorAll('#assignEmployeesModal .employee-checkbox');
+
+    selectAllCheckbox.addEventListener('change', function () {
+        const isChecked = selectAllCheckbox.checked;
+
+        employeeCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = isChecked;
+        });
+    });
+
+    employeeCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const allChecked = Array.from(employeeCheckboxes).every(cb => cb.checked);
+            
+            selectAllCheckbox.checked = allChecked; 
+            if (!allChecked) {
+                selectAllCheckbox.checked = false; 
+            }
+        });
+    });
+
+    window.addEventListener('load', function () {
+        const allChecked = Array.from(employeeCheckboxes).every(cb => cb.checked);
+        
+        selectAllCheckbox.checked = allChecked;
+    });
+</script>
+<script>
+$(document).ready(function() {
+    $('#assign-employee-form').on('submit', function(event) {
+        event.preventDefault();
+
+        var selectedEmployees = $('input[name="employees"]:checked').map(function() {
+            return $(this).val();
+        }).get();
+		var unselectedEmployees = $('input[name="employees"]:not(:checked)').map(function() {
+            return $(this).val();
+        }).get();
+
+		console.log("Selected Employees:", selectedEmployees);
+        console.log("Unselected Employees:", unselectedEmployees);
+
+        var clientId = '{{ client_id }}';
+
+        var data = {
+            'client_id': clientId,
+            'selected-employees': selectedEmployees,
+			'unselected-employees':unselectedEmployees
+        };
+
+        var csrftoken = '{{ csrf_token }}';
+
+        $.ajax({
+            url: '{% url "company:client_service_delivery_team_assign" client_id %}',
+            type: 'POST',
+            data: data,
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+            success: function(response) {
+                console.log('Employees assigned successfully:', response);
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error while assigning employees:', error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

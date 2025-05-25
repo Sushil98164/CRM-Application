@@ -1,0 +1,31 @@
+{% load static %}
+
+{% load widget_tweaks %}
+<form class="login100-form validate-form">
+    <span class="login100-form-logo">
+        <img alt="" src="{% static '/assets/img/logo-2.png' %}">
+    </span>
+    <span class="login100-form-title p-b-34 p-t-27">
+        Log in
+    </span>
+    <div class="wrap-input100 validate-input" data-validate="Enter username">
+        {% render_field form.email class="input100" type="email" name="email" id="email" placeholder="Email" %}
+        <span class="focus-input100" data-placeholder="&#xf207;"></span>
+    </div>
+    <div class="wrap-input100 validate-input" data-validate="Enter password">
+        {% render_field form.password class="input100" type="password" id="password" name="password" placeholder="Password" %}
+        <span class="focus-input100" data-placeholder="&#xf191;"></span>
+        <span class="error-messge">{{ form.password.errors }}</span>
+    </div>
+
+    <div class="container-login100-form-btn">
+        <button class="login100-form-btn">
+            Login
+        </button>
+    </div>
+    <div class="text-center p-t-30">
+        <a class="txt1" href="{% url 'user_auth:forget_password' %}">
+            Forgot Password?
+        </a>
+    </div>
+</form>

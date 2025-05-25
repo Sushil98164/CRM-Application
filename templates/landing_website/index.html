@@ -1,0 +1,598 @@
+{% extends 'base_landing_page.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block stylesheets %}
+<style>
+  p.text-banner {
+      color: #444;
+      font-family: Nunito;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: 0.48px;
+      padding-top: 14px;
+  }
+  </style>
+{% endblock stylesheets %}
+{% block content %}
+
+
+
+  {% include 'landing_website/includes/header.html' %}
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="hero d-flex align-items-center">
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+          <h1 data-aos="fade-up">Welcome to our Intelligent NDIS Solutions.</h1>
+          <h2 data-aos="fade-up" data-aos-delay="400">Empowering Inclusive Care with Intelligent Solutions</h2>
+          <p class="text-banner" data-aos="fade-up" data-aos-delay="500">We are dedicated to developing an AI-driven platform that proactively analyzes client risk assessments and guides support workers, ensuring comprehensive and responsive care. Our upcoming AI bot will help us achieve this commitment.</p>
+          <div data-aos="fade-up" data-aos-delay="600">
+            <div class="text-center text-lg-start">
+              <a href="#contact" class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
+                <span>Request a demo</span>
+                <!-- <i class="bi bi-arrow-right"></i> -->
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
+          <img src="{% static 'landing_page/img/hero-img.png' %}" class="img-fluid" alt="">
+        </div>
+      </div>
+    </div>
+
+  </section><!-- End Hero -->
+
+  <main id="main">
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+
+      <div class="container-fluid" data-aos="fade-up">
+        <div class="row gx-0">
+
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3>Who We Are?</h3>
+              <p class="mb-2"><strong>An extensive cloud based platform for effortless coordination between care workers, clients, relatives and service terms.</strong></h2>
+              <p class="mt-0">
+                Inspired by a pressing need to address the escalating costs faced by NDIS providers for technology, and the glaring absence of user-friendly solutions accommodating diversity—including linguistic, digital literacy, and overall health literacy challenges—we embarked on our mission. Recognizing these barriers could significantly hinder the quality of care and access to services for NDIS participants, BellsCRM was founded. Our goal was clear: to develop an inclusive solution that not only reduces financial burdens on providers but also enriches the NDIS experience for all.
+              </p>
+              <div class="text-center text-lg-start">
+                <a href="{% url 'website:about' %}" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                  <span>Read More -></span>
+                  <!-- <i class="bi bi-arrow-right"></i> -->
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'landing_page/img/about.jpg' %}" class="img-fluid" alt="">
+          </div>
+
+        </div>
+      </div>
+
+    </section><!-- End About Section -->
+    <!-- ======= Ecosystem Section ======= -->
+    <section id="ecosystem" class="ecosystem">
+
+      <div class="container-fluid" data-aos="fade-up">
+        <div class="row gx-0">
+          <div class="col-lg-6  d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'landing_page/img/ecosystem.png' %}" class="img-fluid" alt="">
+          </div>
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3 class="mb-4 mb-md-5">Unified NDIS Ecosystem</h3>
+              <div class="row">
+                <div class="col-md-12 circle-chnage">
+                  <div class="circle-content text-center">
+                   <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Timesheeting</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Digital Risk Assessment</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Case/Shift Notes</p>
+                  </div>
+                  <div class="circle-content text-center">
+                   <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> 360 Degree Client profile View</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> 360 Degree Client profile View</p>
+                  </div>
+                  <div class="circle-content text-center">
+                   <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Quick Onboarding</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Role Based Access</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Contact Management</p>
+                  </div>
+                   <div class="circle-content text-center">
+                   <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> Analytics for managers</p>
+                    <p><span><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" fill="#ECF3FF"/>
+                      <path d="M7 13.0444L13.6622 24L24 7" stroke="#013289" stroke-width="2.125"/>
+                    </svg></span> NDIS Mandatory Incident Reporting</p>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section><!-- End Ecosystem Section -->
+    
+
+    <!-- ======= Clients Section ======= -->
+    {% comment %} <section id="clients" class="clients">
+
+      <div class="container-fluid" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>Our Clients</h2>
+        </header>
+
+        <div class="clients-slider swiper">
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide swiper-slide-2" >
+              <img src="{% static 'landing_page/img/clients/client-1.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-2.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-3.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-4.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-5.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-6.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-7.png' %}" class="img-fluid" alt="">
+            </div>
+            <div class="swiper-slide swiper-slide-2">
+              <img src="{% static 'landing_page/img/clients/client-8.png' %}" class="img-fluid" alt="">
+            </div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+    </section> {% endcomment %}
+    <!-- End Clients Section -->
+
+      <!-- ======= Services Section ======= -->
+      <section id="services" class="services">
+
+        <div class="container-fluid" data-aos="fade-up">
+
+          <header class="section-header">
+            <h2>Why BellsCRM’s NDIS Platform Stands out</h2>
+          </header>
+
+          <div class="row gy-4 service-box-blcrm">
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="200">
+              <div class="service-box blue">
+                <h3>Fast and Lightning</h3>
+                <p>BellsCRM's NDIS platform boasts lightning-fast performance, providing instant accessibility and rapid data processing. With real-time updates and efficient workflows, it ensures unparalleled speed and reliability, ideal for seamless efficiency even during peak usage.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards " data-aos="fade-up" data-aos-delay="300">
+              <div class="service-box orange">
+                <h3>Easy to set up</h3>
+                <p>BellsCRM's NDIS platform is easy to set up, featuring an intuitive interface and a guided setup wizard. Pre-configured templates streamline the process, while comprehensive support ensures assistance when needed. Choose flexible deployment options for convenience.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="400">
+              <div class="service-box green">
+                <h3>No training required</h3>
+                <p>BellsCRM's NDIS platform requires no training, thanks to its user-friendly design and intuitive interface. With straightforward navigation and clear instructions, users can seamlessly navigate and utilize the platform without the need for extensive training sessions.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="500">
+              <div class="service-box red">
+                <h3>Easy english</h3>
+                <p>BellsCRM's NDIS platform is so simple to use that you won't need any training. It's designed with clear instructions and an easy-to-understand layout, making it a breeze for anyone to navigate without any prior experience.
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="600">
+              <div class="service-box purple">
+                <h3>User friendly</h3>
+                <p>BellsCRM's NDIS platform is incredibly user-friendly. With a straightforward design and intuitive features, navigating the platform is a breeze for users of all levels. Say goodbye to complexity and hello to a hassle-free experience with BellsCRM.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box pink">
+                <h3>Real time insights</h3>
+                <p>BellsCRM's NDIS platform provides real-time insights, offering users immediate access to crucial information. With up-to-the-minute data, users can make informed decisions promptly, enhancing efficiency and effectiveness in service delivery and management.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box light-orange">
+                <h3>Cloud based platform</h3>
+                <p>BellsCRM's NDIS platform operates on a cloud-based system, offering users the convenience of accessing their data securely from anywhere with an internet connection. With cloud-based infrastructure, users can enjoy flexibility, scalability, and seamless updates without the need for on-site hardware maintenance.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box dark-blue">
+                <h3>Enhanced data security</h3>
+                <p>BellsCRM's NDIS platform ensures enhanced data security, employing robust measures to protect sensitive information. With encryption, access controls, and regular audits, users can trust that their data is safeguarded against unauthorized access, ensuring confidentiality and compliance with industry standards.
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box brown">
+                <h3>Comprehensive client management</h3>
+                <p>BellsCRM's NDIS platform provides comprehensive client management tools, allowing users to efficiently organize and track client information. With features such as profile management, communication logs, and scheduling capabilities, users can effectively manage client relationships and deliver personalized services tailored to individual needs.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box dark-brown">
+                <h3>Ongoing support and training</h3>
+                <p>BellsCRM's NDIS platform offers ongoing support and training to ensure users get the most out of the system. With access to resources such as tutorials, documentation, and dedicated customer support, users can receive assistance whenever needed, empowering them to maximize the platform's potential.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box dark-gray">
+                <h3>Affordable</h3>
+                <p>BellsCRM's NDIS platform is affordable, offering competitive pricing without compromising on quality or features. With flexible pricing plans tailored to different needs and budgets, organizations can access powerful tools and functionalities without breaking the bank.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 ndis-cards" data-aos="fade-up" data-aos-delay="700">
+              <div class="service-box light-gray">
+                <h3>Customisable to fit your needs</h3>
+                <p>BellsCRM's NDIS platform is highly customizable, allowing users to tailor the system to their specific requirements. With configurable options and flexible settings, organizations can adapt the platform to align with their unique workflows and preferences, ensuring a personalized and efficient user experience.</p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button type="button" class="load-more-btn">Load More</button>
+            </div>
+          </div>
+
+        </div>
+
+      </section><!-- End Services Section -->
+
+     <!-- ======= Pricing Section ======= -->
+     {% comment %} <section id="pricing" class="pricing">
+
+      <div class="container-fluid" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>Our Prices</h2>
+        </header>
+
+        <div class="row justify-content-center gy-4" data-aos="fade-left">
+
+          <div class="col-lg-3 col-md-6 d-flex flex-wrap" data-aos="zoom-in" data-aos-delay="200">
+            <div class="box">
+              <h3 style="color: #FF901C;">Basic</h3>
+              <img src="{% static 'landing_page/img/pricing-business.png' %}" class="img-fluid" alt="">
+              <ul>
+                <li>1 year free</li>
+                <li>Maximum 5 clients</li>
+                <li>No additional cost</li>
+              </ul>
+              <a href="#" class="btn-buy">Buy Now</a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex flex-wrap" data-aos="zoom-in" data-aos-delay="300">
+            <div class="box">
+              <h3 style="color: #FF0071;">Lite</h3>
+              <img src="{% static 'landing_page/img/pricing-ultimate.png' %}" class="img-fluid" alt="">
+              <ul>
+                <li>$5 / Month / Client</li>
+                <li>Minimum 10 Clients</li>
+              </ul>
+              <a href="#" class="btn-buy">Buy Now</a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex flex-wrap" data-aos="zoom-in" data-aos-delay="400">
+            <div class="box">
+              <h3 style="color: #07D5C0;">Custom</h3>
+              <img src="{% static 'landing_page/img/pricing-free.png' %}" class="img-fluid" alt="">
+              <ul>
+                <li>Team will get in touch with you and help you provide tailored solutions for you</li>
+              </ul>
+              <a href="#" class="btn-buy">Buy Now</a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section> {% endcomment %}
+    <!-- End Pricing Section -->
+
+
+
+   <!-- ======= Testimonials Section ======= -->
+
+    {% if testimonials %}
+    <section id="testimonials" class="testimonials">
+
+      <div class="container-fluid" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>Customer Reviews</h2>
+        </header>
+
+        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="200">
+          <div class="swiper-wrapper">
+            {% for testimonial in testimonials %}
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <p>
+                {{testimonial.text}}
+                </p>
+                <div class="profile">
+                  <img src="{{testimonial.image.url}}" class="testimonial-img" alt="">
+                  <h3>{{testimonial.client_name}}</h3>
+                  <h4>{{testimonial.position}}</h4>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            
+            <!-- End testimonial item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section> 
+    {% endif %}
+
+
+    <!-- End Testimonials Section -->
+    <!-- ======= F.A.Q Section ======= -->
+   {% if faqs %}
+    <section id="faq" class="faq">
+
+      <div class="container-fluid" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>Frequently Asked Questions</h2>
+        </header>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-9">
+            <!-- F.A.Q List 1-->
+            <div class="accordion accordion-flush" id="faqlist1">
+              {% for faq in faqs %}
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-{{ faq.id }}">
+                    <img src="{% static 'landing_page/img/plus-icon.svg' %}" class="plus-icon" alt="">{{faq.question}}
+                  </button>
+                </h2>
+                <div id="faq-content-{{ faq.id }}" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-1"></div>
+                      <div class="col-md-11">
+                        {{faq.answer}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+
+
+            </div>
+          </div>
+        
+        </div>
+
+      </div>
+
+    </section>
+{% endif %}
+    <!-- End F.A.Q Section -->
+
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+
+      <div class="container-fluid" data-aos="fade-up">
+
+        <header class="section-header">
+          <h2>Contact Us</h2>
+        </header>
+
+        <div class="row gy-4">
+
+          <div class="col-lg-6">
+
+            <div class="row gy-4">
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-geo-alt"></i>
+                  <h3>Address</h3>
+                  <p>119 Montrose Rd,<br>Montrose 7010 Tasmania Australia.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-telephone"></i>
+                  <h3>Call Us</h3>
+                  <p>0416720008<br></p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-envelope"></i>
+                  <h3>Email Us</h3>
+                  <p> info@bellscrm.com.au</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-clock"></i>
+                  <h3>Open Hours</h3>
+                  <p>Monday - Friday<br>9:00AM - 05:00PM</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col-lg-6" id="contactFormSection">
+            <form action="{% url 'website:add_contact' %}" id="contactId" method="POST" class="disable-on-submit">
+              {% csrf_token %}
+              <div class="row gy-4">
+
+                <div class="col-md-6">
+                  {% render_field form.name class="form-control" placeholder="Enter your name" %}
+                  {% for error in form.name.errors %}
+                  <div class="error">{{ error }}</div>
+                {% endfor %}
+                </div>
+
+                <div class="col-md-6 ">
+                  {% render_field form.email class="form-control" placeholder="Enter your email" %}
+                  {% for error in form.email.errors %}
+                  <div class="error">{{ error }}</div>
+                  {% endfor %}
+                </div>
+
+                <div class="col-md-12">
+                  {% render_field form.subject class="form-control" placeholder="Enter your subject" %}
+                  {% for error in form.subject.errors %}
+                  <div class="error">{{ error }}</div>
+                {% endfor %}
+                </div>
+
+                <div class="col-md-12">
+                  {% render_field form.message class="form-control" placeholder="Enter your message" %}
+                  {% for error in form.message.errors %}
+                  <div class="error">{{ error }}</div>
+                {% endfor %}
+                </div>
+
+                {% render_field form.captcha   %}
+                <span class="errorMessage">
+                  {{form.errors.captcha}}
+                </span>
+								<p style="color: red; display: none;" id="captcha_error_id_stu">Please complete the reCAPTCHA.</p>
+
+                <div class="col-md-12 text-center">
+                  {% for message in messages %}
+                  <div class="alert alert-success sent-message" role="alert">
+                      {{ message }}
+                  </div>
+                 {% endfor %}
+                  <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+
+              </div>
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- End Contact Section -->
+
+
+    
+  </main><!-- End #main -->
+
+  {% include 'landing_website/includes/footer.html' %}
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  
+  {% block javascripts %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const boxes = document.querySelectorAll('.service-box');
+      const loadMoreBtn = document.querySelector('.load-more-btn');
+      const parenDiv = document.querySelectorAll('.ndis-cards')
+      // Initially hide all boxes except the first 6
+      for (let i = 6; i < parenDiv.length; i++) {
+        
+        parenDiv[i].style.display = 'none';
+      }
+      // Toggle function to show/hide boxes
+      let showAll = false;
+      loadMoreBtn.addEventListener('click', function () {
+        showAll = !showAll;
+        for (let i = 6; i < parenDiv.length; i++) {
+          parenDiv[i].style.display = showAll ? 'block' : 'none';
+        }
+        loadMoreBtn.textContent = showAll ? 'Show Less' : 'Load More';
+      });
+    });
+
+
+    document.querySelector("#contactId").addEventListener("submit", function(e) {
+		var recaptchaValue = document.querySelector("#g-recaptcha-response").value;
+		if (!recaptchaValue) {
+			e.preventDefault();
+			$('#captcha_error_id_stu').show();
+		}
+	});
+
+
+  </script>
+
+
+{% if is_from_contact %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var formSection = document.getElementById('contactFormSection');
+      if (formSection) {
+        formSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  </script>
+{% endif %}
+
+
+  {% endblock %}
+  
+{% endblock %}

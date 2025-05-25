@@ -1,0 +1,548 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% block title %} 
+My Profile
+{% endblock title %}
+{% block stylesheets %}
+<style>
+    .card-2 {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .card-2 .card-link  {
+        color: #000;
+        font-size: 20px;
+        text-decoration: none;
+        width: 100% !important;
+        display: flex;
+    }
+
+
+	.modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+		button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 24px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		border-radius: 5px;
+		margin-right: 20px;
+		}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1.25em auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed {
+		border-radius: 0.25em;
+		background: initial;
+		display: inline-block;
+		background-color: rgb(48, 133, 214);
+		border-left-color: rgb(48, 133, 214);
+		border-right-color: rgb(48, 133, 214);
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}   
+        .profile-userpic-2 img {
+            border: 3px solid rgb(210, 214, 222);
+            margin: auto;
+            width: 248px;
+            height: 164px;
+            max-width: 100%;
+        } 
+</style>
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Employee profile</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+           
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employee</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">Client list</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+{% if messages %}
+<div class="container-fluid">
+    <ul class="list-unstyled">
+    {% for message in messages %}
+        <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<script>
+    // Automatically close alerts after 5 seconds
+    window.setTimeout(function () {
+        $(".alert").fadeTo(500, 0).slideUp(500, function () {
+        $(this).remove();
+        });
+    }, 5000);
+    </script>
+{% endif %}
+    <div class="col-md-12">
+        
+        <!-- BEGIN PROFILE SIDEBAR -->
+        <div class="profile-sidebar">
+
+        
+        </div>
+        <!-- END BEGIN PROFILE SIDEBAR -->
+        <!-- BEGIN PROFILE CONTENT -->
+        <div class="profile-content">
+            <div class="row">
+             {% include 'company_admin/employee/include/tabs-bar.html' %}
+            </div>
+            <div class="row">
+                <div class="card" style="width: 100%;">
+                    <div class="card-topline-aqua">
+                        <header></header>
+                    </div>
+                    <div class="white-box ">
+                        <!-- Nav tabs -->
+                      
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            {% if request.resolver_match.url_name == 'employee_profile' %}
+                            <div class="tab-pane active fontawesome-demo">
+                                 <div id="biography">
+                                    <div class="card-body no-padding height-9">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="profile-usertitle">
+                                                    <div class="profile-user-title">Personal details
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="profile-userpic-2 col-md-5 mt-3">
+                                                {%  if profile.person.profile_image  %}
+                                                    <img src="{{profile.person.profile_image.url}}" class="img-responsive" alt="">
+
+                                                {% else%}
+                                                    <img src="{% static 'admin/img/user.png' %}" class="img-responsive" alt="">
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="col-7 mt-3">
+
+                                                <div class="user-details">
+                                                   <div class="user-info">
+                                                        <p class="user-profile-content">Name<span>{% if profile.person.first_name and profile.person.last_name %}{{profile.person.first_name}} {{profile.person.last_name}}{% endif %}</span></p>
+                                                        <p class="user-profile-content">Email<span>{% if profile.person.email %}{{profile.person.email}}{% endif %}</span></p>
+                                                        <p class="user-profile-content">Mobile number<span>{% if profile.person.phone_number %}{{profile.person.phone_number}}{% endif %}</span></p>
+                                                        <p class="user-profile-content">Date of birth<span>{% if profile.date_of_birth %}{{profile.date_of_birth}}{% endif %}<span></p>
+                                                        <p class="user-profile-content">Address<span>{% if profile.address %}{{profile.address}}{% endif %}</span></p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-5 mt-5 text-center">
+                                                        <a href="{% url 'employee:employee_profile_edit' profile.id %}"
+                                                            class="btn btn-primary btn-xs">
+                                                            Edit</i>
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div> 
+                            </div>
+                            {% endif %}
+
+
+                            {% if request.resolver_match.url_name == 'employee_documents' %}
+                            <div class="tab-pane active fontawesome-demo">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div id="accordion" style="width: 100%;">
+
+                                            <div class="card-2">
+                                                <div class="card-header">
+                                                    <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                                                        IDs and checks
+                                                    </a>
+                                                </div>
+                                                <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                                
+                                            
+                                            <div class="card-body ">
+            
+                                                        <div class="table-scrollable">
+                                                            <table
+                                                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                id="">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>S.no</th>
+                                                                        <th>Document name</th>
+                                                                        <th>Expiry date</th>
+                                                                        <th>Status</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% if IDsAndChecksDocuments %}
+                                                                    {% for document in IDsAndChecksDocuments %}
+                                                                    <tr class="odd">
+                                                                        <td>{{forloop.counter}}</td>
+                                                                        <td>{{document.name}}</td>
+                                                                        <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                        <td>Pending</td>
+                                                                        <td> 
+                                                                            {% if document.file %}
+
+                                                                        <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs">
+                                                                            <i class="fa fa-eye"></i>
+                                                                        </a>
+                                                                        {% endif %}
+                                                                        {% comment %} <form id="deleteForm_{{ document.id }}" action="{% url 'employee:delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                            {% csrf_token %}
+                                                        
+                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                <i class="fa fa-trash-o"></i>
+                                                                            </button>
+                                                                        </form> {% endcomment %}
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                    {% else %}
+                                                                    <tr class="odd">
+                                                                    <td colspan="5">
+                                                                        <center>No data available</center>
+                                                                    </td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                   
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <div class="card-2">
+                                                <div class="card-header ">
+                                                <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
+                                                    Qualification
+                                                </a>
+                                                </div>
+                                                <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                                <div class="card-body ">
+            
+                                                        <div class="table-scrollable">
+                                                            <table
+                                                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                id="">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>S.no</th>
+                                                                        <th>Document name</th>
+                                                                        <th>Expiry date</th>
+                                                                        <th>Status</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% if QualificationDocuments %}
+                                                                    {% for document in QualificationDocuments %}
+
+                                                                    <tr class="odd">
+                                                                        <td>{{forloop.counter}}</td>
+                                                                        <td>{{document.name}}</td>
+                                                                        <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                        <td>Pending</td>
+                                                                        <td>
+                                                                            {% if document.file %}
+                                                                        <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs">
+                                                                            <i class="fa fa-eye"></i>
+                                                                        </a>
+                                                                        {% endif %}
+                                                                        {% comment %} <form id="deleteForm_{{ document.id }}" action="{% url 'employee:delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                            {% csrf_token %}
+                                                        
+                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                <i class="fa fa-trash-o"></i>
+                                                                            </button>
+                                                                        </form> {% endcomment %}
+                                                                    </tr>
+                                                                   
+                                                                    {% endfor %}
+                                                                    {% else %}
+                                                                    <tr class="odd">
+                                                                    <td colspan="5">
+                                                                        <center>No data available</center>
+                                                                    </td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                   
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-2">
+                                                <div class="card-header ">
+                                                    <a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
+                                                        Other
+                                                    </a>
+                                                </div>
+                                                <div id="collapseThree" class="collapse" data-parent="#accordion">
+                                                <div class="card-body ">
+            
+                                                        <div class="table-scrollable">
+                                                            <table
+                                                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                id="">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>S.no</th>
+                                                                        <th>Document name</th>
+                                                                        <th>Expiry date</th>
+                                                                        <th>Status</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% if OtherDocuments %}
+                                                                    {% for document in OtherDocuments %}
+
+                                                                    <tr class="odd">
+                                                                        <td>{{forloop.counter}}</td>
+                                                                        <td>{{document.name}}</td>
+                                                                        <td>{% if document.expiry_date %}{{document.expiry_date}}{% endif %}</td>
+                                                                        <td>Pending</td>
+                                                                        <td>
+                                                                            {% if document.file %}
+                                                                        <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary btn-xs">
+                                                                            <i class="fa fa-eye"></i>
+                                                                        </a>
+                                                                        {% endif %}
+                                                                        {% comment %} <form id="deleteForm_{{ document.id }}" action="{% url 'employee:delete_employee_document' document.employee.id document.id %}" method="post" id="deleteForm">
+                                                                            {% csrf_token %}
+                                                        
+                                                                            <button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ document.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+                                                                                <i class="fa fa-trash-o"></i>
+                                                                            </button>
+                                                                        </form> {% endcomment %}
+                                                                    </tr>
+                                                                   
+                                                                    {% endfor %}
+                                                                    {% else %}
+                                                                    <tr class="odd">
+                                                                    <td colspan="5">
+                                                                        <center>No data available</center>
+                                                                    </td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            </div>
+
+                                        </div>
+
+                                      </div>  
+                                    <div class="row">
+                                        <div class="col-lg-12 mt-5 text-center">
+                                         <a href="{% url 'employee:employee_document' employee_id %}"
+                                                                            class="btn btn-primary btn-xs">
+                                                                            Edit</i>
+                                            </a> 
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+
+                            {% if request.resolver_match.url_name == 'company_employee_my_clients' %}
+
+                            <div class="tab-pane active">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="table-scrollable">
+                                                            <table
+                                                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                                                id="">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>S.no</th>
+                                                                        <th>Client name</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for assignment in client_assignments %}
+                                                                    {% for client in assignment.clients.all %}
+                                                                    <tr class="odd">
+                                                                        <td>{{ forloop.counter }}</td>
+                                                                        <td>{{client}}</td>
+                                                                        <td><a href="{% url 'company:company_employee_client_detail_view' client.id  %}"
+                                                                            class="btn btn-primary btn-xs">
+                                                                            View</i>
+                                                                        </a></td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                    {% endfor %}
+                                                                </tbody>
+                                             </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PROFILE CONTENT -->	
+    </div>
+</div>
+
+<!---delete confirm popup-->
+<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-alert">
+                <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                </div>
+                <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+            </div>
+            <div class="modal-body">
+                You won't be able to revert it!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="deleteConfirmed">Yes, delete it!</button>
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--pop up end-->
+
+{% block javascripts %}
+<script>
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        $('#deleteConfirmed').click(function () {
+            $('#deleteForm_' + document_id).submit();
+        });
+    }
+</script>
+
+
+
+{% endblock javascripts %}
+{% endblock %}

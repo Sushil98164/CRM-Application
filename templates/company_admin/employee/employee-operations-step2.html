@@ -1,0 +1,4556 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% block title %}
+{% load company_admin_tags %}
+{% if request.resolver_match.url_name == 'employee_add' %}
+Add Employee
+{% else %}
+Edit Employee
+{% endif %}
+{% endblock title %}
+
+
+{% block stylesheets %}
+<style>
+
+     /* Styles for non-editable features */
+.non-editable-feature {
+    position: relative;
+    cursor: not-allowed;
+}
+
+/* Style for disabled dropdown triggers */
+.dropdown-trigger.disabled {
+    pointer-events: none;
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #999;
+}
+
+/* Prevent dropdown menus from showing in non-editable features */
+.non-editable-feature .dropdown-menu-main,
+.dropdown-menu-main.disabled-dropdown {
+    display: none !important;
+}
+
+/* Style for disabled toggles and buttons */
+.disabled-toggle,
+button.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Reduce opacity of all elements in non-editable features for visual cue */
+.non-editable-feature .action-div {
+    opacity: 0.8;
+}
+
+/* Optional: Visual indicator for the non-editable area */
+.non-editable-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(240, 240, 240, 0.1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+
+
+    .articals {
+
+
+        display: none;
+    }
+
+    .articals.on {
+        display: block;
+        transition: .2s;
+        animation: scale-up .2s forwards;
+    }
+
+    .customize--height {
+        min-height: 58vh !important;
+    }
+
+    @keyframes scale-up {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* create template css start */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+    .padding-10 {
+        padding: 15px;
+
+    }
+
+    .gap-10 {
+        gap: 10px;
+    }
+
+ 
+
+    .input-type-div {
+        background-color: #F4F4F4;
+        height: 50px;
+        width: 100%;
+        padding: 10px;
+        text-transform: capitalize;
+        border: 1px solid #999999;
+        border-radius: 5px;
+
+    }
+
+    .input-type-div>input {
+        border: none;
+        outline: none;
+        background-color: transparent;
+        background: transparent;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 26.63px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+    .input-type-div>input:focus {
+        border: none;
+        outline: none;
+    }
+
+    .max-500 {
+        max-width: 500px;
+    }
+
+   
+
+    .on-off-section {
+        width: 65px;
+        height: 35px;
+        display: flex;
+        position: relative;
+        background: red;
+    }
+
+    .on-off-section:focus-within .cross-svg {
+        right: 0;
+        transition: .2s;
+    }
+
+    .cross-svg {
+
+        top: -2px;
+        transition: .2s;
+        cursor: pointer;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 83px;
+        height: 34px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #44CB23;
+        /* Initial background for ON */
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "ON";
+        /* Initial state is ON */
+        height: 26px;
+        width: 26px;
+        left: 8px;
+        bottom: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-family: Inter, sans-serif;
+        font-weight: 700;
+        color: white;
+        transition: .4s;
+        z-index: 20;
+    }
+
+    input:checked+.slider:before {
+        content: "OFF";
+        /* Changes to OFF when checked */
+        transform: translateX(30px);
+    }
+
+    input:checked+.slider {
+        background-color: #ff0000;
+        /* Changes background for OFF */
+        left: 6px;
+
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px #ff0000;
+    }
+
+    .slider.round {
+        border-radius: 5px;
+    }
+
+    .slider.round::after {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 34px;
+        left: 42px;
+        background-size: cover;
+        transition: .4s;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzgiIGhlaWdodD0iMzgiIHZpZXdCb3g9IjAgMCAzOCAzOCIgcG9zaXRpb249InJlbGF0aXZlIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHg9IjAuNSIgeT0iMC41IiB3aWR0aD0iMzciIGhlaWdodD0iMzciIHJ4PSIzLjUiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIzNyIgaGVpZ2h0PSIzNyIgcng9IjMuNSIgc3Ryb2tlPSIjNDRDQjIzIi8+PHBhdGggZD0iTTEyIDIwTDE1LjUyNjQgMjIuODIxMUMxNi4zNTM3IDIzLjQ4MzAgMTcuNTUzNiAyMy4zODQ4IDE4LjI2MjQgMjIuNTk3M0wyNiAxNCIgc3Ryb2tlPSIjNDRDQjIzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==');
+        /* Initial ON image */
+        scale: 1.1;
+
+    }
+
+    input:checked+.slider.round::after {
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzgiIGhlaWdodD0iMzgiIHZpZXdCb3g9IjAgMCAzOCAzOCIgcG9zaXRpb249InJlbGF0aXZlIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHg9IjAuNSIgeT0iMC41IiB3aWR0aD0iMzciIGhlaWdodD0iMzciIHJ4PSIzLjUiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIzNyIgaGVpZ2h0PSIzNyIgcng9IjMuNSIgc3Ryb2tlPSIjRDIyMjIyIi8+PHBhdGggZD0iTTI1LjUgMTIuNTAwMUwxMi41IDI1LjUwMDFNIDI1LjUgMjUuNUwxMi41IDEyLjUiIHN0cm9rZT0iI0QyMjIyMiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==');
+        /* OFF image when checked */
+        transform: translateX(-42px);
+        scale: 1.1;
+
+    }
+
+    .gap-40 {
+        gap: 40px;
+    }
+
+    #clone-templateid {
+        display: none;
+        background: #D9D9D9;
+
+
+
+    }
+
+
+    .drop-down-rol-base {
+        font-size: 20px;
+        font-family: inter;
+        font-weight: 500;
+        line-height: 24px;
+        display: flex;
+        gap: 24px;
+        height: 50px;
+
+    }
+
+    .input-of-rolebase {
+        border: none;
+        outline: none;
+        background-color: #FAFAFA;
+        text-transform: capitalize;
+        color: #B8B6B6;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    }
+
+    .input-of-rolebase::placeholder {
+        font-family: Inter;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24.2px;
+        text-align: left;
+        color: #B8B6B6;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        text-transform: capitalize;
+
+    }
+
+    .input-of-rolebase:focus {
+        outline: none;
+        border: none;
+    }
+
+    .input-upper-div {
+        background-color: #fff;
+        border: 1px solid #DEE2E6;
+        border-radius: 6px;
+
+    }
+   
+    .input-upper-div {
+    display: flex;
+    flex-direction: column;
+     /* or set dynamically */
+}
+
+.searched-items {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+  
+
+    .search-button-template {
+        background-color: transparent;
+    }
+
+    .searched-info {
+        padding: 10px 0px 19px 0px;
+    }
+
+    .searched-info :where(.navlink.active) {}
+
+    .nav-tabs .nav-item.show .nav-link,
+    .nav-tabs .nav-link.active {
+        background: #F1F8FA !important;
+        border-left: 4px solid #188AE2 !important;
+        border-color: #188AE2 !important;
+        border-top: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        border-radius: 4px;
+    }
+
+  
+
+    .border-0 {
+        border: none !important;
+    }
+
+    .accordion .card-header:after {
+        content: "";
+    }
+
+    h4 {
+        margin: 0 !important;
+    }
+
+    .mb-66 {
+        margin-bottom: 66px;
+    }
+
+    .ps-0 {
+        padding-left: 0 !important;
+    }
+
+    .role-base-accodian {
+        padding: 5px;
+     
+        background: rgba(217, 217, 217, 0.08);
+        padding-right: 10px;
+    }
+
+    .main-card-content:focus {
+        box-shadow: none !important;
+        overflow: auto !important;
+    }
+
+    .accordion>.card {
+        overflow: visible !important;
+    }
+
+   
+
+    .bshadow-none {
+        box-shadow: none !important;
+    }
+
+    .gap-3 {
+        gap: 18px;
+    }
+   
+    .collaps-phera {
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        opacity: 0.7;
+        box-sizing: border-box;
+
+    }
+
+    .transsperant {
+        background-color: transparent;
+    }
+
+    .transsperant:focus {
+        border: none !important;
+        outline: none !important;
+    }
+
+    
+
+    .accodians-inner-dropdowns {
+        position: absolute;
+        transform: translate3d(-185px, 41px, 0px) !important;
+        top: -4px !important;
+        left: 0px;
+        will-change: transform;
+        transition: .1s;
+    }
+
+    .accodian-inner-dropdowns:hover {
+        background: #F1F8FA !important;
+
+    }
+
+    .accodians-inner-dropdowns-toggel {
+        border: none;
+        background-color: transparent;
+    }
+
+    .accodians-inner-dropdowns-toggel:focus {
+        border: none !important;
+        outline: none !important;
+
+    }
+
+    .first-drop-downotem-icon::after {
+        content: "";
+        height: 20px;
+        width: 20px;
+        background-color: white;
+        position: absolute;
+        border-radius: 0px 0px 20px;
+        z-index: -1;
+        rotate: 45deg;
+        top: -11px;
+        right: 22px;
+        box-shadow: -1px -1px 1px #0000002b;
+
+
+
+    }
+
+    .template-submint-button {
+        font-family: Inter;
+        font-size: 23px;
+        font-weight: 500;
+        line-height: 27.84px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+        padding: 10px 41px 10px 41px;
+
+        opacity: 0px;
+        background: #D9D9D9;
+        border: none !important;
+
+
+    }
+
+    .template-submint-button:focus {
+        border: none !important;
+    }
+
+    .template-cancle-button {
+        font-family: Inter;
+        font-size: 23px;
+        font-weight: 500;
+        line-height: 27.84px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        background: #FFFFFF;
+        border: 3px solid #D9D9D9
+    }
+
+   
+
+    .our-main-switch {
+        width: 75px;
+    }
+
+    #clone-templateid {
+        background: #FBFBFB;
+        border: 1px solid #D9D9D9;
+        border-radius: 10px;
+    }
+
+    .accodians-inner-dropdowns .dropdown-item {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-family: Poppins;
+        font-size: 21px;
+        font-weight: 400;
+        line-height: 31.5px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+    .gap-2 {
+        gap: 16px;
+    }
+
+    .naimationdropdownicon {
+        height: 8px;
+        width: 20px;
+    }
+
+ 
+   
+
+    
+    {% comment %} .accodian-inner-dropdowns {
+        font-family: Inter;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 19.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+
+    } {% endcomment %}
+
+    .accodians-inner-dropdowns-toggel {
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 16.8px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+    .accodians-inner-dropdowns-toggel svg {
+        height: 6px;
+        width: 12px;
+    }
+
+    .manager-admin-emp a:first-child {
+        padding: 21px 21px 21px 30px;
+        background: #F1F8FA;
+        border-left: 4px solid #188AE2
+    }
+
+    .manager-admin-emp a {
+        font-family: Inter;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 21.78px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        padding: 21px 21px 21px 30px;
+        margin-top: 0 !important;
+        color: #000000;
+        margin-bottom: 0 !important;
+        background-color: white;
+
+
+    }
+
+    .gap-1 {
+        gap: 10px;
+    }
+
+    .normal-user a {
+        padding: 21px 21px 21px 30px;
+        background-color: white;
+        font-family: Inter;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 21.78px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        color: black;
+
+    }
+
+    .normal-user a:last-child {
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .tem-employ {
+        font-family: Inter;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 24.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        padding-left: 10px;
+
+    }
+
+    .collapse-overlap {
+        position: absolute;
+        background-color: #fbfbfb;
+        z-index: 1050;
+        width: 100%;
+        border: 1px solid #D9D9D9;
+        left: 0;
+        top: 40px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-top: 0 !important;
+
+    }
+
+    .bolder-tittle.bolder-tittle {
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 21.6px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        text-transform:capitalize;
+
+    }
+
+    .select-form-admin {
+        border-radius: 10px;
+        border: 1px solid #D9D9D9;
+        height: 40px;
+
+    }
+
+    /* custom selct */
+
+
+    .custom_dropdown_wrapper {
+        width: 100%;
+
+        position: relative;
+        font-family: Inter, sans-serif;
+        margin: 10px;
+    }
+
+    .custom_dropdown_trigger {
+        /* width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #D9D9D9;
+        border-radius: 10px;
+        background: #FBFBFB;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: Inter;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 24.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none; */
+        background: #fff;
+    border: 1px solid #000;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    color: #000;
+font-family: Inter;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+text-transform: capitalize;
+    
+
+    }
+
+    .custom_dropdown_trigger::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #666;
+        border-bottom: 2px solid #666;
+        transform: rotate(45deg);
+        transition: transform 0.3s ease;
+    }
+
+    .custom_dropdown_trigger.active::after {
+        transform: rotate(-135deg);
+    }
+
+    .custom_dropdown_content {
+        position: relative;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #FBFBFB;
+        border: 1px solid #D9D9D9 !important;
+        border-top: none !important;
+        border-radius: 0px 0px 10px 10px;
+        padding-top: 20px;
+        margin-top: 0px;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        
+    }
+
+    .custom_dropdown_content.custom_dropdown_show {
+        display: block;
+    }
+
+    .custom_dropdown_input_wrapper {
+        padding: 8px;
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #DEE2E6;
+        border-radius: 10px;
+
+    }
+
+    .custom_dropdown_input {
+        width: 100%;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        background: transparent;
+        box-sizing: border-box;
+    }
+
+    .custom_dropdown_input:focus {
+        outline: none;
+        border-color: #188AE2;
+    }
+
+    .custom_dropdown_options {
+
+        padding: 10px;
+        height: 144px;
+        overflow: scroll;
+        position: relative;
+    }
+
+    .custom_dropdown_group {
+        padding: 10px 15px;
+        font-weight: 600;
+        background-color: #F8F9FA;
+        color: #28303F;
+        font-size: 16px;
+    }
+
+    .custom_dropdown_option {
+        padding: 10px;
+        cursor: pointer;
+        background: white;
+        transition: background-color 0.2s ease;
+        margin-top: 10px;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21.78px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        flex-direction: column;
+        gap: 5px;
+        text-transform: capitalize;
+
+    }
+    p.user-mail {
+    color: #444;
+    font-family: Poppins;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+    .custom_dropdown_option:hover {
+        background-color: #F1F8FA;
+    }
+
+    .custom_dropdown_trigger.active {
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom: none;
+
+    }
+
+    .already-exsist-template {
+        padding: 55px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+    }
+
+    .already-exsist-template-inner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 33px;
+    }
+
+    .new-clint-template-modal .modal-dialog {
+        max-width: 550px !important;
+    }
+
+    .allready-exist-heading {
+        font-family: Inter;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 33.89px;
+        text-align: center;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-bottom: 0;
+
+    }
+
+    .allready-exist-pera {
+        font-family: Inter;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 19.36px;
+        text-align: center;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-top: 16px;
+        margin-bottom: 0;
+    }
+
+    .close-modal-button {
+        border: 3px solid #D9D9D9;
+        background: #BEBDBD;
+        font-family: Inter;
+        font-size: 23px;
+        font-weight: 500;
+        line-height: 27.84px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-bottom: 0;
+        margin-top: 27px;
+        transition: .2s;
+
+    }
+
+    .close-modal-button:focus {
+        border: 3px solid #D9D9D9 !important;
+        outline: none !important;
+        scale: 1.1;
+
+    }
+
+    /* here end */
+
+    .radio-button-color-change {
+        accent-color: #443333;
+    }
+
+    .radio-button-color-change:hover {
+        cursor: pointer;
+    }
+
+    .radio-lable {
+        font-family: Inter;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 24.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+    .radio-lable:hover {
+        cursor: pointer;
+    }
+
+    .howtoassin-permission {
+        font-family: Inter;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 33.89px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+    .select-the-role {
+        font-family: Inter;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 33.89px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .employee-accordion {
+        width: 100%;
+        margin: 20px auto;
+        /* border: 1px solid #ddd; */
+        border-radius: 5px;
+
+    }
+
+    .accordion-item {
+    border: 1px solid #BABABA;
+}
+
+    .accordion-button {
+        width: 100%;
+        background: #F3F4F6;
+        border: none;
+        padding: 14px;
+        font-size: 1.1rem;
+        text-align: left;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        border: 1px solid #DEE2E6;
+        position: relative;
+    }
+    .accordion-button p{
+        color: rgb(0 0 0 / 70%);
+        font-family: Poppins;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        margin: 0;  
+        position: absolute;
+        right: 20px;
+    }
+    .accordion-item:not(:first-child){
+       margin-top: 15px;
+    }
+
+    .employee-add-rotate-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='10' viewBox='0 0 21 10' fill='none'%3E%3Cpath d='M1.75 1.55469L10.5 8.55469L19.25 1.55469' stroke='%2328303F' stroke-width='2.625' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right center;
+        background-size: contain;
+        height: 14px;
+        width: 14px;
+        rotate: -90deg;
+    }
+
+
+    .accordion-button:focus {
+        border: 1px solid #BABABA;
+        outline: none;
+    }
+
+    .accordion-button:hover {
+        background: #e2e2e2;
+    }
+
+    .accordion-button span {
+        transition: transform 0.3s ease;
+
+    }
+
+    /* Rotate icon when active */
+    .accordion-button.active span {
+        transform: rotate(90deg);
+    }
+
+    .accordion-content {
+        opacity: 0;
+        visibility: hidden;
+        height: 0;
+        display: none;
+        padding: 30px 29px 49px 32px;
+        /* Keep padding, but avoid collapsing */
+        background: #fff;
+        transition: opacity 0.3s ease-out, visibility 0.1s ease-out, height 0.1s ease-out, padding 0.3s ease-out;
+    }
+
+    .accordion-content.show {
+        opacity: 1;
+        display: block;
+        visibility: visible;
+        height: auto;
+        transition: .2s;
+        padding: 30px 29px 30px 32px;
+        /* Proper padding when open */
+    }
+
+    ----------------------------------------------------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------------------------- .custom-accordion {
+        width: 100%;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .custom-accordion-item {
+        border-bottom: 1px solid #ddd;
+        margin-top:15px;
+    }
+
+    .custom-accordion-btn {
+        width: 100%;
+        background: #f7f7f7;
+        border: none;
+        padding: 14px;
+        font-size: 1.1rem;
+        text-align: left;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        border: 1px solid #BABABA;
+    }
+
+    .custom-rotate-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='10' viewBox='0 0 21 10' fill='none'%3E%3Cpath d='M1.75 1.55469L10.5 8.55469L19.25 1.55469' stroke='%2328303F' stroke-width='2.625' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right center;
+        background-size: contain;
+        height: 14px;
+        width: 14px;
+        rotate: -90deg;
+        transition: transform 0.3s ease;
+    }
+
+    .custom-accordion-btn:focus {
+        border: 1px solid #BABABA;
+        outline: none;
+    }
+
+    .custom-accordion-btn:hover {
+        background: #e2e2e2;
+    }
+
+    .custom-accordion-btn span {
+        transition: transform 0.3s ease;
+    }
+
+    /* Rotate icon when active */
+    .custom-accordion-btn.custom-active .custom-rotate-icon {
+        transform: rotate(90deg);
+    }
+
+    .custom-accordion-content {
+        opacity: 0;
+        visibility: hidden;
+        display: none;
+        height: 0;
+        padding: 0 15px;
+        background: #fff;
+        transition: opacity 0.3s ease-out, visibility 0.1s ease-out, height 0.1s ease-out, padding 0.3s ease-out;
+    }
+
+    .custom-accordion-content.custom-show {
+        opacity: 1;
+        display: block;
+        visibility: visible;
+        height: auto;
+        padding: 30px 29px 49px 32px;
+    }
+    .input-innerr-div {
+    background-color: #FAFAFA;
+    border-radius: 6px;
+    border: 1px solid #DEE2E6;
+}
+
+
+    ------------------------------------------------------------------------------------------------------------------------------- -----------------------------------------------------------------------------------------------------------------------------
+    /* custom select */
+
+    .dropdown-container {
+        margin-top: 15px;
+        position: relative;
+
+        font-family: Arial, sans-serif;
+    }
+
+    .employee-dropdown-trigger {
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid black;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        transition: all 0.2s ease;
+    }
+
+    .employee-dropdown-trigger:hover {
+        border-color: black;
+    }
+
+    .employee-dropdown-trigger.active {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .dropdown-arrow {
+       
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="21" height="11" viewBox="0 0 21 11" fill="none"><path d="M1.75 2.05469L10.5 9.05469L19.25 2.05469" stroke="%2328303F" stroke-width="2.625" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+        width: 10px;
+        height: 4px;
+        display: flex;
+        background-size: cover;
+        padding: 3px;
+        background-size: contain;
+        transition: transform 0.2s ease;
+        background-repeat: no-repeat;
+    }
+
+    .employee-dropdown-trigger.active .dropdown-arrow {
+        transform: rotate(-135deg);
+        margin-top: 4px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        width: 100%;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 1000;
+
+        overflow-y: auto;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+    }
+{% comment %} 
+    .dropdown-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background:white;
+        
+    } {% endcomment %}
+
+    .dropdown-item:hover {
+        background: #f5f5f5;
+    }
+
+    .dropdown-item.selected {
+        background: #e3f2fd;
+        color: #1976d2;
+        font-weight: 500;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Scrollbar styling */
+    .dropdown-menu::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+
+  
+
+    .drop-down-menue-inner {
+        position: relative;
+        z-index: 2222;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        background-color: white;
+        border-radius: 5px;
+        padding-top: 10px;
+        min-width: 195px;
+
+    }
+
+    .dropdown-item:hover {
+        background: #F1F8FA !important;
+        cursor: pointer;
+    }
+
+    .drop-down-menue-inner::after {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 19px;
+        background-color: rgb(255, 255, 255);
+        top: -11px;
+        rotate: 45deg;
+        z-index: -1;
+        left: 66%;
+        border: 1px solid #D9D9D9;
+        border-right: none;
+        border-bottom: none;
+    }
+    /* .template-active {
+        border-left: 4px solid #188AE2;
+        background: #F1F8FA;
+        border-radius: 5px;
+    } */
+    .searched-items {
+    height: 361px;
+    overflow-y: scroll;
+}
+    .my-0{
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .gap-55{
+        gap: 27px;
+    }
+   
+    
+    .pl-66{
+        padding-left: 42px;
+    }
+
+    {% comment %} extra-selct {% endcomment %}
+
+    .extra-container-class.extra-container-class {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .extra-trigger-class.extra-trigger-class {
+        background: #fff;
+        border: 1px solid #000;
+        padding: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 5px;
+        color: #000;
+font-family: Inter;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+    }
+    
+    .extra-arrow-class.extra-arrow-class {
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid #333;
+        border-bottom: 2px solid #333;
+        transform: rotate(45deg);
+        transition: transform 0.3s;
+    }
+    
+    .extra-menu-class.extra-menu-class {
+        display: none;
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        width: 100%;
+        z-index: 10;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .extra-item-class.extra-item-class {
+        padding: 10px;
+        display: block;
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+    }
+    
+    .extra-item-class:hover.extra-item-class:hover {
+        background: #f0f0f0;
+    }
+    
+    /* Show dropdown on trigger click */
+    .extra-container-class.active .extra-menu-class {
+        display: block !important;
+    }
+    
+    .extra-container-class.active .extra-arrow-class {
+        transform: rotate(-135deg);
+    }
+    .gap-17{
+        gap:17px;
+    }
+    .select-template-user-select{
+        color: #000;
+font-family: Inter;
+font-size: 16px !important;
+font-style: normal;
+font-weight: 400;
+line-height: normal;    
+    }
+    .dropdown-container{
+        cursor:pointer;
+    }
+    .customize-dropdown-triggerrs{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .dropdown-text{
+        color: #263854;
+        text-align: right;
+        
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 120%;
+    }
+    .dropdown-secnd-item-page.dropdown-secnd-item-page{
+        background-color: white;
+        min-width:195px;
+        color: #000;
+font-family: Poppins;
+{% comment %} font-size: 21px !important; {% endcomment %}
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+border-radius: 5px;
+    }
+
+.role-base-main-accodian[aria-expanded="true"] .naimationdropdownicon {
+    transform: rotate(180deg);
+    transition: .2s;
+}
+
+.role-base-main-accodian[aria-expanded="false"] .naimationdropdownicon {
+    transform: rotate(0deg);
+    transition: .2s;    
+}
+
+
+
+
+{% comment %} //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////media-quary////////////////////////////////////////////////////// {% endcomment %}
+
+@media (min-width: 769px){
+    .created-templated-name {
+       
+        font-size: 20px !important;
+        font-weight: 600;
+        line-height: normal;
+        text-transform: capitalize;
+    }
+    .clone-template {
+        font-size: 20px !important;
+        font-weight: 600;
+        line-height: 33px;
+        margin: 0 !important;
+        width:83%;
+    }
+    .customfont-tital.customfont-tital {
+        font-weight: 400;
+        text-align: left;
+        font-size:16px !important;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        color: #000000 !important;
+        padding: 19px 19px 19px 21px;
+        border: none;
+        transition: .1s;
+        opacity: 0.7;
+    }
+    .right-side-accodian-heading {
+        font-weight: 600;
+        line-height: 33.89px;
+        text-align: left;
+        font-size: 16px !important;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+    .role-base-main-accodian{
+        padding: 30px 0px 30px 20px;
+    }
+    .our-main-switch{
+        margin: 36px 21px 0px 0px;
+    }
+    .accodin-header-right {
+        display: flex;
+        gap: 20px;
+        align-items: start;
+    }
+    .collaps-phera {
+       
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 24px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+
+
+    }
+    .create-data {
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 19.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-top:0 !important;
+        margin-bottom:0 !important;
+
+
+    }
+    .create-data strong{
+        font-weight: 600 !important;
+    }
+    .card-body {
+        padding-top: 31px;
+        padding-bottom: 31px;
+    }
+    .dropdown-item {
+        background-color: white;
+        min-width:195px;
+        color: #000;
+font-family: Poppins;
+font-size: 14px !important;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+border-radius: 5px;
+    }
+    .naimationdropdownicon{
+        margin-top:13px;
+    }
+    .w-90 {
+        width: 85% !important;
+    }
+    .accodian-inner-dropdowns  {
+
+        font-weight: 400;
+        line-height: 19.2px !important;
+        font-size: 14px !important;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+    }
+    .dropdown-text {
+        margin-right: 5px;
+        color: #263854;
+text-align: right;
+
+font-size: 14px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 16.8px */
+
+    }
+    .dropdown-menu-main.dropdown-menu-main {
+        border-radius: 7px;
+        background: #D9D9D9;
+        right: -24px !important;
+        top: 35px !important;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        border: 1px solid #D9D9D9 !important;
+        box-shadow: none !important;
+        position: absolute;
+
+    }
+    .gap-21 {
+        gap: 21px;
+    }
+ 
+}
+
+
+
+
+
+.card-box {
+    padding: 24px 10px;
+}
+@media (max-width: 768px) {
+    .created-templated-name {
+       
+        font-size: 20px !important;
+        font-weight: 600;
+        line-height: normal;
+        text-transform: capitalize;
+    }
+    .clone-template {
+        font-size: 14px !important;
+        font-weight: 600;
+        line-height: 33px;
+        margin: 0 !important;
+        width:83%;
+    }
+    .customfont-tital.customfont-tital {
+        font-weight: 400;
+        text-align: left;
+        font-size:16px !important;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        color: #000000 !important;
+        padding: 15px 5px;
+        border: none;
+        transition: .1s;
+        opacity: 0.7;
+    }
+    .right-side-accodian-heading {
+        font-weight: 600;
+        line-height: 33.89px;
+        text-align: left;
+        font-size: 20px !important;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+    .role-base-main-accodian{
+        padding:5px 0px 5px 0px;
+    }
+    .accodin-header-right {
+        display: flex;
+        gap: 5px;
+        align-items: start;
+        padding-right: 39px;
+    }
+    .our-main-switch{
+        margin: 5px 0px 0px 0px;
+    }
+    .collaps-phera {
+       
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 24px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+    .create-data {
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 19.2px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-top:0 !important;
+        margin-bottom:0 !important;
+
+
+    }
+    .bolder-tittle.bolder-tittle{
+        font-size:14px;
+    }
+    .accodian-inner-dropdowns{
+        font-size:14px !important;
+    }
+    .create-data strong{
+        font-weight: 600 !important;
+    }
+    .card-body {
+        padding-top: 11px;
+        padding-bottom: 11px;
+        padding-left:20px;
+        padding-right:10px;
+    }
+    .dropdown-item {
+        background-color: white;
+        min-width:195px;
+        color: #000;
+font-family: Poppins;
+font-size: 14px !important;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+border-radius: 5px;
+padding:5px 10px;
+white-space: normal !important;
+    }
+    .padding-10{
+        padding:8px;
+    }
+    .naimationdropdownicon{
+        margin-top:14px;
+        width:16px;
+        height:6px;
+    }
+    .pl-66{
+        padding-left:5px;
+    }
+    .gap-13{
+        gap:5px;
+    }
+    .our-main-switch{
+        position:absolute;
+        right:0;
+        top:0px;
+        scale:0.8;
+    }
+    .main-switch{
+        scale:.9;
+        margin-left:14px;
+    }
+    .dropdown-text {
+        margin-right: 5px;
+        color: #263854;
+text-align: right;
+
+font-size: 11px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 16.8px */
+
+    }
+    .dropdown-menu-main.dropdown-menu-main {
+        border-radius: 7px;
+        background: #D9D9D9;
+        right: -24px !important;
+        top: 25px !important;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        border: 1px solid #D9D9D9 !important;
+        box-shadow: none !important;
+        position: absolute;
+
+    }
+    .custom-accordion-content.custom-show{
+        padding:30px 9px 49px 9px;
+    }
+    .accordion-button p {
+    position: relative;
+    font-size: 12px;
+     right: 0px; 
+}
+.accordion-button {
+    font-size: 12px;
+    gap: 5px;
+    align-items: flex-start;
+    flex-direction: column;
+    
+}
+.input-upper-div {
+    height: 370px !important;
+}
+.action-div {
+    margin-top: 20px;
+}
+.accordion-content.show {
+    padding: 10px;
+}
+.right-side-accodian-heading {
+        font-weight: 600;
+        line-height: 33.89px;
+        text-align: left;
+        font-size: 14px !important;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+
+    }
+    .page-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+}
+@media (min-width: 768px) and (max-width: 1065px) {
+    .accordion-button {
+    font-size: 14px;
+    gap: 21px;
+    }
+    .accordion-button p {
+    font-size: 12px;
+}
+
+}
+
+</style>
+{% endblock stylesheets %}
+{% block content %}
+{% load widget_tweaks %}
+<!-- start widget -->
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Add employee</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li>
+                <i class="fa fa-home"></i>&nbsp;<a class="parent-item"
+                    href="{% url 'company:employee_list' %}">Employee</a>&nbsp;
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">Add&nbsp;<i class="fa fa-angle-right"></i></li>
+            <li class="active">Permission sets</li>
+
+
+
+        </ol>
+    </div>
+</div>
+
+<div class="btn-group">
+    <a href="#" id="backButton"
+        class="btn btn-info mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="7" height="13" viewBox="0 0 7 13" fill="none"  style="margin-right: 10px;" >
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.21849 1.10334C6.54194 1.3621 6.59438 1.83407 6.33562 2.15751L2.71044 6.68899L6.33562 11.2205C6.59438 11.5439 6.54194 12.0159 6.21849 12.2746C5.89505 12.5334 5.42308 12.481 5.16432 12.1575L1.16432 7.15751C0.94519 6.8836 0.94519 6.49439 1.16432 6.22047L5.16432 1.22047C5.42308 0.897025 5.89505 0.844584 6.21849 1.10334Z" fill="white" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back 
+    </a> 
+</div>
+<div class="card-box">
+    <div class="card-head">
+        <header>Permission sets</header>
+    </div>
+    <div class="employee-accordion">
+        <div class="accordion-item">
+            <button class="accordion-button active " data-target="section1">
+              
+                <span class="employee-add-rotate-icon">
+                </span>
+                How do you want to assign the permissions?
+                
+               <p>
+                {% if user_permission %} {{ user_permission }}
+                {% elif existing_user_permission %} {{ existing_user_permission }}
+                {% endif %}</p>
+            
+            </button>
+            <div id="section1" class="accordion-content {% if request.resolver_match.url_name != 'employee_scratch_template' and request.resolver_match.url_name != 'employee_existing_template' and request.resolver_match.url_name != 'saved_template_assignment' %} show {% endif %}">
+                <div class="d-flex flex-column gap-17">
+                    <h4 class="my-0 select-template-user-select">How do you want to assign the permissions?</h4>
+                <div class="outer-dropdown-container col-12 col-lg-4 px-0 extra-container-class">
+                    <div class="employee-dropdown-trigger extra-trigger-class">
+                        <span class="outer-dropdown-text mr-2 extra-text-class">{% if user_permission %} {{user_permission}} {% elif existing_user_permission %}{{existing_user_permission}}{% else %}Select an option{% endif %}</span>
+                        <span class="outer-dropdown-arrow extra-arrow-class"></span>
+                    </div>
+                    <div class="outer-dropdown-menu extra-menu-class">
+                        {% if not user_permission %}
+                        <a href="{% url 'company:employee_scratch_template' %}"  class="dropdown-item extra-item-class curren-tab" data-value="1">Start from scratch</a>
+                        {% endif %}
+                        {% if not existing_user_permission %}
+                        <a href="{% url 'company:employee_existing_template' %}" class="dropdown-item extra-item-class" data-value="1">Choose a role based or permission set</a>
+                        {% endif %}
+                    </div>   
+                </div>
+                </div> 
+            </div>   
+        </div>
+        {% if request.resolver_match.url_name == 'employee_scratch_template'  %}
+        <div class="accordion-item">
+            <div class="feature-content-tabs">  
+                <div class="custom-accordion">
+                    {% comment %} <div class="custom-accordion-item"> {% endcomment %}
+                        {% comment %} <button class="custom-accordion-btn custom-active" data-target="customsection-first"> {% endcomment %}
+                        <button class="accordion-button active" data-target="customsection-first">
+                            <span class="custom-rotate-icon"></span> Start from scratch
+                        </button>
+                        
+                        {% comment %} <div id="customsection-first" class="custom-accordion-content custom-show"> {% endcomment %}
+                        <div id="customsection-first" class="accordion-content show">
+                            {% include "company_admin/employee/feature-design-component.html" %}
+                        </div>
+                    {% comment %} </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if request.resolver_match.url_name == 'employee_existing_template' or request.resolver_match.url_name == 'saved_template_assignment' %}
+        <div class="accordion-item">
+            <button class="accordion-button active" data-target="section2">
+                    <span class="employee-add-rotate-icon">
+
+                    </span>
+                    Choose a permission set
+                <p style='text-transform:capitalize;'>{% if used_template_name %} {{ used_template_name }}{% endif %}</p>
+
+            </button>
+            <div id="section2" class="accordion-content {% if request.resolver_match.url_name != 'employee_scratch_template' and request.resolver_match.url_name != 'saved_template_assignment' %} show {% endif %}">
+                <div class="d-flex flex-column gap-17">
+                    <h4 class="my-0 select-template-user-select">Select Permission set/ User</h4>
+                   <!---filter-->
+                    <div class="custom_dropdown_wrapper m-0 col-lg-4 px-0">
+                        <input type="hidden" name="selected_option" id="selected_option_input" value="{{ selected_option }}">
+                    
+                        {% if used_template_name %}
+                        <div class="custom_dropdown_trigger template-active">{{used_template_name}}</div>
+                        {% else %}
+                        <div class="custom_dropdown_trigger">Select Permission set/user</div>
+                        {% endif %}
+                        <div class="custom_dropdown_content ">
+                            <form class="custom_dropdown_input_wrapper d-flex ">
+                                <input type="text" class="custom_dropdown_input"
+                                    placeholder="Type to search...">
+                                <button type="submit" class="ms-auto border-0 search-button-template">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="none">
+                                        <path d="M23.45 23.45L28 28M26.7 14.35C26.7 7.52928 21.1707 2 14.35 2C7.52928 2 2 7.52928 2 14.35C2 21.1707 7.52928 26.7 14.35 26.7C21.1707 26.7 26.7 21.1707 26.7 14.35Z" stroke="#28303F" stroke-width="2.4375" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                </button>
+                            </form>
+                            
+                                {% if simple_templates %}
+                                <div class="custom_dropdown_group">Permission sets</div>
+                                <div class="custom_dropdown_options">
+                                {% for template in simple_templates %}
+                                <div class="custom_dropdown_option mt-0 {% if used_template_name == template.group.name|split_string %} template-active{% endif %}" data-value="{{ template.group.id }}">
+                                    {{ template.group.name|split_string }}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% if user_templates %}
+                            </div>
+                           
+                                <div class="custom_dropdown_group">Users</div>
+                                <div class="custom_dropdown_options">
+                                <div class="ustom_dropdown_options" >
+                                {% for user_template in user_templates %}
+                                                <div class="custom_dropdown_option{% if used_template_name == user_template.template.group.name|split_string %} template-active{% endif %}" 
+                                                        data-value="{{ user_template.template.group.id }}" 
+                                                        data-type="user">
+                                                        
+                                                    {{ user_template.template.group.name|split_string }}
+                                            
+                                                    {% if user_template.emails %}
+                                                        <p class="user-mail m-0">
+                                                            {{ user_template.emails|join:", " }}
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--filter_end-->
+                </div>
+            </div>
+        </div>
+        {% if request.resolver_match.url_name == 'employee_scratch_template' or  request.resolver_match.url_name == 'saved_template_assignment' %}
+        <div class="accordion-item">
+            <div class="feature-content-tabs ">  
+                <div class="custom-accordion ">
+                    {% comment %} <div class="custom-accordion-item m-0"> {% endcomment %}
+                        <button class="accordion-button active" data-target="customsection-second">
+                            <span class="custom-rotate-icon"></span>{% if  request.resolver_match.url_name == 'saved_template_assignment' %} View Permissions {% else %} Start from scratch{% endif %}
+                        </button>    
+                        <div id="customsection-second" class="accordion-content show">
+                            {% include "company_admin/employee/feature-design-component.html" %}
+                        </div>
+                    {% comment %} </div> {% endcomment %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="modal new-clint-template-modal fade " id="noFeatureModal" tabindex="-1" role="dialog"
+                aria-labelledby="noFeatureModalLabel" aria-hidden="true">
+                <div class="modal-dialog my-0 d-flex align-items-center justify-content-center h-100"
+                    role="document">
+                    <div class="modal-content">
+                        <div class="already-exsist-template">
+                            <div class="already-exsist-template-inner"><img
+                                    src="{% static 'assets/img/allready-exisist.svg' %}" alt="">
+                                <h3 class="allready-exist-heading template-heading mt-0" id='modalHeader'></h3>
+                            </div>
+                            <p class="allready-exist-pera template-paragraph" id='modalPara'>
+                            </p>
+                            <button class="close-modal-button"  data-dismiss="modal">Cancel</button>
+
+                        </div>
+
+                    </div>
+                </div>
+
+{% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const backButton = document.getElementById("backButton");
+        if (backButton) {
+            backButton.addEventListener("click", function(event) {
+                event.preventDefault();
+                const url = new URL('employee/add/', window.location.origin);  
+                url.searchParams.set("back", "true");  
+                window.location.href = url.toString();
+            });
+        }
+    });
+</script>
+    
+<!--Fetching and manupulating permission selection-->
+
+<script>
+    class FeatureDataHandler {
+        
+        constructor() {   
+            
+            this.defaultFeatureData = {};
+            this.finalFeatureData = {};
+            this.permissionSets = {}
+            this.form = document.getElementById("template_form");
+            //this.modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+            this.modalMessage = document.querySelector('.allready-exist-pera');
+            this.modalHeading = document.querySelector('.allready-exist-heading');
+            //this.existingTemplates = JSON.parse('{{ company_templates_data|safe }}');
+
+            // Load permission sets
+            this.loadPermissionSets();
+            this.clientProfileActionToggle();
+            this.departmentActionToggle();
+            this.progressnotesActionToggle();
+            this.employeeActionToggle();
+            this.termReadActionToggle();
+            this.termUpdateActionToggle();
+            this.privacyReadActionToggle();
+            this.privacyUpdateActionToggle();
+            this.userPermissionUpdateActionToggle();
+            this.userPermissionUpdateActionDisable();
+
+
+            // First initialize the data
+            this.initializeDefaultFeatureData();
+            // Then initialize dropdowns
+            this.initializeDropdowns();
+            this.attachEventListeners();
+
+            this.handleTemplateNameChange();
+            this.updateHiddenInput();
+
+            
+        
+        }
+        
+         loadPermissionSets() {
+            
+            document.querySelectorAll(".permission_sets").forEach((input, index) => {
+                try {
+                    const formattedValue = input.value.replace(/'/g, '"');
+                    const parsedData = JSON.parse(formattedValue);
+                    this.permissionSets[index] = parsedData;
+                } catch (error) {
+                    console.error("Error parsing permission set data:", error);
+                    console.error("Invalid JSON input:", input.value);
+                }
+            });
+        
+            console.log("Loaded Permission Sets:", this.permissionSets);
+        }
+        
+
+        initializeDropdowns() {
+            
+            document.querySelectorAll('.dropdown-container').forEach(container => {
+                const trigger = container.querySelector('.dropdown-trigger');
+                const menu = container.querySelector('.dropdown-menu-main');
+                const text = container.querySelector('.dropdown-text');
+                const arrow = container.querySelector('.dropdown-arrow'); 
+                const selectedItem = container.querySelector('[data-selected="true"]');
+                if (selectedItem) {
+                    text.textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = menu.style.display === 'block';
+
+                    // Close all dropdowns before opening a new one
+                    document.querySelectorAll('.dropdown-menu-main').forEach(m => m.style.display = 'none');
+                    document.querySelectorAll('.dropdown-arrow').forEach(a => a.style.transform = 'rotate(0deg)');
+
+                    menu.style.display = isOpen ? 'none' : 'block';
+                    arrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                    arrow.style.transition = 'transform 0.2s ease';
+                });
+
+                container.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const actionValue = trigger.getAttribute('value');
+                        const dataValue = item.getAttribute('data-value');
+                        const parentContainer = item.closest('.main-card-content');
+                        const featureKeyInput = parentContainer.querySelector('.feature_name');
+                        const feature_key = featureKeyInput ? featureKeyInput.value : null;
+                        if (!feature_key) {
+                            console.error("Feature key not found for dropdown item.");
+                            return;
+                        }
+                        
+                        console.log(`🔹 Feature Key: ${feature_key}, Action: ${actionValue}, Data Value: ${dataValue}`);
+                        
+                        //###################################################################################################################                  
+                        //check current recieved action
+
+
+                        if (actionValue === 'create') {
+                            
+                            //verify action and data value with permission set
+                        
+                            const existsInPermissions = Object.values(this.permissionSets).some(permissions =>
+                            permissions[actionValue]?.[dataValue] &&
+                                Object.keys(permissions[actionValue][dataValue]).some(key => 
+                                    Array.isArray(permissions[actionValue][dataValue][key]) &&
+                                    permissions[actionValue][dataValue][key].length > 0
+                                )
+                            );
+                            console.log(`Data Value (${dataValue}) Exists with Permissions:`, existsInPermissions);
+                            if (existsInPermissions) {
+                                //updating current slected value in dropdown
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const createSelectedAccessLevel = document.querySelector(`.${feature_key}-create-selected-access-level`);
+                                if (createSelectedAccessLevel) {
+                                    createSelectedAccessLevel.textContent = item.textContent;
+                                }                                
+                                //if exist in json get the nested action keys to update the values
+
+                                const nestedKeys = Object.keys(this.permissionSets)
+                                    .flatMap(key => Object.keys(this.permissionSets[key]?.[actionValue]?.[dataValue] || {}));
+
+                                console.log(`Nested Keys inside '${actionValue} > ${dataValue}':`, nestedKeys);
+                                
+                                  // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("read")) {
+                                    const readTrigger = parentContainer.querySelector(`.${feature_key}-read-trigger`);
+                                    if (!readTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentReadValue = readTrigger.getAttribute('data-value'); 
+                                
+                                    let readArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["create"]?.[dataValue]?.["read"]) {
+                                            readArray = permissions["create"][dataValue]["read"];
+                                        }
+                                    });
+                                
+                                    // Ensure readArray is an array (fallback to empty array if undefined)
+                                    readArray = Array.isArray(readArray) ? readArray : [];
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentReadValid = readArray.some(update => update.code === currentReadValue);
+
+                                
+                                    //const readText = readTrigger.querySelector('.read-text');
+                                    const readText = readTrigger.querySelector(`.${feature_key}-read-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstReadOption = readArray.length > 0 ? readArray[0] : null;
+                                    const firstReadValue = firstReadOption?.code;
+                                    const firstReadText = firstReadOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstReadText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentReadValid && readText && firstReadValue) {
+                                        readText.textContent = firstReadText || item.textContent; 
+                                        readTrigger.setAttribute('data-value', firstReadValue); 
+                                        const readSelectedAccessLevel = document.querySelector(`.${feature_key}-read-selected-access-level`);
+                                        if (readSelectedAccessLevel) {
+                                            readSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstReadText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentReadValue} as it's still valid.`);
+                                    }
+                                }
+
+                                // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("update")) {
+                                    const updateTrigger = parentContainer.querySelector(`.${feature_key}-update-trigger`);
+                                    if (!updateTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentUpdateValue = updateTrigger.getAttribute('data-value'); 
+                                
+                                    let updateArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["create"]?.[dataValue]?.["update"]) {
+                                            updateArray = permissions["create"][dataValue]["update"];
+                                        }
+                                    });
+                                
+                                    // Ensure updateArray is an array (fallback to empty array if undefined)
+                                    updateArray = Array.isArray(updateArray) ? updateArray : [];
+                                
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentUpdateValid = updateArray.some(update => update.code === currentUpdateValue);
+
+                                
+                                    //const updateText = updateTrigger.querySelector('.update-text');
+                                    const updateText = updateTrigger.querySelector(`.${feature_key}-update-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstUpdateOption = updateArray.length > 0 ? updateArray[0] : null;
+                                    const firstUpdateValue = firstUpdateOption?.code;
+                                    const firstUpdateText = firstUpdateOption?.name;
+                                
+                                    console.log(`🔹 First Update Value: ${firstUpdateValue}, Text: ${firstUpdateText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentUpdateValid && updateText && firstUpdateValue) {
+                                        updateText.textContent = firstUpdateText || item.textContent; 
+                                        updateTrigger.setAttribute('data-value', firstUpdateValue); 
+                                        const updateSelectedAccessLevel = document.querySelector(`.${feature_key}-update-selected-access-level`);
+                                        if (updateSelectedAccessLevel) {
+                                            updateSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstUpdateText} (${firstUpdateValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentUpdateValue} as it's still valid.`);
+                                    }
+                                }
+
+
+                                if (nestedKeys.includes("delete")) {
+                                    const deletetrigger = parentContainer.querySelector(`.${feature_key}-delete-trigger`);
+                                    if (!deletetrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentdeleteValue = deletetrigger.getAttribute('data-value'); 
+                                
+                                    let deleteArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["create"]?.[dataValue]?.["delete"]) {
+                                            deleteArray = permissions["create"][dataValue]["delete"];
+                                        }
+                                    });
+                                
+                                    // Ensure deleteArray is an array (fallback to empty array if undefined)
+                                    deleteArray = Array.isArray(deleteArray) ? deleteArray : [];
+                                    
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentDeleteisValid = deleteArray.some(update => update.code === currentdeleteValue);
+
+                                
+                                    //const readText = deletetrigger.querySelector('.read-text');
+                                    const deleteText = deletetrigger.querySelector(`.${feature_key}-delete-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstDeleteOption = deleteArray.length > 0 ? deleteArray[0] : null;
+                                    const firstReadValue = firstDeleteOption?.code;
+                                    const firstDeleteText = firstDeleteOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstDeleteText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentDeleteisValid && deleteText && firstReadValue) {
+                                        deleteText.textContent = firstDeleteText || item.textContent; 
+                                        deletetrigger.setAttribute('data-value', firstReadValue); 
+                                        const deleteSelectedAccessLevel = document.querySelector(`.${feature_key}-delete-selected-access-level`);
+                                        if (deleteSelectedAccessLevel) {
+                                            deleteSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstDeleteText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentdeleteValue} as it's still valid.`);
+                                    }
+                                }
+                                
+
+                                if (nestedKeys.includes("export")) {
+                                    
+                                    const exportTrigger = parentContainer.querySelector(`.${feature_key}-export-trigger`);
+                                    if (!exportTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentExportValue = exportTrigger.getAttribute('data-value'); 
+                                
+                                    let exportArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["create"]?.[dataValue]?.["export"]) {
+                                            exportArray = permissions["create"][dataValue]["export"];
+                                        }
+                                    });
+                                
+                                    // Ensure exportArray is an array (fallback to empty array if undefined)
+                                    exportArray = Array.isArray(exportArray) ? exportArray : [];
+                                
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentExportValid = exportArray.some(update => update.code === currentExportValue);
+
+                                
+                                    //const updateText = exportTrigger.querySelector('.update-text');
+                                    const exportText = exportTrigger.querySelector(`.${feature_key}-export-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstExportOption = exportArray.length > 0 ? exportArray[0] : null;
+                                    const firstExportValue = firstExportOption?.code;
+                                    const firstExportText = firstExportOption?.name;
+                                
+                                    console.log(`🔹 First Update Value: ${firstExportValue}, Text: ${firstExportText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentExportValid && exportText && firstExportValue) {
+                                        exportText.textContent = firstExportText || item.textContent; 
+                                        exportTrigger.setAttribute('data-value', firstExportValue); 
+                                        const exportSelectedAccessLevel = document.querySelector(`.${feature_key}-export-selected-access-level`);
+                                        if (exportSelectedAccessLevel) {
+                                            exportSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstExportText} (${firstExportValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentExportValue} as it's still valid.`);
+                                    }
+                                }
+
+
+                                
+                                
+                                 
+                            } else {
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const SelectedAccessLevel = document.querySelector(`.${feature_key}-selected-access-level`);
+                                
+                                if (SelectedAccessLevel) {
+                                    SelectedAccessLevel.textContent = item.textContent;
+                                } 
+                                if(dataValue == 'create_templates_none'){
+                                    $('#permission_create_text').text('None')
+
+                                }
+                                else{
+                                    $('#permission_create_text').text('All Users')
+
+                                }
+                                
+                            }
+                        }
+                        
+
+
+                        if (actionValue === 'read') {
+                            
+                            //verify action and data value with permission set
+                        
+                            const existsInPermissions = Object.values(this.permissionSets).some(permissions =>
+                            permissions[actionValue]?.[dataValue] &&
+                                Object.keys(permissions[actionValue][dataValue]).some(key => 
+                                    Array.isArray(permissions[actionValue][dataValue][key]) &&
+                                    permissions[actionValue][dataValue][key].length > 0
+                                )
+                            );
+                            console.log(`Data Value (${dataValue}) Exists with Permissions:`, existsInPermissions);
+                            
+                            if (existsInPermissions) {
+                                //updating current slected value in dropdown
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const readSelectedAccessLevel = document.querySelector(`.${feature_key}-read-selected-access-level`);
+                                if (readSelectedAccessLevel) {
+                                    readSelectedAccessLevel.textContent = item.textContent;
+                                }                                
+                                //if exist in json get the nested action keys to update the values
+
+                                const nestedKeys = Object.keys(this.permissionSets)
+                                    .flatMap(key => Object.keys(this.permissionSets[key]?.[actionValue]?.[dataValue] || {}));
+
+                                console.log(`Nested Keys inside '${actionValue} > ${dataValue}':`, nestedKeys);
+                                
+                                 // Check if "update" exists inside the nested keys
+                                 if (nestedKeys.includes("create")) {
+                                    const createTrigger = parentContainer.querySelector(`.${feature_key}-create-trigger`);
+                                    if (!createTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentCreateValue = createTrigger.getAttribute('data-value'); 
+                                
+                                    let createArray = [];
+                                
+                                    // Dynamically find the update array based on the selected create value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["read"]?.[dataValue]?.["create"]) {
+                                            createArray = permissions["read"][dataValue]["create"];
+                                        }
+                                    });
+                                
+                                    // Ensure createArray is an array (fallback to empty array if undefined)
+                                    createArray = Array.isArray(createArray) ? createArray : [];
+                                
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentCreateValue = createArray.some(update => update.code === currentCreateValue);
+
+                                
+                                    //const updateText = createTrigger.querySelector('.update-text');
+                                    const createText = createTrigger.querySelector(`.${feature_key}-create-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstCreateOption = createArray.length > 0 ? createArray[0] : null;
+                                    const firstCreateValue = firstCreateOption?.code;
+                                    const firstCreateText = firstCreateOption?.name;
+                                
+                                    console.log(`🔹 First Update Value: ${firstCreateValue}, Text: ${firstCreateText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentCreateValue && createText && firstCreateValue) {
+                                        createText.textContent = firstCreateText || item.textContent; 
+                                        createTrigger.setAttribute('data-value', firstCreateValue); 
+                                        const createSelectedAccessLevel = document.querySelector(`.${feature_key}-create-selected-access-level`);
+                                        if (createSelectedAccessLevel) {
+                                            createSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstCreateText} (${firstCreateValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentCreateValue} as it's still valid.`);
+                                    }
+                                }
+
+                                // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("update")) {
+                                    
+                                    const updateTrigger = parentContainer.querySelector(`.${feature_key}-update-trigger`);
+                                    if (!updateTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentUpdateValue = updateTrigger.getAttribute('data-value'); 
+                                
+                                    let updateArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["read"]?.[dataValue]?.["update"]) {
+                                            updateArray = permissions["read"][dataValue]["update"];
+                                        }
+                                    });
+                                
+                                    // Ensure updateArray is an array (fallback to empty array if undefined)
+                                    updateArray = Array.isArray(updateArray) ? updateArray : [];
+                                
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentUpdateValid = updateArray.some(update => update.code === currentUpdateValue);
+
+                                
+                                    //const updateText = updateTrigger.querySelector('.update-text');
+                                    const updateText = updateTrigger.querySelector(`.${feature_key}-update-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstUpdateOption = updateArray.length > 0 ? updateArray[0] : null;
+                                    const firstUpdateValue = firstUpdateOption?.code;
+                                    const firstUpdateText = firstUpdateOption?.name;
+                                
+                                    console.log(`🔹 First Update Value: ${firstUpdateValue}, Text: ${firstUpdateText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentUpdateValid && updateText && firstUpdateValue) {
+                                        updateText.textContent = firstUpdateText || item.textContent; 
+                                        updateTrigger.setAttribute('data-value', firstUpdateValue); 
+                                        const updateSelectedAccessLevel = document.querySelector(`.${feature_key}-update-selected-access-level`);
+                                        if (updateSelectedAccessLevel) {
+                                            updateSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstUpdateText} (${firstUpdateValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentUpdateValue} as it's still valid.`);
+                                    }
+                                }
+
+
+                                if (nestedKeys.includes("delete")) {
+                                    
+                                    const deletetrigger = parentContainer.querySelector(`.${feature_key}-delete-trigger`);
+                                    if (!deletetrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentdeleteValue = deletetrigger.getAttribute('data-value'); 
+                                
+                                    let deleteArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["read"]?.[dataValue]?.["delete"]) {
+                                            deleteArray = permissions["read"][dataValue]["delete"];
+                                        }
+                                    });
+                                
+                                    // Ensure deleteArray is an array (fallback to empty array if undefined)
+                                    deleteArray = Array.isArray(deleteArray) ? deleteArray : [];
+                                    
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentDeleteisValid = deleteArray.some(update => update.code === currentdeleteValue);
+
+                                
+                                    //const readText = deletetrigger.querySelector('.read-text');
+                                    const deleteText = deletetrigger.querySelector(`.${feature_key}-delete-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstDeleteOption = deleteArray.length > 0 ? deleteArray[0] : null;
+                                    const firstReadValue = firstDeleteOption?.code;
+                                    const firstDeleteText = firstDeleteOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstDeleteText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentDeleteisValid && deleteText && firstReadValue) {
+                                        deleteText.textContent = firstDeleteText || item.textContent; 
+                                        deletetrigger.setAttribute('data-value', firstReadValue); 
+                                        const deleteSelectedAccessLevel = document.querySelector(`.${feature_key}-delete-selected-access-level`);
+                                        if (deleteSelectedAccessLevel) {
+                                            deleteSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstDeleteText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentdeleteValue} as it's still valid.`);
+                                    }
+                                }
+                                
+
+                                if (nestedKeys.includes("export")) {
+                                    
+                                    const exportTrigger = parentContainer.querySelector(`.${feature_key}-export-trigger`);
+                                    if (!exportTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentExportValue = exportTrigger.getAttribute('data-value'); 
+                                
+                                    let exportArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["read"]?.[dataValue]?.["export"]) {
+                                            exportArray = permissions["read"][dataValue]["export"];
+                                        }
+                                    });
+                                
+                                    // Ensure exportArray is an array (fallback to empty array if undefined)
+                                    exportArray = Array.isArray(exportArray) ? exportArray : [];
+                                
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentExportValid = exportArray.some(update => update.code === currentExportValue);
+
+                                
+                                    //const updateText = exportTrigger.querySelector('.update-text');
+                                    const exportText = exportTrigger.querySelector(`.${feature_key}-export-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstExportOption = exportArray.length > 0 ? exportArray[0] : null;
+                                    const firstExportValue = firstExportOption?.code;
+                                    const firstExportText = firstExportOption?.name;
+                                
+                                    console.log(`🔹 First Update Value: ${firstExportValue}, Text: ${firstExportText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentExportValid && exportText && firstExportValue) {
+                                        exportText.textContent = firstExportText || item.textContent; 
+                                        exportTrigger.setAttribute('data-value', firstExportValue); 
+                                        const exportSelectedAccessLevel = document.querySelector(`.${feature_key}-export-selected-access-level`);
+                                        if (exportSelectedAccessLevel) {
+                                            exportSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstExportText} (${firstExportValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentExportValue} as it's still valid.`);
+                                    }
+                                }
+
+
+                                
+                                
+                                 
+                            } else {
+                                
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const SelectedAccessLevel = document.querySelector(`.${feature_key}-selected-access-level`);
+                                
+                                if (SelectedAccessLevel) {
+                                    SelectedAccessLevel.textContent = item.textContent;
+                                } 
+                                if(dataValue == 'read_templates_none'){
+                                    $('#permission_read_text').text('None')
+
+                                }
+                                else{
+                                    $('#permission_read_text').text('All Users')
+
+                                }
+
+                            }
+                        }
+                        
+
+                        if (actionValue === 'update') {
+                            
+                            //verify action and data value with permission set
+                        
+                            const existsInPermissions = Object.values(this.permissionSets).some(permissions =>
+                            permissions[actionValue]?.[dataValue] &&
+                                Object.keys(permissions[actionValue][dataValue]).some(key => 
+                                    Array.isArray(permissions[actionValue][dataValue][key]) &&
+                                    permissions[actionValue][dataValue][key].length > 0
+                                )
+                            );
+                            console.log(`Data Value (${dataValue}) Exists with Permissions:`, existsInPermissions);
+                            
+                            if (existsInPermissions) {
+                                //updating current slected value in dropdown
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+
+                                const updateSelectedAccessLevel = document.querySelector(`.${feature_key}-update-selected-access-level`);
+                                        if (updateSelectedAccessLevel) {
+                                            updateSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+
+                                //if exist in json get the nested action keys to update the values
+
+                                const nestedKeys = Object.keys(this.permissionSets)
+                                    .flatMap(key => Object.keys(this.permissionSets[key]?.[actionValue]?.[dataValue] || {}));
+
+                                console.log(`Nested Keys inside '${actionValue} > ${dataValue}':`, nestedKeys);
+                                
+                                // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("read")) {
+                                    
+                                    const readTrigger = parentContainer.querySelector(`.${feature_key}-read-trigger`);
+                                    if (!readTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentReadValue = readTrigger.getAttribute('data-value'); 
+                                
+                                    let readArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["update"]?.[dataValue]?.["read"]) {
+                                            readArray = permissions["update"][dataValue]["read"];
+                                        }
+                                    });
+                                
+                                    // Ensure readArray is an array (fallback to empty array if undefined)
+                                    readArray = Array.isArray(readArray) ? readArray : [];
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentReadValid = readArray.some(update => update.code === currentReadValue);
+
+                                
+                                    //const readText = readTrigger.querySelector('.read-text');
+                                    const readText = readTrigger.querySelector(`.${feature_key}-read-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstReadOption = readArray.length > 0 ? readArray[0] : null;
+                                    const firstReadValue = firstReadOption?.code;
+                                    const firstReadText = firstReadOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstReadText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentReadValid && readText && firstReadValue) {
+                                        readText.textContent = firstReadText || item.textContent; 
+                                        readTrigger.setAttribute('data-value', firstReadValue); 
+                                        const deleteSelectedAccessLevel = document.querySelector(`.${feature_key}-delete-selected-access-level`);
+                                        if (deleteSelectedAccessLevel) {
+                                            deleteSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstReadText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentReadValue} as it's still valid.`);
+                                    }
+                                }
+                               
+
+                                if (nestedKeys.includes("delete")) {
+                                    const deletetrigger = parentContainer.querySelector(`.${feature_key}-delete-trigger`);
+                                    if (!deletetrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentdeleteValue = deletetrigger.getAttribute('data-value'); 
+                                
+                                    let deleteArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["update"]?.[dataValue]?.["delete"]) {
+                                            deleteArray = permissions["update"][dataValue]["delete"];
+                                        }
+                                    });
+                                
+                                    // Ensure deleteArray is an array (fallback to empty array if undefined)
+                                    deleteArray = Array.isArray(deleteArray) ? deleteArray : [];
+                                    
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentDeleteisValid = deleteArray.some(update => update.code === currentdeleteValue);
+
+                                
+                                    //const readText = deletetrigger.querySelector('.read-text');
+                                    const deleteText = deletetrigger.querySelector(`.${feature_key}-delete-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstDeleteOption = deleteArray.length > 0 ? deleteArray[0] : null;
+                                    const firstReadValue = firstDeleteOption?.code;
+                                    const firstDeleteText = firstDeleteOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstDeleteText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentDeleteisValid && deleteText && firstReadValue) {
+                                        deleteText.textContent = firstDeleteText || item.textContent; 
+                                        deletetrigger.setAttribute('data-value', firstReadValue); 
+                                        const deleteSelectedAccessLevel = document.querySelector(`.${feature_key}-delete-selected-access-level`);
+                                        if (deleteSelectedAccessLevel) {
+                                            deleteSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstDeleteText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentdeleteValue} as it's still valid.`);
+                                    }
+                                }
+                                
+                                 
+                            } else {
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const SelectedAccessLevel = document.querySelector(`.${feature_key}-selected-access-level`);
+                                
+                                if (SelectedAccessLevel) {
+                                    SelectedAccessLevel.textContent = item.textContent;
+                                } 
+                            }
+                        }
+                        
+
+
+                        if (actionValue === 'delete') {
+                            
+                            //verify action and data value with permission set
+                        
+                            const existsInPermissions = Object.values(this.permissionSets).some(permissions =>
+                            permissions[actionValue]?.[dataValue] &&
+                                Object.keys(permissions[actionValue][dataValue]).some(key => 
+                                    Array.isArray(permissions[actionValue][dataValue][key]) &&
+                                    permissions[actionValue][dataValue][key].length > 0
+                                )
+                            );
+                            console.log(`Data Value (${dataValue}) Exists with Permissions:`, existsInPermissions);
+                            
+                            if (existsInPermissions) {
+                                //updating current slected value in dropdown
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+
+                                const deleteSelectedAccessLevel = document.querySelector(`.${feature_key}-delete-selected-access-level`);
+                                        if (deleteSelectedAccessLevel) {
+                                            deleteSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+
+                                //if exist in json get the nested action keys to update the values
+
+                                const nestedKeys = Object.keys(this.permissionSets)
+                                    .flatMap(key => Object.keys(this.permissionSets[key]?.[actionValue]?.[dataValue] || {}));
+
+                                console.log(`Nested Keys inside '${actionValue} > ${dataValue}':`, nestedKeys);
+                                
+                                // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("read")) {
+                                    
+                                    const readTrigger = parentContainer.querySelector(`.${feature_key}-read-trigger`);
+                                    if (!readTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentReadValue = readTrigger.getAttribute('data-value'); 
+                                
+                                    let readArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["delete"]?.[dataValue]?.["read"]) {
+                                            readArray = permissions["delete"][dataValue]["read"];
+                                        }
+                                    });
+                                
+                                    // Ensure readArray is an array (fallback to empty array if undefined)
+                                    readArray = Array.isArray(readArray) ? readArray : [];
+                                    
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentReadValid = readArray.some(update => update.code === currentReadValue);
+
+                                
+                                    //const readText = readTrigger.querySelector('.read-text');
+                                    const readText = readTrigger.querySelector(`.${feature_key}-read-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstReadOption = readArray.length > 0 ? readArray[0] : null;
+                                    const firstReadValue = firstReadOption?.code;
+                                    const firstReadText = firstReadOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstReadText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentReadValid && readText && firstReadValue) {
+                                        readText.textContent = firstReadText || item.textContent; 
+                                        readTrigger.setAttribute('data-value', firstReadValue); 
+                                        const readSelectedAccessLevel = document.querySelector(`.${feature_key}-read-selected-access-level`);
+                                        if (readSelectedAccessLevel) {
+                                            readSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstReadText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentReadValue} as it's still valid.`);
+                                    }
+                                }
+                                                            
+                                // Check if "update" exists inside the nested keys
+                                if (nestedKeys.includes("update")) {
+                                    const updateTrigger = parentContainer.querySelector(`.${feature_key}-update-trigger`);
+                                    if (!updateTrigger) return;
+
+                                    // Get the current selected update value
+                                    const currentUpdateValue = updateTrigger.getAttribute('data-value'); 
+
+                                    let updateArray = [];
+
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["delete"]?.[dataValue]?.["update"]) {
+                                            updateArray = permissions["delete"][dataValue]["update"];
+                                        }
+                                    });
+
+                                    // Ensure updateArray is an array (fallback to empty array if undefined)
+                                    updateArray = Array.isArray(updateArray) ? updateArray : [];
+
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentUpdateValid = updateArray.some(update => update.code === currentUpdateValue);
+
+
+                                    //const updateText = updateTrigger.querySelector('.update-text');
+                                    const updateText = updateTrigger.querySelector(`.${feature_key}-update-text`);
+
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstUpdateOption = updateArray.length > 0 ? updateArray[0] : null;
+                                    const firstUpdateValue = firstUpdateOption?.code;
+                                    const firstUpdateText = firstUpdateOption?.name;
+
+                                    console.log(`🔹 First Update Value: ${firstUpdateValue}, Text: ${firstUpdateText}`);
+
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentUpdateValid && updateText && firstUpdateValue) {
+                                        updateText.textContent = firstUpdateText || item.textContent; 
+                                        updateTrigger.setAttribute('data-value', firstUpdateValue); 
+                                        const updateSelectedAccessLevel = document.querySelector(`.${feature_key}-update-selected-access-level`);
+                                        if (updateSelectedAccessLevel) {
+                                            updateSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstUpdateText} (${firstUpdateValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentUpdateValue} as it's still valid.`);
+                                    }
+                                }
+
+                                
+                                 
+                            } else {
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const SelectedAccessLevel = document.querySelector(`.${feature_key}-selected-access-level`);
+                                
+                                if (SelectedAccessLevel) {
+                                    SelectedAccessLevel.textContent = item.textContent;
+                                } 
+                            }
+                        }
+                        
+
+                        if (actionValue === 'export') {
+                            
+                            //verify action and data value with permission set
+                        
+                            const existsInPermissions = Object.values(this.permissionSets).some(permissions =>
+                            permissions[actionValue]?.[dataValue] &&
+                                Object.keys(permissions[actionValue][dataValue]).some(key => 
+                                    Array.isArray(permissions[actionValue][dataValue][key]) &&
+                                    permissions[actionValue][dataValue][key].length > 0
+                                )
+                            );
+                            console.log(`Data Value (${dataValue}) Exists with Permissions:`, existsInPermissions);
+                            
+                            if (existsInPermissions) {
+                                //updating current slected value in dropdown
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const readSelectedAccessLevel = document.querySelector(`.${feature_key}-export-selected-access-level`);
+                                if (readSelectedAccessLevel) {
+                                    readSelectedAccessLevel.textContent = item.textContent;
+                                }                                
+                                //if exist in json get the nested action keys to update the values
+
+                                const nestedKeys = Object.keys(this.permissionSets)
+                                    .flatMap(key => Object.keys(this.permissionSets[key]?.[actionValue]?.[dataValue] || {}));
+
+                                console.log(`Nested Keys inside '${actionValue} > ${dataValue}':`, nestedKeys);
+                                
+                                
+                                if (nestedKeys.includes("read")) {
+                                    
+                                    const readTrigger = parentContainer.querySelector(`.${feature_key}-read-trigger`);
+                                    if (!readTrigger) return;
+                                
+                                    // Get the current selected update value
+                                    const currentReadValue = readTrigger.getAttribute('data-value'); 
+                                
+                                    let readArray = [];
+                                
+                                    // Dynamically find the update array based on the selected read value
+                                    Object.values(this.permissionSets).forEach(permissions => {
+                                        if (permissions?.["export"]?.[dataValue]?.["read"]) {
+                                            readArray = permissions["export"][dataValue]["read"];
+                                        }
+                                    });
+                                
+                                    // Ensure readArray is an array (fallback to empty array if undefined)
+                                    readArray = Array.isArray(readArray) ? readArray : [];
+                                    
+                                    // Check if the current update value exists in the found update array
+                                    const isCurrentReadValid = readArray.some(update => update.code === currentReadValue);
+
+                                
+                                    //const readText = readTrigger.querySelector('.read-text');
+                                    const readText = readTrigger.querySelector(`.${feature_key}-read-text`);
+
+                                
+                                    // Get the first update value dynamically from the found permission set
+                                    const firstReadOption = readArray.length > 0 ? readArray[0] : null;
+                                    const firstReadValue = firstReadOption?.code;
+                                    const firstReadText = firstReadOption?.name;
+                                
+                                    console.log(`🔹 First Read Value: ${firstReadValue}, Text: ${firstReadText}`);
+                                
+                                    // Update the update dropdown only if the current update value is invalid
+                                    if (!isCurrentReadValid && readText && firstReadValue) {
+                                        readText.textContent = firstReadText || item.textContent; 
+                                        readTrigger.setAttribute('data-value', firstReadValue); 
+                                        const readSelectedAccessLevel = document.querySelector(`.${feature_key}-read-selected-access-level`);
+                                        if (readSelectedAccessLevel) {
+                                            readSelectedAccessLevel.textContent = item.textContent;
+                                        } 
+                                        console.log(`✅ Update changed to: ${firstReadText} (${firstReadValue})`);
+                                    } else {
+                                        console.log(`⏳ Keeping current update value: ${currentReadValue} as it's still valid.`);
+                                    }
+                                }
+                                                            
+
+                               
+
+
+                                
+                                
+                                 
+                            } else {
+                                text.textContent = item.textContent;
+                                trigger.setAttribute('data-value', dataValue);
+                                const SelectedAccessLevel = document.querySelector(`.${feature_key}-selected-access-level`);
+                                
+                                if (SelectedAccessLevel) {
+                                    SelectedAccessLevel.textContent = item.textContent;
+                                } 
+                                
+                            }
+                        }
+                        
+
+                        //#######################################################################################################################
+
+                        
+                        menu.style.display = 'none';
+                        arrow.style.transform = 'rotate(0deg)';
+                        this.updateFinalFeatureData();
+                    });
+                });
+            });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.dropdown-menu-main').forEach(menu => menu.style.display = 'none');
+                document.querySelectorAll('.dropdown-arrow').forEach(arrow => arrow.style.transform = 'rotate(0deg)');
+            });
+        }
+
+        initializeDefaultFeatureData() {
+            
+            const allFeatureKeys = new Set();
+            document.querySelectorAll(".main-card-content .feature_name").forEach(input => {
+                if (input.value) {
+                    allFeatureKeys.add(input.value);
+                }
+            });
+
+            allFeatureKeys.forEach(featureKey => {
+                this.defaultFeatureData[featureKey] = [];
+                this.finalFeatureData[featureKey] = [];
+            });
+
+            document.querySelectorAll(".main-card-content").forEach((card) => {
+                const featureKey = card.querySelector(".feature_name")?.value;
+                if (!featureKey) return;
+
+                const checkbox = card.querySelector(".our-main-switch input");
+                const isActive = checkbox ? !checkbox.checked : true;
+
+                const actions = [];
+                card.querySelectorAll(".action-div").forEach((actionContainer) => {
+                    const actionName = actionContainer.querySelector(".feature-actions")?.textContent?.trim().replace(":", "");
+                    const dropdownTrigger = actionContainer.querySelector(".dropdown-trigger");
+                    let accessLevelCode = dropdownTrigger?.getAttribute('data-value');
+
+                    if (!accessLevelCode) {
+                        const selectedItem = actionContainer.querySelector('.dropdown-item[data-selected="true"]');
+                        accessLevelCode = selectedItem?.getAttribute('data-value');
+                    }
+
+                    if (actionName && accessLevelCode) {
+                        actions.push({ action: actionName, accessLevelCode, is_active: isActive });
+                    }
+                });
+
+                if (actions.length > 0) {
+                    this.defaultFeatureData[featureKey] = [...actions];
+                    this.finalFeatureData[featureKey] = [...actions];
+                }
+            });
+
+            console.log("Default Feature Data:", this.defaultFeatureData);
+            console.log("Initial Final Feature Data:", this.finalFeatureData);
+            this.updateHiddenInput();
+        }
+
+        updateHiddenInput() {
+            const finalFeatureDataInput = document.getElementById("final_feature_data_input");
+            
+            if (finalFeatureDataInput) {
+                finalFeatureDataInput.value = JSON.stringify(this.finalFeatureData);
+            }
+        }
+        
+
+
+        initializeFeatureData(card) {
+            const featureKey = card.querySelector(".feature_name")?.value;
+            if (!featureKey) return;
+            const checkbox = card.querySelector(".our-main-switch input");
+            const isActive = checkbox ? !checkbox.checked : true;
+            const actions = [];
+            card.querySelectorAll(".action-div").forEach(actionContainer => {
+                const action = this.getActionData(actionContainer, isActive);
+                if (action) actions.push(action);
+            });
+            if (actions.length > 0) {
+                this.defaultFeatureData[featureKey] = [...actions];
+                this.finalFeatureData[featureKey] = [...actions];
+            }
+        }
+    
+        getActionData(actionContainer, isActive) {
+            const actionName = actionContainer.querySelector(".feature-actions")?.textContent?.trim().replace(":", "");
+            const dropdownTrigger = actionContainer.querySelector(".dropdown-trigger");
+            let accessLevelCode = dropdownTrigger?.getAttribute('data-value');
+            if (!accessLevelCode) {
+                const selectedItem = actionContainer.querySelector('.dropdown-item[data-selected="true"]');
+                accessLevelCode = selectedItem?.getAttribute('data-value');
+            }
+            if (actionName && accessLevelCode) {
+                return {
+                    action: actionName,
+                    accessLevelCode: accessLevelCode,
+                    is_active: isActive
+                };
+            }
+            return null;
+        }
+
+        updateFinalFeatureData() {
+            document.querySelectorAll(".main-card-content").forEach(card => {
+                const featureKey = card.querySelector(".feature_name")?.value;
+                if (!featureKey) return;
+                const checkbox = card.querySelector(".our-main-switch input");
+                const isActive = checkbox ? !checkbox.checked : true;
+                const updatedActions = [];
+                card.querySelectorAll(".action-div").forEach(actionContainer => {
+                    const action = this.getActionData(actionContainer, isActive);
+                    if (action) updatedActions.push(action);
+                });
+                if (updatedActions.length > 0) {
+                    this.finalFeatureData[featureKey] = updatedActions;
+                }
+            });
+            this.updateHiddenInput();
+            console.log("Updated Final Feature Data:", this.finalFeatureData);
+        }
+        
+
+        
+        attachEventListeners() {
+            if (this.templateNameInput) {
+                this.templateNameInput.addEventListener("keyup", () => this.handleTemplateNameChange());
+            }
+
+            document.querySelectorAll(".our-main-switch input").forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                    this.updateFinalFeatureData();
+                });
+            });
+
+            if (this.form) {
+                this.form.addEventListener("submit", (event) => {
+                    if (!this.validateForm(event)) {
+                        event.preventDefault();
+                    }
+                });
+            }
+        }
+
+
+        clientProfileActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.client_profile-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('client-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'create_all_clients', text: 'All Clients' }
+                        : { value: 'create_client_none', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        if (mapping.value === "create_client_none") {
+                            dropdownText.textContent = "All Clients";
+                            dropdownTrigger.setAttribute('data-value', 'create_all_clients');
+                            document.getElementById('client-profile').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            document.getElementById('client-profile').textContent = 'No';
+                            dropdownTrigger.setAttribute('data-value', 'create_client_none');
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+            
+            
+
+
+
+
+        }
+
+
+        departmentActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.department-section-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('department-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'create_department_all', text: 'All Teams' }
+                        : { value: 'create_department_team_own', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        if (mapping.value === "create_department_team_own") {
+                            dropdownText.textContent = "All teams";
+                            dropdownTrigger.setAttribute('data-value', 'create_department_all');
+                            document.getElementById('department_feature').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            document.getElementById('department_feature').textContent = 'No';
+                            dropdownTrigger.setAttribute('data-value', 'create_department_team_own');
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+            
+        
+
+            
+
+
+        }
+
+
+        progressnotesActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.progress-note-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('progress-note-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'create_progress_notes_own', text: 'All progress notes' }
+                        : { value: 'create_progress_notes_no_access', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        if (mapping.value === "create_progress_notes_no_access") {
+                            dropdownText.textContent = "All Teams";
+                            dropdownTrigger.setAttribute('data-value', 'create_progress_notes_own');
+                            document.getElementById('progress-note').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            document.getElementById('progress-note').textContent = 'No';
+                            dropdownTrigger.setAttribute('data-value', 'create_progress_notes_no_access');
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+            
+        
+
+            
+
+
+        }
+
+        employeeActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.employee-approval-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('employee-approval-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'update_employee_approval_all', text: 'All employees' }
+                        : { value: 'update_employee_approval_none', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        if (mapping.value === "update_employee_approval_none") {
+                            dropdownText.textContent = "All Teams";
+                            dropdownTrigger.setAttribute('data-value', 'update_employee_approval_all');
+                            document.getElementById('employee-approval').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            document.getElementById('employee-approval').textContent = 'No';
+                            dropdownTrigger.setAttribute('data-value', 'update_employee_approval_none');
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+            
+        
+        }
+
+        termReadActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.term-read-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('term-read-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'view_terms_and_conditions_all', text: 'All terms and conditions' }
+                        : { value: 'view_none_terms_and_conditions', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        
+                        if (mapping.value === "view_none_terms_and_conditions") {
+                            dropdownText.textContent = "All terms and conditions";
+                            dropdownTrigger.setAttribute('data-value', 'view_terms_and_conditions_all');
+                            document.getElementById('term-read').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            dropdownTrigger.setAttribute('data-value', 'view_none_terms_and_conditions');
+                            document.getElementById('term-read').textContent = 'No';
+
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+        
+            
+            
+        
+        }
+
+
+        termUpdateActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.term-update-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('term-update-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'update_terms_and_conditions_all', text: 'All terms and conditions' }
+                        : { value: 'update_none_terms_and_conditions', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        
+                        if (mapping.value === "update_none_terms_and_conditions") {
+                            dropdownText.textContent = "All terms and conditions";
+                            dropdownTrigger.setAttribute('data-value', 'update_terms_and_conditions_all');
+                            document.getElementById('term-update').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            dropdownTrigger.setAttribute('data-value', 'update_none_terms_and_conditions');
+                            document.getElementById('term-update').textContent = 'No';
+
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+        
+            
+            
+        
+        }
+
+        privacyReadActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.privacy-read-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('privacy-read-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'view_privacy_policy_all', text: 'All privacy policy' }
+                        : { value: 'view_none_privacy_policy', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+                    
+                    if (targetOption) {
+                        
+                        if (mapping.value === "view_none_privacy_policy") {
+                            dropdownText.textContent = "All terms and conditions";
+                            dropdownTrigger.setAttribute('data-value', 'view_privacy_policy_all');
+                            document.getElementById('privacy-read').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            dropdownTrigger.setAttribute('data-value', 'view_none_privacy_policy');
+                            document.getElementById('privacy-read').textContent = 'No';
+
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+        
+            
+            
+        
+        }
+
+        privacyUpdateActionToggle() {
+            
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.privacy-update-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('privacy-update-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'update_privacy_policy_all', text: 'All privacy policy' }
+                        : { value: 'update_none_privacy_policy', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        
+                        if (mapping.value === "update_none_privacy_policy") {
+                            dropdownText.textContent = "All terms and conditions";
+                            dropdownTrigger.setAttribute('data-value', 'update_privacy_policy_all');
+                            document.getElementById('privacy-update').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            dropdownTrigger.setAttribute('data-value', 'update_none_privacy_policy');
+                            document.getElementById('privacy-update').textContent = 'No';
+
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+        
+            
+            
+        
+        }
+
+        userPermissionUpdateActionToggle() {
+            const dropdownTriggers = document.querySelectorAll('.customize-dropdown-triggerrs');
+            dropdownTriggers.forEach(trigger => {
+                const container = trigger.closest('.dropdown-container');
+                const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+                if (selectedItem) {
+                    trigger.querySelector('.dropdown-text').textContent = selectedItem.textContent;
+                    trigger.setAttribute('data-value', selectedItem.getAttribute('data-value'));
+                }
+            });
+        
+            // Handle create action toggles
+            const createActionToggles = document.querySelectorAll('.permission-update-action-toggle');
+            createActionToggles.forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    
+                    const dropdownContainer = toggle.closest('.dropdown-container');
+                    if (!dropdownContainer) return;
+            
+                    // Use getElementById() to select dropdownTrigger by ID
+                    const dropdownTrigger = document.getElementById('permission-update-toggle-mapping');
+                    if (!dropdownTrigger) {
+                        console.error('Dropdown trigger not found');
+                        return;
+                    }
+            
+                    const dropdownText = dropdownTrigger.querySelector('.dropdown-text');
+                    const dropdownItems = dropdownContainer.querySelectorAll('.dropdown-item');
+            
+                    // Define value mappings
+                    const mapping = toggle.checked
+                        ? { value: 'update_templates', text: 'All users' }
+                        : { value: 'update_templates_none', text: 'None' };
+            
+                    // Find target dropdown item
+                    const targetOption = Array.from(dropdownItems).find(item =>
+                        item.getAttribute('data-value') === mapping.value
+                    );
+            
+                    if (targetOption) {
+                        
+                        if (mapping.value === "update_templates_none") {
+                            dropdownText.textContent = "All terms and conditions";
+                            dropdownTrigger.setAttribute('data-value', 'update_templates');
+                            document.getElementById('permission-update').textContent = 'Yes';
+                        } else {
+                            dropdownText.textContent = 'None';
+                            dropdownTrigger.setAttribute('data-value', 'update_templates_none');
+                            document.getElementById('permission-update').textContent = 'No';
+
+                        }
+                    }
+            
+                    // Ensure updateFinalFeatureData is called on toggle change
+                    if (typeof this.updateFinalFeatureData === "function") {
+                        this.updateFinalFeatureData();
+                    }
+                });
+            
+                // Dispatch a change event to ensure the event listener executes initially
+                toggle.dispatchEvent(new Event('change'));
+            });
+        
+            
+            
+        
+        }
+
+
+        userPermissionUpdateActionDisable() {
+            let user_permission_feature_key = 'user_permissions';
+            let read_trigger_selector = document.querySelector(`.${user_permission_feature_key}-read-trigger`);
+            let update_trigger_selector = document.querySelector(`.${user_permission_feature_key}-update-trigger`);
+            let checkbox = document.querySelector('.permission-update-action-toggle');
+        
+            // Arrow function to ensure the correct 'this' context for updateFinalFeatureData
+            const checkAndDisableCheckbox = () => {
+                
+                if (read_trigger_selector && !read_trigger_selector.hasAttribute('data-value')) {
+                    console.log("Element does not have data-value attribute.");
+                  
+                    checkbox.disabled = true;
+                  
+                } else {
+                    console.log("Element has data-value attribute:", read_trigger_selector.getAttribute('data-value'));
+        
+                    let datavalue = read_trigger_selector.getAttribute('data-value');
+                    if (datavalue == 'read_templates_none') {
+                        
+                        checkbox.disabled = true;
+                        checkbox.checked = true;
+                        update_trigger_selector.setAttribute('data-value', 'update_templates_none');
+        
+                        if (typeof this.updateFinalFeatureData === "function") {
+                            this.updateFinalFeatureData();
+                        }
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                }
+            };
+        
+            checkAndDisableCheckbox();
+        
+            // Use arrow function here to ensure 'this' is bound correctly in the event listener
+            document.addEventListener("click", (event) => {
+                setTimeout(() => {
+                    checkAndDisableCheckbox(); // 'this' will be preserved here due to the arrow function
+                }, 100);
+            });
+        }
+        
+   
+    }
+
+
+    
+   
+    document.addEventListener("DOMContentLoaded", () => new FeatureDataHandler());
+   
+</script> 
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dropdown = document.querySelector(".extra-container-class");
+        const trigger = dropdown.querySelector(".extra-trigger-class");
+        const text = dropdown.querySelector(".extra-text-class");
+        const items = dropdown.querySelectorAll(".extra-item-class");
+    
+        // Toggle dropdown on click
+        trigger.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevents click from closing immediately
+            dropdown.classList.toggle("active");
+        });
+    
+        // Change text on selection and allow navigation
+        items.forEach(item => {
+            item.addEventListener("click", function () {
+                text.textContent = this.textContent;
+                dropdown.classList.remove("active");
+                // Allow default link navigation (no preventDefault)
+            });
+        });
+    
+        // Close dropdown if clicking outside
+        document.addEventListener("click", function (event) {
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove("active");
+            }
+        });
+    });
+    
+    
+</script> 
+<!--/Fetching and manupulating permission selection-->
+ <script>
+    class CustomDropdown {
+        constructor(container) {
+            
+            this.container = container;
+            this.trigger = container.querySelector('.employee-dropdown-trigger');
+            this.menu = container.querySelector('.outer-dropdown-menu');
+            this.items = container.querySelectorAll('.outer-dropdown-item');
+            this.selectedText = container.querySelector('.outer-dropdown-text');
+            this.arrow = this.container.querySelector('.outer-dropdown-arrow');
+            this.isOpen = false;
+            this.init();
+        }
+
+        init() {
+            // Toggle dropdown on trigger click
+            this.trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleDropdown();
+            });
+
+            // Handle item selection
+            this.items.forEach(item => {
+                item.addEventListener('click', () => this.selectItem(item));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!this.container.contains(e.target) && this.isOpen) {
+                    this.closeDropdown();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (this.isOpen) {
+                    switch (e.key) {
+                        case 'Escape':
+                            this.closeDropdown();
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.navigateItems(-1);
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.navigateItems(1);
+                            break;
+                        case 'Enter':
+                            if (document.activeElement.classList.contains('outer-dropdown-item')) {
+                                this.selectItem(document.activeElement);
+                            }
+                            break;
+                        case 'Tab':
+                            this.closeDropdown();
+                            break;
+                    }
+                }
+            });
+        }
+
+        toggleDropdown() {
+            this.isOpen ? this.closeDropdown() : this.openDropdown();
+        }
+
+        openDropdown() {
+            this.isOpen = true;
+            this.menu.classList.add('show');
+            this.trigger.classList.add('active');
+            this.arrow.style.transform = "rotate(-135deg)"; // Rotate arrow down
+        }
+
+        closeDropdown() {
+            this.isOpen = false;
+            this.menu.classList.remove('show');
+            this.trigger.classList.remove('active');
+            this.arrow.style.transform = "rotate(45deg)"; // Reset arrow
+        }
+
+        selectItem(item) {
+            // Remove previous selection
+            this.items.forEach(i => i.classList.remove('selected'));
+
+            // Add new selection
+            item.classList.add('selected');
+            this.selectedText.textContent = item.textContent;
+
+            // Close dropdown
+            this.closeDropdown();
+
+            // Dispatch custom event
+            const event = new CustomEvent('change', {
+                detail: {
+                    value: item.dataset.value,
+                    text: item.textContent
+                }
+            });
+            this.container.dispatchEvent(event);
+
+        }
+
+
+        navigateItems(direction) {
+            const items = Array.from(this.items);
+            let focusedIndex = items.findIndex(item => document.activeElement === item);
+
+            let nextIndex = focusedIndex + direction;
+            if (nextIndex >= items.length) nextIndex = 0;
+            if (nextIndex <script 0) nextIndex = items.length - 1;
+
+            items[nextIndex].focus();
+        }
+    }
+
+</script>
+
+
+{% comment %} <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".custom-accordion-item").forEach(accordion => {
+            const button = accordion.querySelector(".custom-accordion-btn");
+            const content = accordion.querySelector(".custom-accordion-content");
+    
+            button.addEventListener("click", function () {
+                const isActive = button.classList.contains("custom-active");
+    
+                // Close all sections within this accordion only
+                document.querySelectorAll(".custom-accordion-item").forEach(item => {
+                    item.querySelector(".custom-accordion-content").classList.remove("custom-show");
+                    item.querySelector(".custom-accordion-btn").classList.remove("custom-active");
+                });
+    
+                // Toggle clicked section only if it wasn't already active
+                if (!isActive) {
+                    content.classList.add("custom-show");
+                    button.classList.add("custom-active");
+                }
+            });
+        });
+    });
+    
+</script> {% endcomment %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".accordion-button");
+
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                const target = document.getElementById(this.dataset.target);
+
+                document.querySelectorAll(".accordion-content").forEach(content => {
+                    if (content !== target) {
+                        content.classList.remove("show");
+                    }
+                });
+
+                document.querySelectorAll(".accordion-button").forEach(btn => {
+                    if (btn !== this) {
+                        btn.classList.remove("active");
+                    }
+                });
+
+                target.classList.toggle("show");
+                this.classList.toggle("active");
+            });
+        });
+    });
+</script>
+{% comment %} <script>
+   
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".custom-accordion").forEach(accordion => {
+            accordion.querySelectorAll(".custom-accordion-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const target = document.getElementById(this.dataset.target);
+                    const isActive = this.classList.contains("custom-active");
+    
+                    // Close all sections within this specific accordion only
+                    accordion.querySelectorAll(".custom-accordion-content").forEach(content => {
+                        content.classList.remove("custom-show");
+                    });
+    
+                    accordion.querySelectorAll(".custom-accordion-btn").forEach(btn => {
+                        btn.classList.remove("custom-active");
+                    });
+    
+                    // Toggle clicked section only if it wasn't already active
+                    if (!isActive) {
+                        target.classList.add("custom-show");
+                        this.classList.add("custom-active");
+                    }
+                });
+            });
+        });
+    });
+    
+
+</script> {% endcomment %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownWrapper = document.querySelector('.custom_dropdown_wrapper');
+        const dropdownTrigger = document.querySelector('.custom_dropdown_trigger');
+        const dropdownContent = document.querySelector('.custom_dropdown_content');
+        const searchInput = document.querySelector('.custom_dropdown_input');
+        
+        const options = document.querySelectorAll('.custom_dropdown_option');
+        const groups = document.querySelectorAll('.custom_dropdown_group');
+        const hiddenInput = document.getElementById('selected_option_input');
+        dropdownTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownTrigger.classList.toggle('active');
+            dropdownContent.classList.toggle('custom_dropdown_show');
+            if (dropdownContent.classList.contains('custom_dropdown_show')) {
+                searchInput.focus();
+            }
+        });
+        searchInput.addEventListener('input', (e) => {
+            
+            const searchTerm = e.target.value.toLowerCase();
+            let visibleOptionsInGroup = new Map();
+
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                const isVisible = text.includes(searchTerm);
+                option.style.display = isVisible ? 'block' : 'none';
+                let group = option.previousElementSibling;
+                while (group && !group.classList.contains('custom_dropdown_group')) {
+                    group = group.previousElementSibling;
+                }
+
+                if (group) {
+                    visibleOptionsInGroup.set(
+                        group,
+                        (visibleOptionsInGroup.get(group) || 0) + (isVisible ? 1 : 0)
+                    );
+                }
+            });
+            groups.forEach(group => {
+                group.style.display = visibleOptionsInGroup.get(group) > 0 ? 'block' : 'none';
+            });
+        });
+        options.forEach(option => {
+            option.addEventListener('click', () => {
+                const selectedValue = option.dataset.value;
+                const selectedText = option.textContent;
+                options.forEach(opt => {
+                    opt.style.borderLeft = 'none';
+                    opt.style.backgroundColor = '';
+                    opt.style.borderRadius = '';
+                });
+                dropdownTrigger.textContent = selectedText;
+                hiddenInput.value = selectedValue;
+                // dropdownTrigger.style.borderLeft = '4px solid #188AE2';
+                // dropdownTrigger.style.backgroundColor = '#F1F8FA';
+                dropdownTrigger.style.backgroundColor = '#F1F8FA';
+                dropdownTrigger.style.borderRadius = '5px';
+                // option.style.borderLeft = '4px solid #188AE2';
+                // option.style.backgroundColor = '#F1F8FA';
+                // option.style.borderRadius = '5px';
+                searchInput.value = '';
+                dropdownContent.classList.remove('custom_dropdown_show');
+                dropdownTrigger.classList.remove('active');
+                options.forEach(opt => opt.style.display = 'block');
+                groups.forEach(group => group.style.display = 'block');
+            });
+        });
+        document.addEventListener('click', (e) => {
+            if (!dropdownWrapper.contains(e.target)) {
+                dropdownContent.classList.remove('custom_dropdown_show');
+                dropdownTrigger.classList.remove('active');
+            }
+        });
+        searchInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                dropdownContent.classList.remove('custom_dropdown_show');
+                dropdownTrigger.classList.remove('active');
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".custom_dropdown_option").forEach(function (element) {
+            element.addEventListener("click", function () {
+                let selectedValue = this.getAttribute("data-value");
+                let selectedText = this.textContent.trim();
+                let dropdownButton = document.getElementById("dropdownButton");
+                let currentUrl = new URL(window.location.origin);
+
+                if (!isNaN(selectedValue)) {
+                    currentUrl.pathname = `saved/template/assignment/${selectedValue}/`;
+                    window.location.href = currentUrl.toString();
+                } else {
+                    console.log("Selected User:", selectedText);
+                    dropdownButton.textContent = selectedText;
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const selectedValue = this.textContent.trim();
+                
+                const actionDiv = this.closest('.action-div');
+                
+                const card = this.closest('.main-card-content');
+                
+                if (card && actionDiv) {
+                    const allActionDivs = Array.from(card.querySelectorAll('.action-div'));
+                    const actionIndex = allActionDivs.indexOf(actionDiv);
+                    
+                    const spans = card.querySelectorAll('.create-data .selected-access-level');
+                    const correspondingSpan = spans[actionIndex];
+                    
+                    if (correspondingSpan) {
+                        correspondingSpan.textContent = selectedValue;
+                        
+                        const dropdownMenu = this.closest('.dropdown-menu-main');
+                        dropdownMenu.querySelectorAll('.dropdown-item').forEach(dropItem => {
+                            dropItem.removeAttribute('data-selected');
+                        });
+                        this.setAttribute('data-selected', 'true');
+                        
+                        const dropdownTrigger = actionDiv.querySelector('.dropdown-trigger .dropdown-text');
+                        if (dropdownTrigger) {
+                            dropdownTrigger.textContent = selectedValue;
+                        }
+                    }
+                }
+            });
+        });
+        
+        document.querySelectorAll('.dropdown-container').forEach(container => {
+            const selectedItem = container.querySelector('.dropdown-item[data-selected="true"]');
+            const triggerText = container.querySelector('.dropdown-trigger .dropdown-text');
+            if (selectedItem && triggerText) {
+                triggerText.textContent = selectedItem.textContent.trim();
+            }
+        });
+    });
+</script> 
+
+
+
+{% comment %} <script>
+function checkActiveFeatures() {
+    
+    const featureDataInput = document.getElementById('final_feature_data_input');
+    
+    if (!featureDataInput || !featureDataInput.value) {
+        return false;
+    }
+    
+    try {
+        const featureData = JSON.parse(featureDataInput.value);
+        
+        // Check if any feature has an active item
+        let hasActiveFeature = false;
+        
+        for (const category in featureData) {
+            if (Array.isArray(featureData[category])) {
+                for (const item of featureData[category]) {
+                    if (item.is_active === true) {
+                        hasActiveFeature = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (hasActiveFeature) {
+                break;
+            }
+        }
+        
+        return !hasActiveFeature; 
+    } catch (error) {
+        console.error('Error parsing feature data:', error);
+        return false;
+    }
+}
+
+function showNoActiveFeaturesModal() {
+    
+    const modal = document.getElementById('exampleModal');
+    const headingElement = modal.querySelector('.template-heading');
+    const paragraphElement = modal.querySelector('.template-paragraph');
+    
+    headingElement.textContent = 'No Active Features';
+    paragraphElement.textContent = 'Please enable at least one feature to continue.';
+    
+    $(modal).modal('show');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const templateForm = document.getElementById('template_form');
+    
+    if (templateForm) {
+        templateForm.addEventListener('submit', function(event) {
+            if (checkActiveFeatures()) {
+                event.preventDefault();
+                showNoActiveFeaturesModal();
+                return false;
+            }
+        });
+    }
+});
+</script> {% endcomment %}
+
+<script>
+    function checkActiveFeatures() {
+        const featureDataInput = document.getElementById('final_feature_data_input');
+        if (!featureDataInput || !featureDataInput.value) {
+            return false;
+        }
+        
+        try {
+            const featureData = JSON.parse(featureDataInput.value);
+            for (const category in featureData) {
+                if (Array.isArray(featureData[category])) {
+                    for (const item of featureData[category]) {
+                        if (item.is_active === true) {
+                            return true; 
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('Error parsing feature data:', error);
+            return false;
+        }
+    }
+    function showNoActiveFeaturesModal() {
+    
+        const modal = new bootstrap.Modal(document.getElementById("noFeatureModal"));
+        const headingElement = document.getElementById('modalHeader');
+        const paragraphElement = document.getElementById('modalPara');
+        
+        headingElement.textContent = 'No Active Features';
+        paragraphElement.textContent = 'Please enable at least one feature to continue.';
+        if(modal){
+            console.log("modal found");
+        }else{
+            console.log("modal not found");
+        }
+        modal.show();
+        
+    }
+    $(document).ready(function () {
+        $('#template_form').submit(function (event) {
+            if (!checkActiveFeatures()) {
+                event.preventDefault(); 
+                showNoActiveFeaturesModal();
+            } 
+        });
+    });
+</script>
+
+
+
+
+<script>
+    //JS to hide and show action header if no value is selected in select options
+    document.addEventListener('DOMContentLoaded', function() {
+        const featureNames = Array.from(document.querySelectorAll('.feature_name')).map(el => el.value);
+        const actions = ['create', 'read', 'update', 'delete' ,'export'];
+        featureNames.forEach(featureKey => {
+            actions.forEach(action => {
+                const triggerElement = document.querySelector(`.${featureKey}-${action}-trigger`);
+                
+                if (!triggerElement) return;
+                
+                const selectedLevelElement = document.querySelector(`.${featureKey}-${action}-selected-access-level`);
+                
+                if (!selectedLevelElement) return;
+                
+                const hasDataValue = triggerElement.hasAttribute('data-value');
+                
+                if (!hasDataValue) {
+                    if (selectedLevelElement.textContent.trim() !== 'N/A') {
+                        selectedLevelElement.textContent = 'N/A';
+                    }
+                } else {
+                    if (selectedLevelElement.textContent.trim() === 'N/A') {
+                        selectedLevelElement.textContent = '';
+                    }
+                }
+            });
+        });
+        
+        // Also handle the initial dropdown selection to ensure values are properly displayed
+        document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
+            const dropdownItems = trigger.nextElementSibling?.querySelectorAll('.dropdown-item[data-selected="true"]');
+            if (dropdownItems && dropdownItems.length > 0) {
+                const selectedItem = dropdownItems[0];
+                const actionClass = trigger.getAttribute('value');
+                const featureKey = trigger.classList[2].split('-')[0]; 
+                
+                if (actionClass) {
+                    const selectedLevelElement = document.querySelector(`.${featureKey}-${actionClass}-selected-access-level`);
+                    if (selectedLevelElement && selectedLevelElement.textContent.trim() === 'N/A') {
+                        selectedLevelElement.textContent = selectedItem.textContent.trim();
+                    }
+                }
+            }
+        });
+    });
+    
+</script>
+
+<script>
+    // JavaScript to handle toggle functionality for feature activation/deactivation
+  document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM fully loaded - Initializing feature toggle functionality');
+      
+      // Get all main toggle switches on the page
+      const mainToggleSwitches = document.querySelectorAll('.disable-div input[type="checkbox"]');
+      console.log('Found', mainToggleSwitches.length, 'main toggle switches');
+      
+      // Function to update UI elements based on editability state
+      function updateFeatureEditability(featureCard, makeNonEditable) {
+          // Get the collapse div within this feature card
+          const collapseDiv = featureCard.querySelector('.collapse');
+          
+          // More specifically target the header actions div using its exact class combination
+          const headerActionsDiv = featureCard.querySelector('.d-flex.gap-3.align-items-center.flex-wrap.mt-1.header-actions');
+          
+          if (!collapseDiv) {
+              console.error('Collapse div not found in feature card:', featureCard);
+              return;
+          }
+          
+          if (makeNonEditable) {
+              // Add non-editable class to the entire collapse div
+              collapseDiv.classList.add('non-editable-feature');
+              
+              // Disable all interactive elements within the collapse div
+              disableAllInteractiveElements(collapseDiv);
+              
+              // Hide the header actions div when feature is not active
+              if (headerActionsDiv) {
+                  console.log('Hiding header actions div');
+                  headerActionsDiv.style.display = 'none';
+                  // Force immediate style application with !important
+                  headerActionsDiv.setAttribute('style', 'display: none !important');
+              } else {
+                  console.error('Header actions div not found in feature card:', featureCard);
+              }
+          } else {
+              // Remove non-editable class from the collapse div
+              collapseDiv.classList.remove('non-editable-feature');
+              
+              // Enable all interactive elements within the collapse div
+              enableAllInteractiveElements(collapseDiv);
+              
+              // Show the header actions div when feature is active
+              if (headerActionsDiv) {
+                  console.log('Showing header actions div');
+                  headerActionsDiv.removeAttribute('style');
+                  headerActionsDiv.style.display = 'flex';
+              } else {
+                  console.error('Header actions div not found in feature card:', featureCard);
+              }
+          }
+      }
+      
+      // Function to disable all interactive elements within a container
+      function disableAllInteractiveElements(container) {
+          // Disable dropdown triggers
+          container.querySelectorAll('.dropdown-trigger').forEach(element => {
+              element.classList.add('disabled');
+              element.setAttribute('data-original-click', element.onclick ? element.onclick.toString() : '');
+              element.onclick = function(e) { e.preventDefault(); return false; };
+          });
+          
+          // Disable regular buttons
+          container.querySelectorAll('button:not(.role-base-main-accodian)').forEach(element => {
+              element.classList.add('disabled');
+              element.setAttribute('disabled', 'disabled');
+          });
+          
+          // Handle all toggle switches inside the container
+          container.querySelectorAll('.switch input[type="checkbox"]').forEach(element => {
+              // Store original state if we need to restore it later
+              element.setAttribute('data-original-state', element.checked);
+              // Disable the toggle
+              element.setAttribute('disabled', 'disabled');
+              // Add disabled class to the parent switch
+              element.closest('.switch').classList.add('disabled-toggle');
+          });
+          
+          // Also target action-toggle checkboxes specifically
+          container.querySelectorAll('.client_profile-action-toggle').forEach(element => {
+              element.setAttribute('disabled', 'disabled');
+              element.closest('.switch').classList.add('disabled-toggle');
+          });
+          
+          // Disable all dropdown menus and prevent them from opening
+          container.querySelectorAll('.dropdown-menu-main').forEach(element => {
+              element.classList.add('disabled-dropdown');
+          });
+          
+          // Disable any other interactive elements like select, input fields, etc.
+          container.querySelectorAll('select, input[type="text"], input[type="number"], textarea').forEach(element => {
+              element.setAttribute('disabled', 'disabled');
+          });
+      }
+      
+      // Function to enable all interactive elements within a container
+      function enableAllInteractiveElements(container) {
+          // Enable dropdown triggers
+          container.querySelectorAll('.dropdown-trigger.disabled').forEach(element => {
+              element.classList.remove('disabled');
+              if (element.hasAttribute('data-original-click')) {
+                  // Just remove the attribute - we'll set onclick to null
+                  element.removeAttribute('data-original-click');
+                  element.onclick = null;
+              }
+          });
+          
+          // Enable regular buttons
+          container.querySelectorAll('button.disabled').forEach(element => {
+              element.classList.remove('disabled');
+              element.removeAttribute('disabled');
+          });
+          
+          // Re-enable all toggle switches inside the container
+          //container.querySelectorAll('.switch input[type="checkbox"][disabled]').forEach(element => {
+            //  element.removeAttribute('disabled');
+              //element.closest('.switch').classList.remove('disabled-toggle');
+          //});
+          
+          container.querySelectorAll('.switch input[type="checkbox"]').forEach(element => {
+            // Store original state if we need to restore it later
+                element.setAttribute('data-original-state', element.checked);
+                // Disable the toggle
+                element.removeAttribute('disabled');
+                // Add disabled class to the parent switch
+                element.closest('.switch').classList.remove('disabled-toggle');
+            });
+            
+          // Re-enable action-toggle checkboxes specifically
+          container.querySelectorAll('.client_profile-action-toggle[disabled]').forEach(element => {
+              element.removeAttribute('disabled');
+              element.closest('.switch').classList.remove('disabled-toggle');
+          });
+          
+          // Enable all dropdown menus
+          container.querySelectorAll('.dropdown-menu-main.disabled-dropdown').forEach(element => {
+              element.classList.remove('disabled-dropdown');
+          });
+          
+          // Enable any other interactive elements
+          container.querySelectorAll('select[disabled], input[type="text"][disabled], input[type="number"][disabled], textarea[disabled]').forEach(element => {
+              element.removeAttribute('disabled');
+          });
+      }
+      
+      // Process each toggle switch for initialization
+      mainToggleSwitches.forEach(toggle => {
+          if (toggle.hasAttribute('disabled')) {
+              console.log('Skipping disabled toggle');
+              return; // Skip disabled toggles
+          }
+          
+          // Get feature information
+          const featureCard = toggle.closest('.main-card-content');
+          if (!featureCard) {
+              console.error('Feature card not found for toggle:', toggle);
+              return;
+          }
+          
+          const featureNameElem = featureCard.querySelector('.feature_name');
+          const featureName = featureNameElem ? featureNameElem.value : 'unknown';
+          
+          console.log(`Processing feature: ${featureName}, Toggle checked: ${toggle.checked}`);
+          
+          // IMPORTANT: Apply the initial state based on the toggle position
+          // When checkbox is checked, feature is NOT active (per your code logic)
+          const isActive = !toggle.checked;
+          
+          // Apply editability state accordingly
+          updateFeatureEditability(featureCard, !isActive);
+          
+          console.log(`Initial setup for ${featureName}: isActive=${isActive}, making ${!isActive ? 'non-editable' : 'editable'}`);
+          
+          // Add change event listener for future changes
+          toggle.addEventListener('change', function() {
+              const isNowActive = !this.checked;
+              console.log(`Toggle changed for ${featureName}: isActive=${isNowActive}`);
+              
+              // Update editability accordingly - with timeout to ensure DOM update
+              setTimeout(() => {
+                  updateFeatureEditability(featureCard, !isNowActive);
+              }, 10);
+          });
+      });
+      
+      console.log('Feature toggle initialization complete');
+  });
+  </script>
+
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const submitButton = document.querySelector(".template-submit-button");
+        const modalCancelButton = document.querySelector(".close-modal-button");
+    
+        if (modalCancelButton && submitButton) {
+            modalCancelButton.addEventListener("click", function () {
+                submitButton.disabled = false;
+                submitButton.innerHTML = "Submit";
+            });
+        }
+    });
+    
+
+
+    function adjustSearchedItemsHeight() {
+    const parent = document.querySelector('.input-upper-div');
+    const child = document.querySelector('.searched-items');
+
+    if (parent && child) {
+        const parentHeight = parent.clientHeight;
+
+        // Optional: subtract header/input height if there's another element inside
+        const otherContent = Array.from(parent.children).filter(el => el !== child);
+        const otherHeight = otherContent.reduce((acc, el) => acc + el.offsetHeight, 400);
+
+        child.style.height = (parentHeight - otherHeight) + 'px';
+    }
+}
+
+// Run after DOM load
+window.addEventListener('load', adjustSearchedItemsHeight);
+  </script>
+{% endblock javascripts %}

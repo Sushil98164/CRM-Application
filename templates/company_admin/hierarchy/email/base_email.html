@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BellsCRM Assignment Reminder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gothic+A1&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        p{
+
+            color: #000;
+            font-family: Poppins;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding:60px 20px 20px 20px;
+        }
+        .logo {
+            margin-bottom: 30px;
+        }
+        .logo img {
+            width: 150px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        {% comment %} .button {
+            display: flex;
+            height: 48px;
+            padding: 10px 20px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            background: #188AE1;
+            color: #FFF;
+            font-family: Poppins;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            width: fit-content;
+            text-decoration: none;
+        } {% endcomment %}
+        .info-box {
+            background-color: #f0f7ff;
+            border: 1px solid #4A90E2;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #1E293B;
+            color: white;
+            padding: 31px 40px 29.615px 40px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .footer-logo {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .footer-links {
+            margin-bottom: 20px;
+        }
+        .footer-links a {
+            color: #FFF;
+            leading-trim: both;
+            text-edge: cap;
+            font-family: Poppins;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .footer-text {
+            color: #FFF;
+            text-align: center;
+            leading-trim: both;
+            text-edge: cap;
+            font-family: Poppins;
+            font-size: 10px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://bellscrm-beta.s3.ap-southeast-2.amazonaws.com/Investigation_emails/header.png" alt="BellsCRM Logo" style="width: 95px;
+            height: 105.179px;
+            aspect-ratio: 95.00/105.18; border-radius: 7.885px;">
+        </div>
+        
+        {% block content %}
+        {% endblock %}
+        <div class="footer">
+            <div class="footer-logo">
+                <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td align="center" style="padding-right: 6px;">
+                            <img src="https://bellscrm-beta.s3.ap-southeast-2.amazonaws.com/Investigation_emails/footer.png"
+                                 alt="BellCRM"
+                                 style="width: 22px; height: 20px;">
+                        </td>
+                        <td align="center" style="font-family: Poppins, Arial, sans-serif; font-size: 19px; color: #FFF; font-weight: 500;">
+                            BellCRM
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+
+            
+            {% block footer %}
+            {% endblock %}
+
+            <p class="footer-text">
+                We are dedicated to developing an AI-driven platform that proactively analyzes client risk assessments and guides support workers, ensuring comprehensive and responsive care. Our upcoming AI bot will help us achieve this commitment.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

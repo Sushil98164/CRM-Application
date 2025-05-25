@@ -1,0 +1,131 @@
+
+{% load widget_tweaks %}
+{% block stylesheets %}
+<style>
+    .capitalize {
+        text-transform: capitalize;
+    }
+</style>
+{% endblock stylesheets %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="card-head">
+                <header>Progress notes and timesheet list</header>
+      
+            </div>
+            <form method="POST" ,action="" id="form_validation">
+                {% csrf_token %}
+                <div class="card-body row">
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            <input class="mdl-textfield__input" type="text" id="txtFirstName" value = "{{request.user.first_name}} {{request.user.last_name}}" readonly>
+                            <label class="mdl-textfield__label">Employee name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.client class="mdl-textfield__input" placeholder=""%} {% comment "dailyshift" %}type="text" id="txtFirstName"{% endcomment %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.client.errors.0 }}</span>
+                            <label class="mdl-textfield__label">Client name</label>
+                        </div>
+                    </div>
+                 
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.start_date_time class="mdl-textfield__input" placeholder="" disabled="disabled"%} 
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.start_date_time.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift start date and time</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.end_date_time class="mdl-textfield__input"  placeholder="" disabled="disabled"%}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.end_date_time.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift end date and time</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.vehicle_used class="mdl-textfield__input"  placeholder="" disabled="disabled" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.end_date_time.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Whether a vehicle was used?</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field employee_shift_form.shift_type class="mdl-textfield__input"  placeholder=""  disabled="disabled"%}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.shift_type.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Shift Type</label>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.distance_traveled class="mdl-textfield__input cls_distance_traveled"  placeholder="" onkeypress="return event.charCode &gt;= 48 &amp;&amp; event.charCode &lt;= 57" disabled="disabled" %}
+                            <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.distance_traveled.errors.0 }}</span>
+                            <label class="mdl-textfield__label ">Distance traveled</label>
+                        </div>
+                    </div> 
+
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field shift_form.description class="mdl-textfield__input" onkeyup="" oninput="autoExpand(this)" disabled="disabled"%}
+                            <label class="mdl-textfield__label">Description</label>
+                            <span class="focus-input100 error-label"  id="storyOfIncidentValidation"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.description.errors.0 }}</span>
+                        
+                        </div>
+                    </div>
+                
+                    <div class="col-lg-12 p-t-20 text-center">
+                        {% if request.resolver_match.url_name == 'dailyshift_add' %}
+                        <button type="submit"
+                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue">Submit</button>
+                        {% endif %}
+                            <a onclick="back_btn()" class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default" id="cancelBtn">Cancel</a>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% block javascripts %}
+<script>
+
+$(document).ready(function() {
+    function handleVisibility(selectedValue) {
+        var distanceField = $('.cls_distance_traveled');
+
+        if(selectedValue == 'True') {
+            if (!distanceField.val()) { 
+            $('.cls_distance_traveled').attr('required', true);
+            $('.cls_distance_traveled').parent().addClass('is-invalid').show();
+            }
+            else{
+                $('.cls_distance_traveled').parent().show();
+            }
+        } else {
+            $('.cls_distance_traveled').val('');
+            $('.cls_distance_traveled').removeAttr('required');
+            $('.cls_distance_traveled').parent().removeClass('is-invalid').hide();
+        }
+    }
+
+    $('#id_vehicle_used').on('change', function(){
+        var selectedValue = $(this).val();
+        handleVisibility(selectedValue);
+    });
+
+    var initialValue = $('#id_vehicle_used').val();
+    handleVisibility(initialValue);
+});
+
+</script>
+{% endblock javascripts %}

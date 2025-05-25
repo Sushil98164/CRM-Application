@@ -1,0 +1,209 @@
+{% extends 'base_landing_page.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block stylesheets %}
+<style>
+ 
+    /* Initially hide the hover effect content */
+    .hidden {
+        display: none;
+    }
+    
+    /* Show the hover effect content and hide the default content on card hover */
+    .card:hover .display-none-hover {
+        display: none;
+    }
+    
+    .card:hover .hover-effect {
+        display: block;
+    }
+    .card.empty-card:hover h5.card-header {
+        visibility: hidden;
+    }
+    .card h5.card-ai {
+        visibility: hidden;
+    }
+    .card:hover .card-ai {
+        visibility: hidden;
+    }
+    
+    .card:hover .display-none-hover{
+    display: none;
+    }
+    p.set-bulid {
+        color: #000;
+        font-family: Montserrat;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        margin-top: 50px;
+    }
+    h2.in-progress {
+        color: rgba(255, 255, 255, 0.60);
+        font-family: Montserrat;
+        font-size: 57.763px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        position: absolute;
+        /* margin: auto; */
+        top: 141px;
+        left: 64px;
+    }
+    .card:hover .in-progress {
+       display: block;
+    }
+    @media (max-width:1400px){
+        h2.in-progress {
+        color: rgba(255, 255, 255, 0.60);
+        font-family: Montserrat;
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        position: absolute;
+        /* margin: auto; */
+        top: 173px;
+        left: 64px;
+    }
+    }
+    </style>
+{% endblock stylesheets %}
+{% block content %}
+{% include 'landing_website/includes/header.html' %}
+
+  <main id="main">
+   <section class="solution">
+    <div class="container-fluid">
+        <div class="row card-full-body">
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">01</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Timesheeting</h5>
+                        <p class="card-text">BellsCRM's NDIS platform offers efficient, customizable timesheeting for streamlined management.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">02</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Digital Risk Assesment</h5>
+                        <p class="card-text">BellsCRM's NDIS platform facilitates digital risk assessment, enhancing accuracy and efficiency.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">03</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Case / Shift Notes</h5>
+                        <p class="card-text">BellsCRM's NDIS platform enables seamless recording and management of case/shift notes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">04</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">360 Degree Profile View</h5>
+                        <p class="card-text">BellsCRM's NDIS platform provides a comprehensive 360-degree profile view for holistic client management.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">05</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">NDIS Incident Management</h5>
+                        <p class="card-text">BellsCRM's NDIS platform offers robust incident management capabilities, ensuring swift and effective resolution.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">06</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Onboarding</h5>
+                        <p class="card-text">BellsCRM's NDIS platform facilitates quick onboarding, minimizing setup time for rapid deployment.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">07</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Role Based Access</h5>
+                        <p class="card-text">BellsCRM's NDIS platform implements role-based access control, ensuring secure and tailored data accessibility.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">08</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Contact Management</h5>
+                        <p class="card-text">BellsCRM's NDIS platform offers efficient contact management for streamlined communication and collaboration.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">09 </h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Analytics For Managers</h5>
+                        <p class="card-text">BellsCRM's NDIS platform provides insightful analytics for informed managerial decision-making.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="card-header">10</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">NDIS Mandatory Incident Reporting</h5>
+                        <p class="card-text">BellsCRM's NDIS platform automates mandatory incident reporting, ensuring compliance and efficiency.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <h2 class="in-progress hidden" >IN PROGRESS</h2>
+                    <h5 class="card-header">11</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Rostering </h5>
+                        <p class="card-text">Rostering feature for easy creation and management of employee shifts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <h2 class="in-progress hidden" >IN PROGRESS</h2>
+                    <h5 class="card-header">12</h5>
+                    <div class="card-body">
+                        <div class="hover-effect hidden">
+                            <h5 class="card-title">Smart Agent For Workers With AI
+                            </h5>
+                            <p class="card-text" style="padding-top: 30px;">AI-driven risk assessment and guidance for support workers.</p>
+                        </div>
+                        <div class="display-none-hover text-center ">
+                            <img src="{% static 'admin/img/brainstorming.png' %}" alt="">
+                            <p class="set-bulid" >What are we set to build</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   </section>
+
+  </main><!-- End #main -->
+
+  {% include 'landing_website/includes/footer.html' %}
+
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+  {% endblock %}

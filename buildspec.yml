@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Before running tests"
+      - sudo yum update -y 
+      - yum install -y gcc
+      - yum install -y libcurl-devel
+      - yum install -y openssl-devel
+      - yum install -y openssl 
+      - sudo yum install -y gcc-c++
+      - sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm 
+      - sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+      - sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+      - sudo dnf install mysql-community-client -y
+      - sudo dnf install mysql-community-server -y
+      - sudo dnf remove mariadb105-devel -y
+      - sudo dnf install mysql-devel -y
+      - pip install mysqlclient==2.0.3
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo "Starting Migrations"
+      - python manage.py migrate
+      - echo "Starting Server"
+      - python manage.py runserver > /dev/null 2>&1 &
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'

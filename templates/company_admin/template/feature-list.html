@@ -1,0 +1,2131 @@
+<div class="tab-content" id="dashboardAccordion">
+    <div class="tab-pane fade show active" id="dashboard-content" role="tabpanel" aria-labelledby="dashboard-tab">
+   
+ {% comment %} <div class="tab-pane fade {% if active_tab == 'dashboard-content' %}show active{% endif %}" id="dashboard-content" role="tabpanel" aria-labelledby="dashboard-tab"> {% endcomment %}
+     <!-- Dashboard content goes here -->
+         <div class="h-100 d-flex flex-column gap-2">
+             <div class="accordion" >
+                     {% for feature_key, feature in dashboard.features.items %}
+ 
+                     <div class="card main-card-content mt-0 mb-3 p-0">
+                         <input type="hidden" value="{{feature_key}}" class="feature_name">
+                         <div class="role-base-accodian d-flex justify-content-between position-relative">
+                             <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian{% if not feature.id == 1 %}collapsed{% endif %}"
+                                 type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                                 aria-controls="collapse{{ feature.id }}">
+                                 <div class="accodin-header-right w-100">
+                                     <span>
+                                          <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                         </svg> 
+                                         
+                                         
+                                     </span>
+                                     <div class="w-100 d-flex flex-column gap-13">
+                                         <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                                         <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+                                         <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions">
+                                             {% for action in feature.actions %}
+                                             <h5 class="create-data">
+                                                 <strong>{{ action.action|title }}:</strong>
+                                                 <span class="{{feature_key}}-selected-access-level" data-action-id="{{ forloop.counter }}">
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+                                             </h5>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+                                 </div>
+                                   
+                             </button>
+                             {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                             
+                             <label class="switch our-main-switch disable-div mb-0">
+                                 <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                                 <span class="slider round m-0"></span>
+                             </label>
+                             {% else %}
+                             <label class="switch our-main-switch disable-div mb-0">
+                                {% if request.resolver_match.url_name == 'view_template' %}
+                                <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+
+                                {% else %}
+                                 <input type="checkbox" {% if not feature.is_active %}checked{% endif %}>
+                                {% endif %}
+                                 <span class="slider round m-0"></span>
+                             </label>
+                             {% endif %}
+                         </div>
+                         
+                         
+                         <div id="collapse{{ feature.id }}" class="collapse {% if feature.id == 1 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#dashboard-content">
+                             <div class="card-body d-flex flex-column ">
+                                 <div class="d-flex flex-column pl-66 gap-21">
+                                     {% for action in feature.actions %}
+                                     
+                                         <div class="d-flex justify-content-between align-items-center action-div" >
+                                             <h4 class="m-0 accodian-inner-dropdowns">
+                                                 
+                                                 <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                                 {{ action.description }}
+                                             </h4>
+                                             <div class="btn-group">
+                                                
+                                                  <div class="dropdown-container">
+                                                     <div class="dropdown-trigger customize-dropdown-triggerrs" value="{{action.action}}">
+                                                         <span class="dropdown-text">Select an option</span>
+                                                         {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                         <span class="dropdown-arrow"></span>
+                                                         {% endif %}
+                                                     </div>
+                                                     <div class="dropdown-menu-main">
+{% comment %}                                                          
+                                                         {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                                             <div class="drop-down-menue-inner">
+                                                                 {% for access_level in action.access_levels %}
+                                                                     {% if access_level.selected %}
+                                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                                             {{ access_level.name }}
+                                                                         </div>
+                                                                     {% endif %}
+                                                                 {% endfor %}
+                                                             </div>
+                                                         {% else %} {% endcomment %}
+                                                        {% if request.resolver_match.url_name == 'view_template' %}
+                                                            <div class="drop-down-menue-inner d-none">
+                                                                {% for access_level in action.access_levels %}
+                                                                    <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                                        {{ access_level.name }}
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div> 
+                                                        {% else %} 
+                                                        <div class="drop-down-menue-inner">
+                                                            {% for access_level in action.access_levels %}
+                                                                <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                                    {{ access_level.name }}
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div> 
+                                                        {% endif %}                                                        
+                                                         
+                                                     </div>
+                                                 </div> 
+ 
+                                                 
+                                             </div>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 {% endfor %}
+             </div>
+         </div>
+     </div>
+
+
+
+     
+     <div class="tab-pane fade" id="employee-management-content" role="tabpanel" aria-labelledby="employee-management-tab">
+         <div class="h-100 d-flex flex-column gap-2">
+             <div class="accordion" >
+                     {% for feature_key, feature in employee_management.features.items %}
+                     <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+                     <div class="card main-card-content mt-0 mb-3 p-0">
+                         <input type="hidden" value="{{feature_key}}" class="feature_name">
+                         <div class="role-base-accodian d-flex justify-content-between position-relative">
+                             <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 2 %}collapsed{% endif %}"
+                                 type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                                 aria-controls="collapse{{ feature.id }}">
+                                 <div class="accodin-header-right w-100">
+                                     <span>
+                                         <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                         </svg>
+                                     </span>
+                                     <div class="w-100 d-flex flex-column gap-13">
+                                         <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                                         <p class="m-0 text-left collaps-phera">{{ feature.description }}</p>
+ 
+                                                 <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                                     {% for action in feature.actions %}
+                                                     <h5 class="create-data">
+                                                         {% if  action.action == 'create' %}
+                                                         <strong>{{ action.action|title }}:</strong>
+ 
+                                                         <span class="{{feature_key}}-selected-access-level" data-action-id="{{ forloop.counter }}">
+                 
+                                                             {% for access_level in action.access_levels %}
+                                                                 {% if access_level.selected %}
+                                                                     {{ access_level.name }}
+                                                                 {% endif %}
+                                                             {% endfor %}
+                                                         </span>
+                                                         {% else %}
+                                                             <strong>{{ action.action|title }}:</strong>
+                                                             {% if action.action == 'read' %}
+ 
+                                                             <span class="{{feature_key}}-read-selected-access-level {{feature_key}}-selected-access-level" id="features">
+                     
+                                                                 {% for access_level in action.access_levels %}
+                                                                     {% if access_level.selected %}
+                                                                         {{ access_level.name }}
+                                                                     {% endif %}
+                                                                 {% endfor %}
+                                                             </span>
+ 
+                                                             
+                                                             {% elif action.action == 'update' %}
+                                                             <span class="{{feature_key}}-update-selected-access-level" id="features">
+ 
+                                                                 {% for access_level in action.access_levels %}
+                                                                     {% if access_level.selected %}
+                                                                         {{ access_level.name }}
+                                                                     {% endif %}
+                                                                 {% endfor %}
+                                                             </span>
+ 
+                                                             {% elif action.action == 'delete' %}
+                                                             <span class="{{feature_key}}-delete-selected-access-level" id="features">
+ 
+                                                                 {% for access_level in action.access_levels %}
+                                                                     {% if access_level.selected %}
+                                                                         {{ access_level.name }}
+                                                                     {% endif %}
+                                                                 {% endfor %}
+                                                             </span>
+                                                             {% endif %}
+ 
+                                                             {% endif %}                               
+                                                     </h5>
+                                                     {% endfor %}
+                                                 </div> 
+                                     </div>
+                                 </div>
+                              
+                        
+                             </button>
+                             {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                             <label class="switch our-main-switch disable-div mb-0">
+                                 <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                                 <span class="slider round m-0"></span>
+                             </label>
+                             {% elif feature_key == 'acknowledgement' and request.resolver_match.url_name == 'add_template' or feature_key == 'acknowledgement' and clone_template_name == 'employee' %}
+                             <label class="switch our-main-switch disable-div mb-0">
+                                {% if request.resolver_match.url_name == 'view_template' %}
+                                <input type="checkbox" checked disabled>
+
+                                {% else %}
+                                 <input type="checkbox" checked>
+                                {% endif %}
+                                 <span class="slider round m-0"></span>
+                             </label>
+                             {% else %}
+                             <label class="switch our-main-switch disable-div mb-0">
+                                {% if request.resolver_match.url_name == 'view_template' %}
+                                <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+
+                                {% else %}
+                                 <input type="checkbox" {% if not feature.is_active %}checked{% endif %}>
+                                {% endif %}                                 
+                                <span class="slider round m-0"></span>
+                             </label>
+                             {% endif %}
+                             
+                         </div>
+
+                         <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 2 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#employee-management-content">
+                             <div class="card-body d-flex flex-column ">
+                                 <div class="d-flex flex-column pl-66 gap-21">
+                                     {% for action in feature.actions %}
+                                         <div class="d-flex justify-content-between align-items-center action-div">
+ 
+                                             <h4 class="m-0 accodian-inner-dropdowns">
+                                                 <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                                 {{ action.description }}
+                                             </h4>
+                                             <div class="btn-group">
+                                               
+ 
+                                                  <div class="dropdown-container">
+                                                     {% if action.action == 'create' %}
+                                                     <div class="dropdown-trigger customize-dropdown-triggerrs add-trigger" value="{{action.action}}">
+                                                         <span class="dropdown-text">Select an option</span>
+                                                         {% if not request.resolver_match.url_name == 'view_template' %}
+                                                         <span class="dropdown-arrow"></span>
+                                                         {% endif %}
+                                                     </div>
+                                                     {% endif %}
+ 
+                                                     {% if action.action == 'read' %}
+                     
+                                                     <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                                         <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                                         {% if not request.resolver_match.url_name == 'view_template' %}
+                                                         <span class="read-arrow dropdown-arrow"></span>
+                                                         {% endif %}
+                                                     </div>
+                                                     {% endif %}
+ 
+                                                     {% if action.action == 'update' %}
+                                                     <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                                         <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                                         {% if not request.resolver_match.url_name == 'view_template' %}
+                                                         <span class="update-arrow dropdown-arrow"></span>
+                                                         {% endif %}
+                                                     </div>
+                                                     {% endif %}
+ 
+                                                     {% if action.action == 'delete' %}
+                                                     <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-delete-trigger" value="{{action.action}}">
+                                                         <span class="{{feature_key}}-delete-text dropdown-text">Select an option</span>
+                                                         {% if not request.resolver_match.url_name == 'view_template' %}
+                                                         <span class="update-arrow dropdown-arrow"></span>
+                                                         {% endif %}
+                                                     </div>
+                                                     {% endif %}
+
+                                                     <div class="dropdown-menu-main">
+                                                         {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                                         <div class="drop-down-menue-inner">
+                                                             {% for access_level in action.access_levels %}
+                                                                 {% if access_level.selected %}
+                                                                     <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                                         {{ access_level.name }}
+                                                                     </div>
+                                                                 {% endif %}
+                                                             {% endfor %}
+                                                         </div>
+                                                     {% else %} {% endcomment %}
+                                                     {% if request.resolver_match.url_name == 'view_template' %}
+
+                                                         <div class="drop-down-menue-inner d-none">
+                                                             {% for access_level in action.access_levels %}
+                                                             <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %} >
+                                                                 {{ access_level.name }}
+                                                             </div>
+                                                         {% endfor %}
+                                                         </div>
+                                                    {% else %}
+                                                    <div class="drop-down-menue-inner">
+                                                        {% for access_level in action.access_levels %}
+                                                        <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %} >
+                                                            {{ access_level.name }}
+                                                        </div>
+                                                    {% endfor %}
+                                                    </div>
+                                                    {% endif %}
+                                                     {% comment %} {% endif %} {% endcomment %}
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     {% endfor %}
+                                 </div>
+                             </div>
+                         </div>
+
+
+                     </div>
+                 {% endfor %}
+             </div>
+         </div>
+     </div>
+ 
+ 
+ 
+ 
+  <div class="tab-pane fade " id="client-management-content" role="tabpanel" aria-labelledby="client-management-tab">
+     
+     <!-- Client Management content goes here -->
+     <div class="accordion" >
+         {% for feature_key, feature in client_management.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 5 %}collapsed{% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                                     <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                         
+                                         {% for action in feature.actions %}
+                                         <h5 class="create-data">
+                                         {% if  action.action == 'create' and action.access_levels.0.code == 'create_client_none' or action.access_levels.0.code == 'create_all_clients' %}
+                                             <strong>{{ action.action|title }}:</strong>
+                                             <span class="{{feature_key}}-selected-access-level" id="client-profile">
+                                                 {% if action.access_levels.0.code == 'create_client_none' %}
+                                                 No
+                                                 {% else %}
+                                                 Yes
+                                                 {% endif %}
+                                             </span>     
+ 
+                                         {% elif action.action == 'create' %}
+                                         <strong>{{ action.action|title }}:</strong>
+ 
+                                         <span class="{{feature_key}}-create-selected-access-level {{feature_key}}-selected-access-level"  id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% else %}
+ 
+                                         
+                                             <strong>{{ action.action|title }}:</strong>
+                                             {% if action.action == 'read' %}
+                                                 <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+ 
+                                                 {% elif action.action == 'update' %}
+                                                 <span class="{{feature_key}}-update-selected-access-level" id="features">
+ 
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+ 
+                                             
+ 
+                                             {% endif %}                                  
+ 
+                                             {% endif %}                                  
+                                         </h5>
+                                         {% endfor %}
+                                     </div> 
+                            
+                         </div>
+                     </div>
+                 </button>
+               
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'client_profile' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 
+                  {% elif feature_key == 'client_profile' and request.resolver_match.url_name == 'add_template' or feature_key == 'client_profile' and request.resolver_match.url_name == 'employee_scratch_template'  or feature_key == 'client_profile' and clone_template_name == 'employee' %}
+                     <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox" checked>
+                     {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>  
+                 {% else %} 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox" {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 5 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#client-management-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                    
+                                     <div class="dropdown-container">
+                                       
+ 
+                                         {% if  action.action == 'create' and action.access_levels.0.code == 'create_client_none' or action.access_levels.0.code == 'create_all_clients' %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-toggle-trigger d-none" id="client-toggle-mapping" value="{{feature_key}}">
+                                                 <span class="{{feature_key}}-create-toggle-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+ 
+                                         {% elif action.action == 'create' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-create-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                             </div>
+                                         {% else %}
+                                       
+                                             {% if action.action == 'read' %}
+                                                                 
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="read-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                             {% if action.action == 'update' %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="update-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                             
+                                             
+                                         {% endif %}
+                                             
+                                         {% if action.action == 'create' and action.access_levels.0.code == 'create_client_none' or action.access_levels.0.code == 'create_all_clients' %}
+    
+                                                <label class="switch our-main-switch m-0">
+                                                    {% for access_level in action.access_levels %}
+                                                    {% if access_level.code == 'create_client_none' %}
+                                                    {% if request.resolver_match.url_name == 'view_template' %}
+                                                        <input type="checkbox" class="client_profile-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                                    {% else %}
+                                                        <input type="checkbox" class="client_profile-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                                    {% endif %}
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    <span class="slider round m-0"></span>
+                                                </label> 
+
+                                           {% endif %}
+ 
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+
+                                             <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>
+                                     
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+         {% endfor %}
+     </div>
+     </div>
+ 
+ 
+     <div class="tab-pane fade" id="department-content" role="tabpanel" aria-labelledby="department-tab">
+         <!-- Department content goes here -->
+         {% for feature_key, feature in department_management.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 8 %}collapsed {% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                                     <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+ 
+                                         {% for action in feature.actions %}
+                                         <h5 class="create-data">
+                                         {% if  action.action == 'create' and action.access_levels.0.code == 'create_department_team_own' or action.access_levels.0.code == 'create_department_all' %}
+                                             <strong>{{ action.action|title }}:</strong>
+                                             <span class="{{feature_key}}-selected-access-level" id="department_feature">
+                                                 {% if action.access_levels.0.code == 'create_department_team_own' %}
+                                                 No
+                                                 {% else %}
+                                                 Yes
+                                                 {% endif %}
+                                             </span>     
+ 
+                                         {% elif action.action == 'create' %}
+                                         <strong>{{ action.action|title }}:</strong>
+ 
+                                         <span class="{{feature_key}}-create-selected-access-level {{feature_key}}-selected-access-level"  id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% else %}
+ 
+                                         
+                                             <strong>{{ action.action|title }}:</strong>
+                                             {% if action.action == 'read' %}
+                                                 <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+ 
+                                                 {% elif action.action == 'update'  %}
+                                                 <span class="{{feature_key}}-update-selected-access-level {{feature_key}}-selected-access-level" id="features">
+ 
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+ 
+                                                 {% elif action.action == 'delete' %}
+                                                 <span class="{{feature_key}}-delete-selected-access-level" id="features">
+ 
+                                                     {% for access_level in action.access_levels %}
+                                                         {% if access_level.selected %}
+                                                             {{ access_level.name }}
+                                                         {% endif %}
+                                                     {% endfor %}
+                                                 </span>
+ 
+ 
+                                             {% endif %}                                  
+ 
+                                             {% endif %}                                  
+                                         </h5>
+                                         {% endfor %}
+                                     </div>
+                         </div>
+                     </div>
+                     
+                      
+                 </button>
+                 
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'department_management' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'assigning_clients' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'department_management' and request.resolver_match.url_name == 'add_template' or feature_key == 'department_management' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'department_management' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox" checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+             
+                 {% elif feature_key == 'assigning_clients' and request.resolver_match.url_name == 'add_template' or feature_key == 'assigning_clients' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'assigning_clients' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox" checked >
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 8 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#department-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                   
+                                     <div class="dropdown-container">
+                                         
+                                         {% if  action.action == 'create' and action.access_levels.0.code == 'create_department_team_own' or action.access_levels.0.code == 'create_department_all' %}
+                                             <div class=" dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-trigger d-none" id="department-toggle-mapping" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-create-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+ 
+                 
+                                         {% else %}
+                                       
+                                             {% if action.action == 'read' %}
+                                                                 
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="read-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                             {% if action.action == 'update' %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="update-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+                                             
+                                             {% if action.action == 'delete' %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-delete-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-delete-text dropdown-text">Select an option</span>
+                                                 {% if not  request.resolver_match.url_name == 'view_template' %}
+
+                                                 <span class="delete-arrow dropdown-arrow"></span>
+                                                {% endif %}
+                                             </div>
+                                             {% endif %}
+                                             
+                                             
+                                         {% endif %}
+ 
+                                         {% if action.action == 'create' and action.access_levels.0.code == 'create_department_team_own' or action.access_levels.0.code == 'create_department_all' %}
+                                         <label class="switch our-main-switch m-0">
+                                             {% for access_level in action.access_levels %}
+                                             {% if access_level.code == 'create_department_all' %}
+                                             {% if request.resolver_match.url_name == 'view_template' %}
+                                            <input type="checkbox" class="department-section-toggle" {% if not access_level.selected %}checked{% endif %} disabled>
+                                            {% else %}
+                                            <input type="checkbox" class="department-section-toggle" {% if not access_level.selected %}checked{% endif%}>
+                                            {% endif %}
+                                            {% endif %}
+                                             {% endfor %}
+                                             <span class="slider round m-0"></span>
+                                           </label>
+                                           
+                                           {% endif %}
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                             {% for access_level in action.access_levels %}
+                                             <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                 {{ access_level.name }}
+                                             </div>
+                                             {% endfor %}
+                                            </div>
+                                        {% else %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div> 
+ 
+ 
+ 
+     <div class="tab-pane fade" id="roster-content" role="tabpanel" aria-labelledby="roster-tab">
+         <!-- Roster content goes here -->
+         {% for feature_key, feature in roster_management.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 10 %}collapsed{% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                             <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                 {% for action in feature.actions %}
+                                 <h5 class="create-data">
+                      
+ 
+                                 {% if action.action == 'create' %}
+                                 <strong>{{ action.action|title }}:</strong>
+ 
+                                 <span class="{{feature_key}}-create-selected-access-level {{feature_key}}-selected-access-level"  id="features">                                        
+                                     {% for access_level in action.access_levels %}
+                                         {% if access_level.selected %}
+                                             {{ access_level.name }}
+                                         {% endif %}
+                                     {% endfor %}
+                                 </span>
+ 
+                                 {% else %}
+ 
+                                 
+                                     <strong>{{ action.action|title }}:</strong>
+                                     {% if action.action == 'read' %}
+                                         <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'update'  %}
+                                         <span class="{{feature_key}}-update-selected-access-level {{feature_key}}-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'delete' %}
+                                         <span class="{{feature_key}}-delete-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'export' %}
+                                         <span class="{{feature_key}}-export-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+ 
+                                     {% endif %}                                  
+ 
+                                     {% endif %}                                  
+                                 </h5>
+                                 {% endfor %}
+  
+                             </div> 
+                         </div>
+                     </div>
+                     <div class="col-auto ml-4">
+                     </div>
+                    
+                 </button>
+                 
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'shift_report' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+                
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'shift_report' and request.resolver_match.url_name == 'add_template' or feature_key == 'shift_report' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'shift_report' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox" checked>
+                     {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 10 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#roster-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                  
+                                     <div class="dropdown-container">
+                                         {% if action.action == 'create' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs  {{feature_key}}-create-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-create-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'read' %}
+         
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="read-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'update' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="update-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'delete' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-delete-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-delete-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="delete-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         {% if action.action == 'export' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-export-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-export-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="export-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         
+                                         
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                   </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>                                    
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div>
+     <div class="tab-pane fade" id="client-incident-report-content" role="tabpanel" aria-labelledby="client-incident-report-tab">
+         <!-- Client Incident Report content goes here -->
+         {% for feature_key, feature in client_incident_report.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian{% if not feature.id == 17 %} collapsed {% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left collaps-phera">{{ feature.description }}</p>
+ 
+                             <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                 {% for action in feature.actions %}
+                                 <h5 class="create-data">
+                                     <strong>{{ action.action|title }}:</strong>
+                                     {% if action.action == 'create' %}
+                                     <span class="{{feature_key}}-create-selected-access-level" id="features">                                        
+                                         {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                             {% endif %}
+                                         {% endfor %}
+                                     </span>
+ 
+ 
+                                     {% elif action.action == 'read' %}
+                                         <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'update'  %}
+                                         <span class="{{feature_key}}-update-selected-access-level {{feature_key}}-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'delete' %}
+                                         <span class="{{feature_key}}-delete-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'export' %}
+                                         <span class="{{feature_key}}-export-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+ 
+                                     {% endif %}                                  
+                        
+                                 </h5>
+                                 {% endfor %}
+                             </div> 
+                         </div>
+                     </div>
+                    
+                 </button>
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                     {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 17 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#client-incident-report-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                  
+                                     <div class="dropdown-container">
+                                         
+                                         {% if action.action == 'create' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-create-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                             </div>
+                                         {% endif %}
+                                       
+ 
+                                         {% if action.action == 'read' %}
+         
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="read-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'update' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="update-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'delete' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-delete-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-delete-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="delete-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         {% if action.action == 'export' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-export-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-export-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="export-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div>
+ 
+     <div class="tab-pane fade" id="progress-notes-timesheet-content" role="tabpanel" aria-labelledby="progress-notes-timesheet-tab">
+         <!-- Progress Notes and Timesheet content goes here -->
+         {% for feature_key, feature in progress_notes_and_timesheet.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 18 %}collapsed{% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                            
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                             <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                 {% for action in feature.actions %}
+                                 <h5 class="create-data">
+                                     <strong>{{ action.action|title }}:</strong>
+                                     {% comment %} {% if action.action == 'create' %}
+                                     <span class="{{feature_key}}-create-selected-access-level d-none" id="features">                                        
+                                         {% for access_level in action.access_levels %}
+                                             {% if forloop.first %}
+                                                 {{ access_level.name }}
+                                             {% endif %}
+                                         {% endfor %}
+                                     </span> {% endcomment %}
+                                     {% if action.action == 'create' %}
+                                     <span class="{{feature_key}}-selected-access-level" id ="progress-note" >
+                                        {% if action.access_levels.0.code == 'create_progress_notes_no_access' %}
+                                        No
+                                        {% else %}
+                                        Yes
+                                        {% endif %}
+                                    </span>     
+ 
+ 
+                                     {% elif action.action == 'read' %}
+                                         <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'update'  %}
+                                         <span class="{{feature_key}}-update-selected-access-level " id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'delete' %}
+                                         <span class="{{feature_key}}-delete-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+                                         {% elif action.action == 'export' %}
+                                         <span class="{{feature_key}}-export-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+ 
+ 
+                                     {% endif %}                                  
+                        
+                                 </h5>
+                                 {% endfor %}
+                             </div>  
+                         </div>
+                     </div>
+                     <div class="col-auto ml-4">
+                     </div>
+                     
+                 </button>
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 18 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#progress-notes-timesheet-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                    
+                                     <div class="dropdown-container">
+                                         {% if action.action == 'create' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-trigger d-none" id="progress-note-toggle-mapping" value="{{action.action}}">
+                                             <span class="{{feature_key}}-create-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                             </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'create' and action.access_levels.0.code == 'create_progress_notes_no_access' or action.access_levels.0.code == 'create_progress_notes_own' %}
+                                         <label class="switch our-main-switch m-0">
+                                             {% comment %} <input type="checkbox" class="progress-note-action-toggle" {% if action.access_levels.0.code == 'create_progress_notes_no_access' %}checked{% endif %}> {% endcomment %}
+                                             {% for access_level in action.access_levels %}
+                                                {% if access_level.code == 'create_progress_notes_no_access' %}
+                                                {% if request.resolver_match.url_name == 'view_template' %}
+                                                <input type="checkbox" class="progress-note-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                                {% else %}
+                                                <input type="checkbox" class="progress-note-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                                {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                             <span class="slider round m-0"></span>
+                                           </label>
+                                           
+                                           {% endif %}
+                                       
+ 
+                                         {% if action.action == 'read' %}
+         
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="read-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'update' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="update-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+ 
+                                         {% if action.action == 'delete' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-delete-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-delete-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="delete-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         {% if action.action == 'export' %}
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-export-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-export-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="export-arrow dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div>
+ 
+ 
+     <div class="tab-pane fade" id="investigation-content" role="tabpanel" aria-labelledby="investigation-tab">
+         <!-- Progress Notes and Timesheet content goes here -->
+         {% for feature_key, feature in admin_control.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 19 %}collapsed{% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                             <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                 {% for action in feature.actions %}
+                                 <h5 class="create-data">
+                                     <strong>{{ action.action|title }}:</strong>
+ 
+                                 {% if  feature_key == 'employee_approval' and action.action == 'update'  %}
+                                     <span class="employee-approval-create-shuffle" id="employee-approval">
+                                         {% if action.access_levels.0.code == 'update_employee_approval_none' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>     
+                                 {% else %}
+                                     {% if action.action == 'read' %}
+                                         <span class="{{feature_key}}-read-selected-access-level" id="features">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+                                     {% elif action.action == 'update'  %} 
+                                         <span class="{{feature_key}}-update-selected-access-level {{feature_key}}-selected-access-level" id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+                                     {% endif %}                               
+ 
+                                 {% endif %}                               
+                                 </h5>
+                                 {% endfor %}
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-auto ml-4">
+                     </div>
+             
+                 </button>
+ 
+ 
+ 
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'incident_investigation' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'risk_investigation' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'employee_approval' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox"  checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'incident_investigation' and request.resolver_match.url_name == 'add_template' or feature_key == 'incident_investigation' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'incident_investigation' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"    checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'risk_investigation' and request.resolver_match.url_name == 'add_template' or feature_key == 'risk_investigation' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'risk_investigation' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox"    checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'employee_approval' and request.resolver_match.url_name == 'add_template' or feature_key == 'employee_approval' and request.resolver_match.url_name == 'employee_scratch_template'  or feature_key == 'employee_approval' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox"    checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+                 
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 19 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#investigation-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                    
+                                     <div class="dropdown-container">
+                               
+                                             {% if action.action == 'read' %}
+                                                                 
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-read-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+                                                 <span class="read-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                             {% if action.action == 'update' and not feature_key == 'employee_approval'  %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+                                                 <span class="update-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                             {% if action.action == 'update' and feature_key == 'employee_approval' %}
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-trigger d-none" id="employee-approval-toggle-mapping" value="{{action.action}}">
+                                                 <span class="{{feature_key}}-update-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+                                                 <span class="update-arrow dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+                                             {% endif %}
+ 
+                                          
+    
+                                         {% if action.action == 'update' and action.access_levels.0.code == 'update_employee_approval_none' or action.access_levels.0.code == 'update_employee_approval_all' %}
+                                         {% comment %} <label class="switch our-main-switch m-0">
+                                             <input type="checkbox" class="employee-approval-action-toggle" {% if action.access_levels.0.code == 'update_employee_approval_none' %}checked{% endif %}>
+ 
+                                             <span class="slider round m-0"></span>
+                                         </label> {% endcomment %}
+
+                                         <label class="switch our-main-switch m-0">
+                                            {% for access_level in action.access_levels %}
+                                            {% if access_level.code == 'update_employee_approval_none' %}
+                                            {% if request.resolver_match.url_name == 'view_template' %}
+                                            <input type="checkbox" class="employee-approval-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                            {% else %}
+                                                <input type="checkbox" class="employee-approval-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                            <span class="slider round m-0"></span>
+                                        </label>
+
+                                         {% endif %}
+                           
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div>
+ 
+ 
+     <div class="tab-pane fade" id="company-policy-content" role="tabpanel" aria-labelledby="company-policy-tab">
+         <!-- Company Policy content goes here -->
+         {% for feature_key, feature in settings.features.items %}
+         <input type="hidden" value="{{feature.permission_set}}" class="permission_sets">
+ 
+         <div class="card main-card-content mt-0 mb-3 p-0">
+             <input type="hidden" value="{{feature_key}}" class="feature_name">
+             <div class="role-base-accodian d-flex justify-content-between position-relative">
+                 <button class="w-90 transsperant border-0 bshadow-none role-base-main-accodian {% if not feature.id == 13 %}collapsed{% endif %}"
+                     type="button" data-toggle="collapse" data-target="#collapse{{ feature.id }}" aria-expanded="true"
+                     aria-controls="collapse{{ feature.id }}">
+                     <div class="accodin-header-right w-100">
+                         <span>
+                             <svg class="naimationdropdownicon rotateble-icons" width="24" height="14" viewBox="0 0 24 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M2 2.44531L12 11.5538L22 2.44531" stroke="#28303F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                             </svg>
+                         </span>
+                         <div class="w-100 d-flex flex-column gap-13">
+                             <h3 class="my-0 right-side-accodian-heading">{{ feature.name }}</h3>
+                             <p class="m-0 text-left  collaps-phera">{{ feature.description }}</p>
+ 
+                             <div class="d-flex gap-3 align-items-center flex-wrap mt-1 header-actions" >
+                                 {% for action in feature.actions %}
+                                 <h5 class="create-data">
+                                     <strong>{{ action.action|title }}:</strong>
+ 
+                                 {% if  feature_key == 'terms_and_conditions' and action.action == 'read' %}
+                                     <span class="employee-approval-create-shuffle" id="term-read">
+                                         {% if action.access_levels.0.code == 'view_none_terms_and_conditions' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>   
+                                 {% elif  feature_key == 'terms_and_conditions' and action.action == 'update' %}
+                                     <span class="employee-approval-create-shuffle" id="term-update">
+                                         {% if action.access_levels.0.code == 'update_none_terms_and_conditions' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>    
+                                 
+                                 {% elif  feature_key == 'privacy_policy' and action.action == 'read' %}
+                                     <span class="employee-approval-create-shuffle" id="privacy-read">
+                                         {% if action.access_levels.0.code == 'view_none_privacy_policy' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>    
+                                     
+                                 {% elif  feature_key == 'privacy_policy' and action.action == 'update' %}
+                                     <span class="employee-approval-create-shuffle" id="privacy-update">
+                                         {% if action.access_levels.0.code == 'update_none_privacy_policy' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>    
+                                 
+                                      
+                                 {% elif  feature_key == 'user_permissions' and action.action == 'update' %}
+                                     <span class="employee-approval-create-shuffle" id="permission-update">
+                                         {% if action.access_levels.0.code == 'update_templates_none' %}
+                                         No
+                                         {% else %}
+                                         Yes
+                                         {% endif %}
+                                     </span>   
+                                 {% else %}
+ 
+                                     {% if action.action == 'create' %}
+                                     <span class="{{feature_key}}-create-selected-access-level" id="permission_create_text">                                        
+                                         {% for access_level in action.access_levels %}
+                                             {% if access_level.selected %}
+                                                 {{ access_level.name }}
+                                             {% endif %}
+                                         {% endfor %}
+                                     </span>
+                                     {% endif %}                               
+ 
+                                     {% if action.action == 'read' %}
+                                         <span class="{{feature_key}}-read-selected-access-level" id="permission_read_text">                                        
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+                                     {% endif %}                               
+ 
+                                     {% if action.action == 'update'  %} 
+                                         <span class="{{feature_key}}-update-selected-access-level " id="features">
+ 
+                                             {% for access_level in action.access_levels %}
+                                                 {% if access_level.selected %}
+                                                     {{ access_level.name }}
+                                                 {% endif %}
+                                             {% endfor %}
+                                         </span>
+                                     {% endif %}                               
+ 
+                                 {% endif %}                               
+                                 </h5>
+                                 {% endfor %}
+                             </div> 
+                         </div>
+                     </div>
+                     
+                      
+                 </button>
+                
+ 
+                 {% if request.resolver_match.url_name == 'saved_template_assignment' and saved_template_name == 'employee' and feature_key == 'user_permissions' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"  checked>
+                     <span class="slider round m-0"></span>
+                 </label>
+ 
+ 
+                 {% elif request.resolver_match.url_name == 'saved_template_assignment' %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                     <input type="checkbox"   {% if not feature.is_active %}checked{% endif %}>
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% elif feature_key == 'user_permissions' and request.resolver_match.url_name == 'add_template' or feature_key == 'user_permissions' and request.resolver_match.url_name == 'employee_scratch_template' or feature_key == 'user_permissions' and clone_template_name == 'employee' %}
+ 
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" checked disabled>
+                    {% else %}
+                     <input type="checkbox"   checked>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% else %}
+                 <label class="switch our-main-switch disable-div mb-0">
+                    {% if request.resolver_match.url_name == 'view_template' %}
+                    <input type="checkbox" {% if not feature.is_active %}checked{% endif %} disabled>
+                    {% else %}
+                     <input type="checkbox"  {% if not feature.is_active %}checked{% endif %}>
+                    {% endif %}
+                     <span class="slider round m-0"></span>
+                 </label>
+                 {% endif %}
+             </div>
+             <div id="collapse{{ feature.id }}" class="collapse {% if feature.id  == 13 %} show {% endif %}" aria-labelledby="heading{{ feature.id }}" data-parent="#company-policy-content">
+                 <div class="card-body d-flex flex-column ">
+                     <div class="d-flex flex-column pl-66 gap-21">
+                         {% for action in feature.actions %}
+                             <div class="d-flex justify-content-between align-items-center action-div">
+                                 <h4 class="m-0 accodian-inner-dropdowns">
+                                     <span class="bolder-tittle feature-actions">{{ action.action }}:</span>
+                                     {{ action.description }}
+                                 </h4>
+                                 <div class="btn-group">
+                                   
+                                     <div class="dropdown-container">
+                            
+ 
+                                     {% if feature_key == 'user_permissions' and  action.action == 'update' and action.access_levels.0.code == 'update_templates_none' or action.access_levels.0.code == 'update_templates' %}
+                                        {% comment %} <label class="switch odropdownTriggerur-main-switch m-0">
+                                         <input type="checkbox" class="permission-update-action-toggle" {% if action.access_levels.0.code == 'update_templates_none' %}checked{% endif %}>
+ 
+                                         <span class="slider round m-0"></span>
+                                       </label> {% endcomment %}
+                                       
+                                       <label class="switch odropdownTriggerur-main-switch m-0">
+                                        {% for access_level in action.access_levels %}
+                                            {% if access_level.code == 'update_templates_none' %}
+                                            <input type="checkbox" 
+                                                    class="permission-update-action-toggle"
+                                                    {% if access_level.selected %}checked{% endif %}
+                                                    {% if request.resolver_match.url_name == 'view_template' %}disabled{% endif %}>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="slider round m-0"></span>
+                                      </label>
+
+                                       <div class="dropdown-trigger customize-dropdown-triggerrs  {{feature_key}}-update-trigger {{feature_key}}-update-toggle-trigger d-none" id="permission-update-toggle-mapping" value="{{feature_key}}">
+                                         <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                         {% if not request.resolver_match.url_name == 'view_template' %}
+                                         <span class="dropdown-arrow"></span>
+                                         {% endif %}
+                                         </div>
+ 
+                                       
+                                       {% endif %}
+                                         {% if feature_key == 'terms_and_conditions' and action.action == 'read' and action.access_levels.0.code == 'view_none_terms_and_conditions' or action.access_levels.0.code == 'view_terms_and_conditions_all' %}
+                                       {% comment %} <label class="switch changed-our-main-switch m-0">
+                                           <input type="checkbox" class="term-read-action-toggle" {% if action.access_levels.0.code == 'view_none_terms_and_conditions' %}checked{% endif %}>
+                                            
+                                           <span class="slider round m-0"></span>
+                                         </label> {% endcomment %}
+                                         
+                                         <label class="switch changed-our-main-switch m-0">
+                                            {% for access_level in action.access_levels %}
+                                            {% if access_level.code == 'view_none_terms_and_conditions' %}
+                                            {% if request.resolver_match.url_name == 'view_template' %}
+                                            <input type="checkbox" class="term-read-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                            {% else %}
+                                            <input type="checkbox" class="term-read-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                            <span class="slider round m-0"></span>
+                                          </label>
+
+ 
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-toggle-trigger d-none" id="term-read-toggle-mapping" value="{{feature_key}}">
+                                             <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+ 
+                                         
+                                         {% endif %}
+                                         {% if feature_key == 'terms_and_conditions' and action.action == 'update' and action.access_levels.0.code == 'update_none_terms_and_conditions' or action.access_levels.0.code == 'update_terms_and_conditions_all' %}
+                                              {% comment %} <label class="switch changed-our-main-switch m-0">
+                                                 <input type="checkbox" class="term-update-action-toggle" {% if action.access_levels.0.code == 'update_none_terms_and_conditions' %}checked{% endif %}>
+         
+                                                 <span class="slider round m-0"></span>
+                                                 </label>
+          {% endcomment %}  
+
+
+                                                 <label class="switch changed-our-main-switch m-0">
+                                                    {% for access_level in action.access_levels %}                                                    
+
+                                                        {% if access_level.code == 'update_none_terms_and_conditions' %}
+                                                        {% if request.resolver_match.url_name == 'view_template' %}
+                                                        <input type="checkbox" class="term-update-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                                        {% else %}
+                                                        <input type="checkbox" class="term-update-action-toggle" {% if access_level.selected %}checked {% endif%}>
+                                                        {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                <span class="slider round m-0"></span>
+                                                </label> 
+
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-toggle-trigger d-none" id="term-update-toggle-mapping" value="{{feature_key}}">
+                                                 <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                                 {% if not request.resolver_match.url_name == 'view_template' %}
+                                                 <span class="dropdown-arrow"></span>
+                                                 {% endif %}
+                                             </div>
+         
+                                         
+                                         {% endif %}
+ 
+                                         {% if feature_key == 'privacy_policy' and action.action == 'read' and action.access_levels.0.code == 'view_privacy_policy_all' or action.access_levels.0.code == 'view_none_privacy_policy' %}
+                                         {% comment %} <label class="switch changed-our-main-switch m-0">
+                                             <input type="checkbox" class="privacy-read-action-toggle" {% if action.access_levels.0.code == 'view_none_privacy_policy' %}checked{% endif %}>
+     
+                                             <span class="slider round m-0"></span>
+                                           </label> {% endcomment %}
+                                           
+                                           <label class="switch changed-our-main-switch m-0">
+                                            {% for access_level in action.access_levels %}
+                                            {% if access_level.code == 'view_none_privacy_policy' %}
+                                            {% if request.resolver_match.url_name == 'view_template' %}
+                                            <input type="checkbox"  class="privacy-read-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                            {% else %}
+                                            <input type="checkbox"  class="privacy-read-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                            <span class="slider round m-0"></span>
+                                          </label>
+
+
+                                           <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-toggle-trigger d-none" id="privacy-read-toggle-mapping" value="{{feature_key}}">
+                                             <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                             {% if not  request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                             </div>
+                                           
+                                           {% endif %}
+                                           {% if feature_key == 'privacy_policy' and action.action == 'update' and action.access_levels.0.code == 'update_none_privacy_policy' or action.access_levels.0.code == 'update_privacy_policy_all' %}
+                                               {% comment %} <label class="switch changed-our-main-switch m-0">
+                                                   <input type="checkbox" class="privacy-update-action-toggle" {% if action.access_levels.0.code == 'update_none_privacy_policy' %}checked{% endif %}>
+           
+                                                   <span class="slider round m-0"></span>
+                                                   </label>
+                                            {% endcomment %}
+
+                                            <label class="switch changed-our-main-switch m-0">
+                                                {% for access_level in action.access_levels %}
+                                                {% if access_level.code == 'update_none_privacy_policy' %}
+                                                {% if request.resolver_match.url_name == 'view_template' %}
+                                                <input type="checkbox"  class="privacy-update-action-toggle" {% if access_level.selected %}checked{% endif %} disabled>
+                                                {% else %}
+                                                <input type="checkbox" class="privacy-update-action-toggle" {% if access_level.selected %}checked{% endif%}>
+                                                {% endif %}
+                                                {% endif %}
+                                                {% endfor %}
+                                                <span class="slider round m-0"></span>
+                                            </label>
+                                        
+ 
+                                             <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-update-toggle-trigger d-none" id="privacy-update-toggle-mapping" value="{{feature_key}}">
+                                             <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                             </div>
+                                           {% endif %}
+                                         
+ 
+                                           {% if feature_key == 'user_permissions' and  action.action == 'create' %}
+ 
+                                           <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-create-trigger {{feature_key}}-create-toggle-trigger" value="{{action.action}}">
+                                             <span class="{{feature_key}}-create-toggle-text dropdown-text">Select an option</span>
+                                             {% if not request.resolver_match.url_name == 'view_template' %}
+                                             <span class="dropdown-arrow"></span>
+                                             {% endif %}
+                                         </div>
+                                         {% endif %}
+                                           
+                                         {% if feature_key == 'user_permissions' and  action.action == 'read' %}
+ 
+                                         <div class="dropdown-trigger customize-dropdown-triggerrs {{feature_key}}-read-trigger  {{feature_key}}-read-toggle-trigger"  value="{{action.action}}">
+                                           <span class="{{feature_key}}-read-toggle-text dropdown-text">Select an option</span>
+                                           {% if not  request.resolver_match.url_name == 'view_template' %}
+                                           <span class="dropdown-arrow"></span>
+                                           {% endif %}
+                                       </div>
+                                        {% endif %}
+ 
+                                         <div class="dropdown-menu-main">
+                                             {% comment %} {% if request.resolver_match.url_name == 'saved_template_assignment' %}
+                                             <div class="drop-down-menue-inner">
+                                                 {% for access_level in action.access_levels %}
+                                                     {% if access_level.selected %}
+                                                         <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" data-selected="true">
+                                                             {{ access_level.name }}
+                                                         </div>
+                                                     {% endif %}
+                                                 {% endfor %}
+                                             </div>
+                                         {% else %} {% endcomment %}
+                                         {% if request.resolver_match.url_name == 'view_template' %}
+                                         <div class="drop-down-menue-inner d-none">
+                                                 {% for access_level in action.access_levels %}
+                                                 <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                     {{ access_level.name }}
+                                                 </div>
+                                             {% endfor %}
+                                             </div>
+                                        {% else %}
+                                        <div class="drop-down-menue-inner">
+                                            {% for access_level in action.access_levels %}
+                                            <div class="dropdown-item dropdown-secnd-item-page" data-value="{{ access_level.code }}" {% if access_level.selected %}data-selected="true"{% endif %}>
+                                                {{ access_level.name }}
+                                            </div>
+                                        {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                         {% comment %} {% endif %} {% endcomment %}
+                                         </div>
+                                     </div>                                
+                                     </div>
+                             </div>
+                         {% endfor %}
+                     </div>
+                 </div>
+             </div>
+         </div>
+          {% endfor %}
+     </div>  
+ </div>
+ 
+ 

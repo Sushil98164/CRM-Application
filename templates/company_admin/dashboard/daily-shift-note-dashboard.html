@@ -1,0 +1,878 @@
+{% extends "base_company_admin.html" %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% load company_admin_tags %}
+{% block title %}
+Progress Notes and Timesheet
+{% endblock title %}
+{% block stylesheets %}
+<style>
+	.modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+	
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		.modal-content{
+			width: 80% !important;
+		}
+		.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+			margin: 0 auto;
+			max-width: 32em;
+			display: flex;
+			justify-content: center;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+			padding: 8px 16px;
+			min-height: 36px;
+			font-size: 14px;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}
+	
+		@media screen and (max-width: 678px) {
+			.modal-content {
+				width: 100% !important;
+			}
+	
+		}
+		i.fa.fa-plus {
+			color: #fff;
+		}
+</style>
+<style>
+    .capitalize {
+      text-transform: capitalize;
+    }
+
+	.assigned{
+		background-color: #188ae2 ;
+		color: white;
+		border:#188ae2 !important;
+		border-radius: 5px;
+		font-size: 11px	;
+
+	}
+	.in-progress{
+		background-color:  #ff9900;
+		color:rgb(255, 247, 247);
+		border:#188ae2 !important;
+		border-radius: 5px;
+		font-size: 11px	;
+		
+	}
+	.completed{
+		background-color:  rgb(11, 168, 95) !important;
+		color:white;
+		border:rgb(11, 168, 95) !important;
+		border-radius: 5px;
+		font-size: 11px	;
+	}
+	.Pending{
+		background-color: rgb(168, 11, 11) !important;
+		color:white;
+		border:rgb(168, 11, 11) !important;
+		border-radius: 5px;
+		font-size: 11px	;
+	}
+	#addRow{
+		margin-top:10px;
+	}
+  </style>
+{% endblock stylesheets %}
+{% block content %}
+{% load widget_tweaks %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Progress notes and timesheet</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li class="active">Progress notes and timesheet</li>
+        </ol>
+    </div>
+</div>
+{% if request.resolver_match.url_name == 'daily_shift_note_dashboard' %}
+{% if  request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' %}
+<div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 col-lg-3-banner d-flex flex-wrap">
+        <div class="w-100 analysis-box m-b-0 bg-purple text-center analysis-box-dashboard">
+            <h3 class="text-white box-title text-center mb-1">Total</h3>
+            <span class="font-32">{{total_count}}</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					{% if messages %}
+					<div class="container-fluid">
+					  <ul class="list-unstyled">
+						{% for message in messages %}
+						  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							  <span aria-hidden="true">&times;</span>
+							</button>
+						  </li>
+						{% endfor %}
+					  </ul>
+					</div>
+					<script>
+						// Automatically close alerts after 5 seconds
+						window.setTimeout(function () {
+						  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+							$(this).remove();
+						  });
+						}, 5000);
+					  </script>
+				  {% endif %}
+
+
+				  <ul class="nav customtab nav-tabs" role="tablist">
+					{% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+					<li class="nav-item"><a href="{% url 'rostering:employee_shifts_list_view' %}" class="nav-link active">Roster</a></li>
+					<li class="nav-item"><a href="{% url 'company:daily_shift_note_dashboard' %}" class="nav-link ">Progress note and timesheet</a></li>
+					
+					{% else %}
+					<li class="nav-item"><a href="{% url 'rostering:employee_shifts_list_view' %}" class="nav-link ">Roster</a></li>
+					<li class="nav-item"><a href="{% url 'company:daily_shift_note_dashboard' %}" class="nav-link active">Progress note and timesheet</a></li>
+					
+					{% endif %}
+		
+					
+				</ul>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Shift notes list</header>
+								</div>
+
+								 <!--Add new incident report button start here -->
+
+								<div class="card-body ">
+									<div class="row">
+
+									  	<div class="col-md-6 col-sm-6 col-6">
+											 {% if  request.user|has_permission:'company_admin.create_progress_notes_own' %}
+											 
+												{% if request.resolver_match.url_name == 'daily_shift_note_dashboard' %}
+													<a href="{% url 'employee:dailyshift_add_employee' %}?path=dashboard" id="addRow" class="btn btn-info ml-auto">
+													Add new <i class="fa fa-plus"></i>
+													
+												</a>
+												{% comment %} {% else %}
+												<a href="{% url 'employee:dailyshift_add_employee' %}?path=employee" id="addRow" class="btn btn-info ml-auto">
+													Add new <i class="fa fa-plus"></i>
+												</a> {% endcomment %}
+												{% endif %}
+											{% endif %} 
+									  	</div>
+										{% if request.resolver_match.url_name == 'daily_shift_note_dashboard' %}
+										{% if  request.user|has_permission:'company_admin.export_progress_notes_all' or request.user|has_permission:'company_admin.export_progress_notes_own_team'%}
+										  <div class="col-md-6 col-sm-6 col-6">
+											<div class="btn-group pull-right">
+												<a class="btn deepPink-bgcolor btn-outline dropdown-toggle {% if not shifts %}disabled{% endif %}" data-toggle="dropdown" {% if not shifts %}disabled{% endif %}>
+													Download reports
+													<i class="fa fa-angle-down"></i>
+												</a>
+												<ul class="dropdown-menu download_report pull-right">
+													<li>
+														<a href="javascript:;" data-file-type="all-csv">
+															<!-- <i class="fa fa-file-pdf-o"></i> Save as CSV -->
+															<svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 512 512">
+																<!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+																<path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM200 352l16 0c22.1 0 40 17.9 40 40l0 8c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-8c0-4.4-3.6-8-8-8l-16 0c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l16 0c4.4 0 8-3.6 8-8l0-8c0-8.8 7.2-16 16-16s16 7.2 16 16l0 8c0 22.1-17.9 40-40 40l-16 0c-22.1 0-40-17.9-40-40l0-80c0-22.1 17.9-40 40-40zm133.1 0l34.9 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-34.9 0c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1L304 512c-8.8 0-16-7.2-16-16s7.2-16 16-16l42.9 0c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16l0 31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66l0-31.6c0-8.8 7.2-16 16-16s16 7.2 16 16l0 31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6l0-31.6c0-8.8 7.2-16 16-16z"/>
+															</svg>
+															Save as CSV
+			
+														</a>
+													</li>
+											
+													<li>
+														<a href="javascript:;" data-file-type="all-excel">
+															<i class="fa fa-file-excel-o"></i>Save as Excel
+														</a>
+													</li>
+												
+												</ul>
+											</div>
+										</div>
+										{% endif %}
+										{% endif %}								
+									</div>
+								  </div>
+				
+									<!--filters -->
+
+									{% if request.resolver_match.url_name == 'daily_shift_note_dashboard' %}
+									{% if  not request.user|has_permission:'company_admin.view_progress_notes_own'%}
+
+										<div class="filter-form" style="margin-left:25px;">
+												<form action="" method="get" class="row disable-on-submit">
+													<div class="col">
+													<div class="form-group">
+														<label for="client">Client</label>
+														{% render_field client_form.client class="form-control" %}
+													</div>
+													</div>
+												<div class="col">
+													<div class="form-group">
+													<label for="Employee">Employee</label>
+													{% render_field client_form.employee class="form-control" %}
+													</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group">
+														<label for="status">Start date</label>
+														<input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+													</div>
+												</div>
+												<div class="col-md-2">
+													<div class="form-group">
+														<label for="status">End date</label>
+														<input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+													</div>
+												</div>
+												<div class="col">
+													<button type="submit" class="btn btn-primary" style="margin-top:31px;">Submit</button>
+													<a href = "{% url 'company:daily_shift_note_dashboard'  %}"><button type="button" class="btn btn-secondary" style="margin-top:31px;" id="clearFilterBtn">Clear Filters</button></a>
+												</div>
+												</form>
+											</div>
+										{% endif %}
+										{% endif %}
+
+								
+								<!-- showing all and team progress notes-->
+								{% if request.resolver_match.url_name == 'daily_shift_note_dashboard' %}
+								<div class="card-body ">
+									<div class="table-scrollable">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th>S.no.</th>
+													<th>Employee name</th>
+													<th> Client name </th>
+													<th> Start date and time </th>
+													<th> End date and time</th>
+													<th> Status</th>
+													<th> Action </th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for shift in shifts %}
+												<tr class="odd gradeX">
+													<input type="hidden" class="shift-id" value="{{ shift.id }}">
+
+													<td class="patient-img">
+														{% get_proper_counter forloop.counter shifts %}
+														</td>
+													<td>{% if shift.employee.person.first_name %}{{shift.employee.person.first_name}} {% endif %} {% if shift.employee.person.last_name %}{{shift.employee.person.last_name}} {% endif %}</td>
+													<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name}} {% endif %}{% if shift.client.person.last_name %}{{shift.client.person.last_name}} {% endif %} </td>
+													<td class="left">{% if shift.start_date_time %}{{shift.start_date_time}}{% endif %}</td>
+													<td class="left">{% if shift.end_date_time %}{{shift.end_date_time}}{% endif %}</td>
+													<td class="left">{% if shift.description %}<button class="Completed" >Completed</button>{% else %}<button class="Pending" >Pending</button>{% endif %}</td>
+
+													<td>
+													
+														{% if shift.id in show_update_button_for %}
+														<a href="{% url 'company:admin_dailyshift_edit' shift.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-pencil"></i>
+														</a>
+														{% endif %} 
+														
+														<a href="{% url 'company:admin_dailyshift_view' shift.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a>
+													
+													</td>
+												</tr>
+												{% endfor %}
+
+											</tbody>
+										</table>
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+												Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+												<ul class="pagination float-right">
+													<!-- Previous Button -->
+													<li class="paginate_button page-item previous {% if not shifts.has_previous %}disabled{% endif %}">
+														{% if shifts.has_previous %}
+															<a href="?page={{ shifts.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Previous</a>
+														{% else %}
+															<a href="#" class="page-link">Previous</a>
+														{% endif %}
+													</li>
+
+													<!-- First Page -->
+													{% if shifts.number > 4 %}
+														<li class="paginate_button page-item">
+															<a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">1</a>
+														</li>
+														{% if shifts.number > 5 %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+														{% endif %}
+													{% endif %}
+
+													<!-- Page Numbers -->
+													{% for num in shifts.paginator.page_range %}
+														{% if num|add:"-3" <= shifts.number and num|add:"3" >= shifts.number %}
+															<li class="paginate_button page-item {% if shifts.number == num %}active{% endif %}">
+																<a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ num }}</a>
+															</li>
+														{% endif %}
+													{% endfor %}
+
+													<!-- Last Page -->
+													{% if shifts.number < shifts.paginator.num_pages|add:"-3" %}
+														<li class="paginate_button page-item disabled">
+															<span class="page-link">...</span>
+														</li>
+														<li class="paginate_button page-item">
+															<a href="?page={{ shifts.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ shifts.paginator.num_pages }}</a>
+														</li>
+													{% endif %}
+
+													<!-- Next Button -->
+													<li class="paginate_button page-item next {% if not shifts.has_next %}disabled{% endif %}">
+														{% if shifts.has_next %}
+															<a href="?page={{ shifts.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Next</a>
+														{% else %}
+															<a href="#" class="page-link">Next</a>
+														{% endif %}
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endif%}
+								<!-- /showing all and team progress notes-->
+								{% if request.resolver_match.url_name == 'employee_shifts_list_view' %}
+								<!-- showing self progress notes-->
+									<div class="row">
+										<div class="col-md-12">
+														<div class="tabbable-line">		
+															<div class="tab-content">
+																<div class="tab-pane active fontawesome-demo">
+														
+																	<div class="table-scrollable">
+																		<table
+																			class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+																			id="example4">
+								
+																			<thead>
+																				<tr class="capitalize">
+																					<th>SNO</th>
+																					<th>Client Name</th>
+																					<th> Start Date And Time </th>
+																					<th> End Date And Time  </th>
+																					<th>Status</th>
+																					<th> Action </th>
+																				</tr>
+																			</thead>
+								
+																			<tbody>
+																				{% if shifts %}
+																				{% for shift in shifts %}
+																				<tr class="odd gradeX">
+																					<td class="patient-img">
+																						{% get_proper_counter forloop.counter shifts %}
+																					</td>
+																					<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name|title}} {% endif %} {% if shift.client.person.last_name %}{{shift.client.person.last_name}}{% endif %} </td>
+																					<td class="left">{% if shift.start_date_time %}{{shift.start_date_time}}{% endif %}</td>
+																					<td class="left">{% if shift.end_date_time %}{{shift.end_date_time}}{% endif %}</td>
+																					{% if shift.status %}
+																					{% if shift.status == 'Assigned' %}
+																					<td class="left"><button class="assigned" >New</button></td>
+																					{% elif shift.status == 'Ongoing' %}
+																					<td class="left" ><button class="in-progress" >In progress</button></td>
+																					{% elif shift.status == 'Pending' %}
+																					<td class="left "><button class="Pending" >Progress note pending</button></td>
+																					{% endif %}
+																					{% endif %}
+																					<td>
+																						{% if shift.status == 'Assigned' %}
+																						<button id="shift-{{ shift.id }}"
+																						class="btn btn-primary punch-in-btn" data-status="{{ shift.status }}">
+																						Punch in
+																						</button>
+																						{% elif shift.status == 'Ongoing' %}
+																						<a  href="{% url 'employee:dailyshift_edit' shift.id %}" style="color:white;">	<button id="punch-out"
+																						class="btn btn-primary punch-out-btn" data-status="{{ shift.status }}">Punch out</button></a>
+																						
+																						{% else %}
+																						<a  href="{% url 'employee:dailyshift_edit_employee' shift.id %}" style="color:white;">	<button
+																							class="btn btn-primary" data-status="{{ shift.status }}">Update</button></a>
+																							
+																						
+																						{% endif %}
+																					</td>
+																				</tr>
+																				{% endfor %}
+																				{% else %}
+																				<tr class="odd gradeX">
+																					<td colspan="6" class="left">No Records Found</td>
+																				</tr>
+																				{% endif %}
+								
+																			</tbody>
+																		</table>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-sm-12 col-md-5">
+																		<!-- <div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+																			Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+																		</div> -->
+																	</div>
+																	<div class="col-sm-12 col-md-7">
+																		<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+																			<ul class="pagination float-right">
+																				<!-- Previous Button -->
+																				<li class="paginate_button page-item previous {% if not shifts.has_previous %}disabled{% endif %}">
+																					{% if shifts.has_previous %}
+																						<a href="?page={{ shifts.previous_page_number }}" class="page-link">Previous</a>
+																					{% else %}
+																						<a href="#" class="page-link">Previous</a>
+																					{% endif %}
+																				</li>
+		
+																				<!-- First Page -->
+																				{% if shifts.number > 4 %}
+																					<li class="paginate_button page-item">
+																						<a href="?page=1" class="page-link">1</a>
+																					</li>
+																					{% if shifts.number > 5 %}
+																						<li class="paginate_button page-item disabled">
+																							<span class="page-link">...</span>
+																						</li>
+																					{% endif %}
+																				{% endif %}
+		
+																				<!-- Page Numbers -->
+																				{% for num in shifts.paginator.page_range %}
+																					{% if num|add:"-3" <= shifts.number and num|add:"3" >= shifts.number %}
+																						<li class="paginate_button page-item {% if shifts.number == num %}active{% endif %}">
+																							<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+																						</li>
+																					{% endif %}
+																				{% endfor %}
+		
+																				<!-- Last Page -->
+																				{% if shifts.number < shifts.paginator.num_pages|add:"-3" %}
+																					<li class="paginate_button page-item disabled">
+																						<span class="page-link">...</span>
+																					</li>
+																					<li class="paginate_button page-item">
+																						<a href="?page={{ shifts.paginator.num_pages }}" class="page-link">{{ shifts.paginator.num_pages }}</a>
+																					</li>
+																				{% endif %}
+		
+																				<!-- Next Button -->
+																				<li class="paginate_button page-item next {% if not shifts.has_next %}disabled{% endif %}">
+																					{% if shifts.has_next %}
+																						<a href="?page={{ shifts.next_page_number }}" class="page-link">Next</a>
+																					{% else %}
+																						<a href="#" class="page-link">Next</a>
+																					{% endif %}
+																				</li>
+																			</ul>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+								{% endif %}
+										</div>
+									</div>
+									<!---delete confirm popup-->
+									<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered" role="document">
+										  <div class="modal-content">
+											<div class="modal-header">
+											  <div class="icon-alert">
+											  <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+											  </div>
+											  <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+											</div>
+											<div class="modal-body">
+											  You won't be able to revert it!
+											</div>
+											<div class="modal-footer">
+											  <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised" id="deleteConfirmed">Yes, delete it!</button>
+											  <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal">Cancel</button>
+											</div>
+										  </div>
+										</div>
+									  </div>
+									
+									<!--pop up end-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- start widget -->
+<!-- end widget -->
+
+
+  	<!-- The Modal -->
+	  <div class="modal fade" id="download-file">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content p-5">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Download files</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+				<form method="POST" id="downloadForm">
+          {% csrf_token %}
+						<div class="form-group">
+							<label for="start_date">Start date</label>
+							<input type="date" class="form-control" id="start_date" name="start_date" onchange="validateDates()" required>
+						</div>
+						<div class="form-group">
+							<label for="end_date">End date</label>
+							<input type="date" class="form-control" id="end_date" name="end_date" onchange="validateDates()" required>
+						</div>
+            <div class="form-group">
+              <label>Download as</label>
+              <select id="fileType" class="form-control">
+                  <option value="excel">Excel</option>
+                  <option value="csv">CSV</option>
+              </select>
+          </div>
+		  <p class="text-danger" id="date_error"></p>
+
+						<div class="modal-footer text-center justify-content-md-center">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+							<button id="downloadButton"  type="submit" class="btn btn-primary">Download</button>
+						</div>
+				</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<!-- <script>
+    function confirmDelete(shiftID) {
+        $('#deleteConfirmationModal').modal('show');
+        $('#deleteConfirmed').click(function () {
+            $('#deleteForm_' + shiftID).submit();
+        });
+    }
+</script> -->
+
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(shiftID) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + shiftID).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+</script>
+<!---downlaod report js -->
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		document.querySelector('.download_report').addEventListener('click', function(event) {
+			  const target = event.target.closest('a');
+			  if (target && target.dataset.fileType) {
+				event.preventDefault();
+				const selectedFileType = target.dataset.fileType;
+				// Get filter values only if the condition is met
+				const idClient = document.getElementById('id_client')?.value || '';
+				const idEmployee = document.getElementById('id_employee')?.value || '';
+				const startDate = document.getElementById('start_date')?.value || '';
+				const endDate = document.getElementById('end_date')?.value || '';
+				const shiftElements = document.querySelectorAll('.shift-id');
+				const shiftIds = Array.from(shiftElements).map(element => element.value);
+		  
+				if (shiftIds.length === 0) {
+				  console.error('No shift IDs found');
+				  return;
+				}
+				$.ajax({
+				  url: "{% url 'company:download_shift_report' %}",
+				  type: 'POST',
+					headers: {
+						'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+					},
+					data: {
+							shift_ids: shiftIds.join(','),
+							file_type: selectedFileType,
+							id_client: idClient,
+							id_employee: idEmployee,
+							start_date: startDate,
+							end_date: endDate
+					},
+					xhrFields: {
+						responseType: 'blob'
+					},
+					success: function(data, textStatus, jqXHR) {
+						const fileType = jqXHR.getResponseHeader('X-File-Type');
+						if(fileType=='csv' || fileType == 'all-csv' ){
+						  const now = new Date();
+						  const day = String(now.getDate()).padStart(2, '0');
+						  const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+						  const year = now.getFullYear();
+						  const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+						  const minutes = String(now.getMinutes()).padStart(2, '0');
+						  const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+						  const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+						  //const filename = `shifts_report_${timestamp}.${selectedFileType === 'csv' ? 'csv' : 'xlsx'}`;
+						  const filename = `shifts_report_${timestamp}.${selectedFileType === 'csv' || selectedFileType === 'all-csv' ? 'csv' : 'xlsx'}`;
+						  //const blob = new Blob([data], { type: selectedFileType === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+						  const blob = new Blob([data], { 
+							type: selectedFileType === 'csv' || selectedFileType === 'all-csv' 
+								? 'text/csv' 
+								: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+						  }); 
+						  const url = window.URL.createObjectURL(blob);
+						  
+						  const a = document.createElement('a');
+						  a.style.display = 'none';
+						  a.href = url;
+						  a.download = filename;
+						  document.body.appendChild(a);
+						  a.click();
+	  
+						  document.body.removeChild(a);
+						  window.URL.revokeObjectURL(url);
+						}
+						else if(fileType=='excel' || fileType == 'all-excel'){
+						  const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+						  const url = window.URL.createObjectURL(blob);
+			
+						  const now = new Date();
+						  const day = String(now.getDate()).padStart(2, '0');
+						  const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+						  const year = now.getFullYear();
+						  const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+						  const minutes = String(now.getMinutes()).padStart(2, '0');
+						  const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+						  const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+						  const filename = `shifts_report_${timestamp}.xlsx`;
+			
+			
+						  const a = document.createElement('a');
+						  a.style.display = 'none';
+						  a.href = url;
+						  a.download = filename;
+						  document.body.appendChild(a);
+						  a.click();
+			
+						  document.body.removeChild(a);
+						  window.URL.revokeObjectURL(url);
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error('Error:', error);
+						document.getElementById('date_error').textContent = 'No records available for the given date range.';
+					}
+				});
+			}
+		});
+	});
+	$('#example4').DataTable({
+		paging: false,
+		info: false
+	});
+	</script>
+  <!--end -->
+
+  <script>
+	function disablePunchInButtons() {
+        $('.punch-in-btn').attr('disabled', true);
+    }
+
+    // Function to enable all punch-in buttons
+    function enablePunchInButtons() {
+        $('.punch-in-btn').attr('disabled', false);
+    }
+
+	$('.punch-in-btn').click(function () {
+		const button = $(this); 
+		const shift_id = button.attr('id').split('-')[1];
+
+		button.prop('disabled', true);
+        button.html('<span class="loader"></span>');
+
+		$.ajax({
+			url: "{% url 'employee:create_progress_note_by_employee' %}",
+			method: 'POST',
+			data: { shift_id: shift_id }, 
+			headers: {
+				'X-CSRFToken': '{{ csrf_token }}'
+			},
+			success: function (response) {
+				window.location.reload(); 
+			},
+			error: function (xhr, status, error) {
+				console.error(xhr.responseText);
+			}
+			
+		});
+	});
+
+
+    $(document).ready(function () {
+        console.log("Document is ready");
+
+        
+
+        // Check on page load if there's any punch-out button active or shift status is 'Ongoing'
+        if ($('[data-status="Ongoing"]').length > 0 || $('[data-status="Ongoing"]').length > 0) {
+            console.log("Found punch-out buttons or ongoing shifts on page load");
+            disablePunchInButtons();
+        } else {
+            console.log("No punch-out buttons or ongoing shifts found on page load");
+            enablePunchInButtons();
+        }
+    });
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const punchOutBtn = document.getElementById('punch-out')
+
+    punchOutBtn.addEventListener('click',function() {
+         
+        punchOutBtn.disabled = true;
+        punchOutBtn.innerHTML = '<span class="loader"></span>';
+    });
+
+});
+</script>
+
+{% endblock javascripts %}

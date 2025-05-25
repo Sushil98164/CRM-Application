@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Status</title>
+</head>
+<body>
+    <p>Hello {{ user.username }},</p>
+
+    <p>Your account status is as follows:</p>
+
+    <ul>
+        <li><strong>Account status:</strong>{% if user.is_active == True %} Active {% else %} Inactive {% endif %}</li>
+    </ul>
+
+    <p>If you have any questions or concerns about your account, please contact our support team.</p>
+
+    <p>Thank you for being a part of {{ site_name }}!</p>
+
+    <p>Best regards,</p>
+    <p>The {{ site_name }} Team</p>
+</body>
+</html>

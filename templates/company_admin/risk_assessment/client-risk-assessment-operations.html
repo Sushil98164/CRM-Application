@@ -1,0 +1,1087 @@
+{% load static %}
+{% load company_admin_tags %}
+{% load widget_tweaks %}
+{% block stylesheets %}
+<style>
+    .capitalize {
+        text-transform: capitalize;
+    }
+</style>
+{% endblock stylesheets %}
+
+<style>
+    .left.edit-delete-action-btn {
+        display: flex !important;
+        align-items: baseline !important;
+    }
+    #risk_detail_form_message {
+        color: red;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Risk assessment information</header>
+                </div>
+            
+    <form id="risk_form" method="POST">
+                    {% csrf_token %}
+                            <div class="card-box">
+                                <div class="card-body row">
+
+                                    <div class="col-lg-6 p-t-20">
+                                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width has-placeholder is-upgraded"
+                                            data-upgraded=",MaterialTextfield">
+                                            <div class="form-control-wrapper">
+                                                {% render_field risk_assessment_form.client %}
+                                                {% render_field risk_assessment_form.prepared_by %}
+                                                {% render_field risk_assessment_form.id %}
+                
+                                                {% render_field risk_assessment_form.assessment_date class="mdl-textfield__input datepicker-risk" placeholder=""%}
+
+                                                <span class="focus-input100 error-label"
+                                                    style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                    data-placeholder="&#xf191;"></span>
+                                                <label class="mdl-textfield__label">Date prepared</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 p-t-20 text-right">
+                                        <button
+                                        type="button" class="btn risk-info-btn"
+                                        data-toggle="modal" data-target="#myModal3">Risk information
+                                        <!-- <i class="fa fa-plus"></i> -->
+                                    </button>
+                                    </div>
+                                    <div class = "table-scrollable" >
+                                    <div class="col-sm-12">
+                                    <table
+                                        class="table table-striped table-bordered table-hover table-checkable order-column valign-middle dataTable no-footer"
+                                        id="example4" role="grid" aria-describedby="example4_info">
+                                        <thead>
+                                            <tr role="row">
+                                                <th class="sorting_asc" tabindex="0" aria-controls="example4"
+                                                    rowspan="1" colspan="1" aria-sort="ascending"
+                                                    aria-label="S.no: activate to sort column descending"
+                                                    style="width: 76.35px;">S.no</th>
+                                                <th class="sorting" tabindex="0" aria-controls="example4" rowspan="1"
+                                                    colspan="1"
+                                                    aria-label=" Risk type : activate to sort column ascending"
+                                                    style="width: 153.538px;"> Risk type </th>
+                                                <th class="sorting" tabindex="0" aria-controls="example4" rowspan="1"
+                                                    colspan="1"
+                                                    aria-label=" Risk Area  : activate to sort column ascending"
+                                                    style="width: 150.663px;"> Risk area </th>
+                                                <th class="sorting" tabindex="0" aria-controls="example4" rowspan="1"
+                                                    colspan="1"
+                                                    aria-label=" Action: activate to sort column ascending"
+                                                    style="width: 175.075px;"> Action</th>
+                                               
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if risk_assessment_detail_obj %}
+                                                {% for detail_obj in risk_assessment_detail_obj %}
+                                                <tr class="odd gradeX">
+                                                    <td class="patient-img">
+                                                        {{forloop.counter}}
+                                                    </td>
+                                                    <td class="left">{% if detail_obj.risk_type.name %}{{detail_obj.risk_type.name}}{% endif %}</td>
+                                                    <td class="left">
+                                                        {% if detail_obj.choosen_risk_area %}
+                                                    {{ detail_obj.choosen_risk_area|get_dict_value }}
+                                                    {% endif %}
+                                                    </td>
+                                                   
+                                                    <td class="left edit-delete-action-btn text-center" style="display: flex; align-items: center; justify-content: center;">
+
+                                                        <a href="#" id="modalLink-{{ forloop.counter }}" data-custom-attribute="{{detail_obj.id}}" class="btn btn-primary btn-xs risk-tab-form"  data-toggle="modal" data-target="#myModal_{{ forloop.counter }}">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>    
+                                                        
+                                                
+                                                {% if not request.resolver_match.url_name == 'risk_assessment_edit' %}
+                                                    <button type="button" class="btn btn-danger btn-xs" onclick="detailconfirmDelete('{{ detail_obj.id }}')">
+                                                        <i class="fa fa-trash-o"></i>
+                                                    </button>
+                                                {% endif %}
+
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                            {% endfor %}
+                                            {% endif %}
+                                           
+                                            {% if not request.resolver_match.url_name == 'risk_assessment_edit' %}
+
+                                            <tr class="odd">
+                                                <td valign="top" colspan="6" class="dataTables_empty text-right"><button
+                                                        type="button" class="btn btn-primary btn-info"
+                                                        data-toggle="modal" data-target="#myModal">
+                                                        Add new <i class="fa fa-plus"></i>
+                                                    </button></td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    </div>
+
+                                    {% if client_id in show_investigation_for %}
+                                    {% if not request.resolver_match.url_name == 'employee_risk_assessment_add' %}
+
+                                    <div class="col-lg-12 p-t-20">
+                                        <p class="" style="font-size: 20px; font-weight: 600;">Documentation and management
+                                            approval</p>
+                                    </div>
+
+                                    {{ risk_documentation_approval_formset.management_form }}
+                                    {% for form in risk_documentation_approval_formset %}
+                                    <div class="col-lg-4 p-t-20">
+                                        <div
+                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                            <div class="form-control-wrapper">
+                                                {% render_field form.completed_by class="mdl-textfield__input" placeholder="" readonly="readonly"  %}
+                                                {% render_field form.id %}
+
+                                                <span class="focus-input100 error-label"
+                                                    style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                    data-placeholder="&#xf191;"></span>
+                                                <label class="mdl-textfield__label">Completed by</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 p-t-20">
+                                        <div
+                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                            <div class="form-control-wrapper">
+                                                {% render_field form.authorized_by class="mdl-textfield__input"  placeholder=""%}
+                                                <span class="focus-input100 error-label"
+                                                    style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                    data-placeholder="&#xf191;"></span>
+                                                <label class="mdl-textfield__label ">Authorised by</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 p-t-20">
+                                        <div
+                                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                            <div class="form-control-wrapper">
+                                                {% render_field form.date class="mdl-textfield__input" placeholder="" %}
+                                                <span class="focus-input100 error-label"
+                                                    style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                    data-placeholder="&#xf191;"></span>
+                                                <label class="mdl-textfield__label">Date</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                    <div class="col-lg-12 p-t-20">
+                                        <p class="" style="font-size: 20px; font-weight: 600;">Monitor and review the risk
+                                            control </p>
+                                    </div>
+
+
+                                    {{ risk_moniter_control_formset.management_form }}
+                                    {% for form in risk_moniter_control_formset %}
+                                    <div class="col-lg-12 p-t-20 row parent-section initial-form">
+
+
+                                        <div class="col-lg-4 p-t-20 monitor_div_clone">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                <div class="form-control-wrapper">
+                                                    {% render_field form.reviewed_date class="mdl-textfield__input" placeholder=""%}
+                                                    {% render_field form.id %}
+
+                                                    <span class="focus-input100 error-label"
+                                                        style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                        data-placeholder="&#xf191;"></span>
+                                                    <label class="mdl-textfield__label">Review date</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 p-t-20 monitor_div_clone">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                <div class="form-control-wrapper">
+                                                    {% render_field form.reviewed_by class="mdl-textfield__input" placeholder=""%}
+                                                    <span class="focus-input100 error-label"
+                                                        style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                        data-placeholder="&#xf191;"></span>
+                                                    <label class="mdl-textfield__label">Reviewed by</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 p-t-20 monitor_div_clone">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                <div class="form-control-wrapper">
+                                                    {% render_field form.authorized_by class="mdl-textfield__input"   placeholder=""%}
+                                                    <span class="focus-input100 error-label"
+                                                        style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                        data-placeholder="&#xf191;"></span>
+                                                    <label class="mdl-textfield__label">Authorised by</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+
+                                    {% endif %}
+                                    <p id="risk_detail_form_message"></p>
+                                    <div class="col-lg-12 p-t-20 text-center">
+                                        {% if request.session.risk_assessment_instance_id and not request.session.risk_assessment_instance_none %}
+                                        <button type="submit"
+                                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue"
+                                            data-upgraded=",MaterialButton" >Submit</button>
+                                        {% else %}
+                                        
+                                            <button   id="risk_detail_message"
+                                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue"
+                                            data-upgraded=",MaterialButton" >Submit</button>
+                                        {% endif %}
+                                        {% if request.resolver_match.url_name == 'employee_risk_assessment_add' %}
+                                        <a href="{% url 'employee:client_risk_assessment_list_view' client_id  %}"
+                                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default"
+                                            data-upgraded=",MaterialButton" onclick="handleCancel({{ risk_assessment_id }});" id="cancelBtn">Cancel</a>
+                                        {% endif %}
+                                        {% if request.resolver_match.url_name == 'risk_assessment_add' or request.resolver_match.url_name == 'risk_assessment_edit'%}
+                                        <a href="{% url 'company:client_profile_risk_assessment' client_id  %}"
+                                            class="mdl-button mdl-js-button mdl-button--raised  m-b-10 btn-default"
+                                            data-upgraded=",MaterialButton"  onclick="handleCancel({{ risk_assessment_id }});" id="companycancelBtn">Cancel</a>
+                                        {% endif %}
+                                    </div>
+
+                                  
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+    </form>
+            <!---delete confirm popup-->
+            <div class="modal fade delete-confirmation-modal" id="detaildeleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="icon-alert">
+                            <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                            </div>
+                            <h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+                        </div>
+                        <div class="modal-body">
+                            You won't be able to revert it!
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised " id="detaildeleteConfirmed">Yes, delete it!</button>
+                            <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal" id="detaildeleteCanceled">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+    <!--pop up end-->
+    <form method="POST" action="{% url 'company:risk_assessment_details_add' client_id %}" class="disable-form-on-submit">
+        {% render_field risk_assessment_form.client %}
+        {% render_field risk_assessment_form.prepared_by %}
+        {% render_field risk_assessment_form.id%}
+    {% csrf_token %}
+        {{ risk_assessment_detail_formset.management_form }}
+        {% for form in risk_assessment_detail_formset %}
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <input type ="hidden" id="assessment_date_value" name="assessment_date" value="">
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                              
+                                    <div class="card-box">
+                                        <div class="card-body row">
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width has-placeholder is-upgraded"
+                                                    data-upgraded=",MaterialTextfield">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_type required="required" class="mdl-textfield__input  risk_area_id"  %}
+                                                        {% render_field form.id%}
+
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder=""></span>
+                                                        <label class="mdl-textfield__label ">Risk type</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width has-placeholder is-upgraded"
+                                                    data-upgraded=",MaterialTextfield">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.choosen_risk_area   class="mdl-textfield__input"%}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk areas</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_self class="mdl-textfield__input "  placeholder="" onkeypress="return event.charCode>= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to self</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_self_category class="mdl-textfield__input " placeholder=""  %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_staff class="mdl-textfield__input " placeholder=""  onkeypress="return event.charCode>= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to staff</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_staff_category class="mdl-textfield__input " placeholder=""  %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_other class="mdl-textfield__input " placeholder=""  onkeypress="return event.charCode >= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to other</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_other_category class="mdl-textfield__input " placeholder="" %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.source_of_information class="mdl-textfield__input "  %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Source of
+                                                            information</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.comments class="mdl-textfield__input " %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Comments(management or
+                                                            support plan)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-12 p-t-20 text-center">
+                                                <button type="submit"
+                                                    class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue"
+                                                    data-upgraded=",MaterialButton" id="addModalSubmitBtn">Submit</button>
+
+                                                    <button type="button" data-upgraded=",MaterialButton" class="mdl-button mdl-js-button mdl-button--raised  m-b-10  btn btn-default" data-dismiss="modal" id="addModalCancelBtn">Cancel
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+
+
+
+ <!--modal for showing risk assessement information-->
+ <div class="modal" id="myModal3">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="col-lg-12 p-t-20"> 
+                    <div class="table-border">
+                        <table class="table">
+                            <thead>
+                                <tr class="type-risk">
+                                    <th scope="col">Type of Risk</th>
+                                    <th scope="col">Range</th>
+                                    <th scope="col">Mitigation Action</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="low-risk">
+                                    <th scope="row">Low</th>
+                                    <td>2-4</td>
+                                    <td>Risks that are below the risk acceptance threshold and can be
+                                        managed by routine procedures.</td>
+                                </tr>
+                                <tr class="medium-risk">
+                                    <th scope="row">Medium</th>
+                                    <td>5-6</td>
+                                    <td>Risks that lie on the risk acceptance threshold, require action by
+                                        due date and active monitoring.</td>
+                                </tr>
+                                <tr class="high-risk">
+                                    <th scope="row">High</th>
+                                    <td>7-10</td>
+                                    <td>Risks that exceed the risk acceptance threshold and need
+                                        proactive, urgent and immediate action to reduce their risk level</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-12 p-t-20">
+                    <style>
+                        table {
+                            width: 100%;
+                            border: 1px solid black;
+                            border-collapse: collapse;
+                            text-align: center;
+                            /* Center align table content */
+                            padding: 10px;
+                            /* Add padding to the table */
+                        }
+
+                        th,
+                        td {
+                            border: 1px solid black;
+                            padding: 10px;
+                            /* Add padding to cells */
+                        }
+
+                        .column-name {
+                            width: 50px;
+                        }
+
+                        .mid-column {
+                            width: 75%;
+                        }
+
+                        .vertical-text {
+                            writing-mode: vertical-rl;
+                            transform: rotate(180deg);
+                            text-align: center;
+                        }
+                    </style>
+
+                    </head>
+
+                    <body>
+                    <div class="table-border">
+                        <table style="width:100%">
+                            <tr class="LIKELIHOOD-GUIDE">
+                                <th class="column-name" rowspan="6">
+                                    <div class="vertical-text">LIKELIHOOD GUIDE</div>
+                                </th>
+                                <th class="mid-column">
+                                    Almost Certain<br>
+                                    <span style="font-weight: 400;">Almost Certain, likely to occur often, >1/week, >25%</span>
+                                </th>
+                                <th class="bg-gray">5</th>
+                            </tr>
+                            <tr class="LIKELIHOOD-GUIDE">
+                                <td><b>Likely</b><br>
+                                    Likely, known to Occur, 1/week - 1/month, 10% - 25%</td>
+                                <td class="bg-gray">4</td>
+                            </tr>
+                            <tr class="LIKELIHOOD-GUIDE">
+                                <td><b>Possible</b><br>
+                                    could occur, 1/month – 1/year, 1% - 10%</td>
+                                <td class="bg-gray">3</td>
+                            </tr>
+                            <tr class="LIKELIHOOD-GUIDE">
+                                <td><b>Unlikely</b><br>
+                                    Unlikely - not likely to occur, 1/year – 1/10 years, 0.1% - 1%</td>
+                                <td class="bg-gray">2</td>
+                            </tr>
+                            <tr class="LIKELIHOOD-GUIDE">
+                                <td><b>Rare</b><br>
+                                    Rare - practically im3, <1 /10 years, <0.1%</td>
+                                <td class="bg-gray">1</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-12 p-t-20">
+
+                    <style>
+                        table,
+                        th,
+                        td {
+                            border: 1px solid black;
+                            border-collapse: collapse;
+                        }
+                    </style>
+                    </head>
+
+                     <div class="table-scrollable">
+                        <div class="table-border">
+                            <table style="width:100%">
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <th rowspan="2" colspan="2" >Severity Occurance</th>
+                                    <th colspan="2">Low Significance</th>
+                                    <th colspan="2">Minor</th>
+                                    <th colspan="2">Moderate</th>
+                                    <th colspan="2">Severe</th>
+                                    <th colspan="2">Major</th>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td colspan="2" >1</td>
+                                    <td colspan="2" >2</td>
+                                    <td colspan="2" >3</td>
+                                    <td colspan="2" >4</td>
+                                    <td colspan="2" >5</td>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td >Almost Certain</td>
+                                    <td class="LIKELIHOOD-GUIDE">5</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">6</td>
+                                    <td class="high">High</td>
+                                    <td class="high">7</td>
+                                    <td class="high">High</td>
+                                    <td class="high">8</td>
+                                    <td class="high">High</td>
+                                    <td class="high">9</td>
+                                    <td class="high">High</td>
+                                    <td class="high">10</td>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td>Likely</td>
+                                    <td>4</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">5</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">6</td>
+                                    <td class="high">High</td>
+                                    <td class="high">7</td>
+                                    <td class="high">High</td>
+                                    <td class="high">8</td>
+                                    <td class="high">High</td>
+                                    <td class="high">9</td>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td>Possible</td>
+                                    <td >3</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">4</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">5</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">6</td>
+                                    <td class="high">High</td>
+                                    <td class="high">7</td>
+                                    <td class="high">High</td>
+                                    <td class="high">8</td>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td>Unlikely</td>
+                                    <td>2</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">3</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">4</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">5</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">6</td>
+                                    <td class="high">High</td>
+                                    <td class="high">7</td>
+                                </tr>
+                                <tr class="LIKELIHOOD-GUIDE-2">
+                                    <td>Rare</td>
+                                    <td>1</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">2</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">3</td>
+                                    <td class="low">Low</td>
+                                    <td class="low">4</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">5</td>
+                                    <td class="medium">Medium</td>
+                                    <td class="medium">6</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 p-t-20 text-center">
+
+
+                        <button type="button" data-upgraded=",MaterialButton"
+                            class="mdl-button mdl-js-button mdl-button--raised  m-b-20  btn btn-default"
+                            data-dismiss="modal" id="closeBtn">Close
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+           
+
+        </div>
+
+        </div>
+    
+</div>
+    
+
+
+    <!-- modal for table records -->
+    {% for form in risk_assessment_detail_formset_for_modals %}
+    
+    <form method="POST" action="{% url 'company:risk_assessment_details_edit' client_id %}" class="disable-form-on-submit">
+        {% csrf_token %}
+    {% render_field risk_assessment_form.client %}
+    {% render_field risk_assessment_form.prepared_by %}
+    {% render_field risk_assessment_form.id %}
+    
+    {{ risk_assessment_detail_formset_for_modals.management_form }}
+   
+        {% render_field form.id %}
+        <input type="hidden" name="form_count" value="{{forloop.counter}}">
+        <input type="hidden" id="detail_obj_{{ forloop.counter }}" name="detail_obj_id" value="">
+
+        <div class="modal" id="myModal_{{ forloop.counter }}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                              
+                                    <div class="card-box">
+                                        <div class="card-body row">
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width has-placeholder is-upgraded"
+                                                    data-upgraded=",MaterialTextfield">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_type  required="required" class="mdl-textfield__input  risk_area_id"  %}
+
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder=""></span>
+                                                        <label class="mdl-textfield__label ">Risk type</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width has-placeholder is-upgraded"
+                                                    data-upgraded=",MaterialTextfield">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.choosen_risk_area   class="mdl-textfield__input chosen-risk-area-box" %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk areas</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_self class="mdl-textfield__input " placeholder="" onkeypress="return event.charCode>= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to self</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_self_category class="mdl-textfield__input " placeholder="" %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_staff class="mdl-textfield__input " placeholder="" onkeypress="return event.charCode>= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to staff</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_staff_category class="mdl-textfield__input " placeholder="" %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_other class="mdl-textfield__input " placeholder="" onkeypress="return event.charCode >= 48 && event.charCode <= 57" %} <span
+                                                            class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                            <label class="mdl-textfield__label ">Risk to other</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.risk_to_other_category class="mdl-textfield__input " placeholder="" %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Risk category
+                                                            (H,M,L)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.source_of_information class="mdl-textfield__input "  %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Source of
+                                                            information</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 p-t-20">
+                                                <div
+                                                    class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                                                    <div class="form-control-wrapper">
+                                                        {% render_field form.comments class="mdl-textfield__input "  %}
+                                                        <span class="focus-input100 error-label"
+                                                            style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "
+                                                            data-placeholder="&#xf191;"></span>
+                                                        <label class="mdl-textfield__label ">Comments(management or
+                                                            support plan)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-12 p-t-20 text-center">
+                                                <button type="submit"
+                                                    class="mdl-button mdl-js-button mdl-button--raised  m-b-10 m-r-20 btn-blue"
+                                                    data-upgraded=",MaterialButton" id="editModalSubmitBtn">Submit</button>
+
+                                                    <button type="button" data-upgraded=",MaterialButton" class="mdl-button mdl-js-button mdl-button--raised  m-b-10  btn btn-default" data-dismiss="modal" id="editModalcancelBtn" modalId="myModal_{{ forloop.counter }}">Cancel
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endfor %}
+
+
+
+    {% block javascripts %}
+    <script src="{% static 'assets/js/form_submit.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.risk-tab-form').click(function() {
+                var detailObjId = $(this).closest('tr').find('td:first').text();
+                var intValue = parseInt(detailObjId.replace(/\D/g, ''), 10);
+                var customValue = this.dataset.customAttribute;
+                if (!isNaN(intValue)) {
+                    $(`#detail_obj_${intValue}`).val(customValue);
+                }
+            });
+        });
+        
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form.disable-form-on-submit');
+        
+            forms.forEach(form => {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const cancelBtn = form.querySelector('button[data-dismiss="modal"]');
+        
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent default submission
+        
+                    if (submitBtn && !submitBtn.disabled) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="loader"></span>';
+                    } else {
+                        return;
+                    }
+        
+                    // Simulate an async request (Replace this with an actual AJAX request if needed)
+                    setTimeout(() => {
+                        form.submit(); // Submit form
+                    }, 300);
+                });
+        
+                // Handle Cancel button with loader
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', function() {
+                        cancelBtn.disabled = true;
+                        cancelBtn.innerHTML = '<span class="loader"></span>';
+        
+                        setTimeout(() => {
+                            cancelBtn.disabled = false;
+                            cancelBtn.innerHTML = 'Cancel';
+                            $(cancelBtn).closest('.modal').modal('hide'); // Close the modal containing the button
+                        }, 300);
+                    });
+                }
+            });
+        
+            // Reset button states when navigating back
+            window.addEventListener('pageshow', function() {
+                forms.forEach(form => {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const cancelBtn = form.querySelector('button[data-dismiss="modal"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Submit';
+                    }
+                    if (cancelBtn) {
+                        cancelBtn.disabled = false;
+                        cancelBtn.innerHTML = 'Cancel';
+                    }
+                });
+            });
+        });
+        </script>
+        
+        
+
+    <script>
+        const submitButton = document.getElementById('risk_detail_message');
+        var messageParagraph = document.getElementById('risk_detail_form_message');
+        submitButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            submitButton.disabled=true;
+            submitButton.innerHTML = '<span class="loader"></span>';
+            setTimeout(function() {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Submit'; 
+            }, 200);
+            messageParagraph.textContent = "Please fill risk assessment of the client to submit this form.";
+        });
+    </script>
+
+
+<script>
+    $(document).ready(function() {
+        
+        if ($('#id_assessment_date').val() !== "") {
+            $('#assessment_date_value').val($('#id_assessment_date').val());
+        }
+    
+        $('#id_assessment_date').on('change', function() {
+            let selectedDate = $(this).val();
+            $('#assessment_date_value').val(selectedDate);
+        });
+    });
+    </script>
+
+    <script>
+        function detailconfirmDelete(detailriskID) {
+            $('#detaildeleteConfirmationModal').modal('show');
+            const deleteConfirmButton = document.getElementById('detaildeleteConfirmed')
+	        const deleteCancelButton = document.getElementById('detaildeleteCanceled')
+    
+            $('#detaildeleteConfirmed').click(function () {
+                $.ajax({
+                    url: '/risk-assessment/details/delete/' + '{{ client.id }}' + '/' + detailriskID + '/',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        deleteConfirmButton.disabled = true;
+			            deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+                        window.location.reload(); 
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+            deleteCancelButton.addEventListener('click',function(){
+			 
+             deleteCancelButton.disabled = true;
+             deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+             setTimeout(function() {
+                 deleteCancelButton.disabled = false;
+                 deleteCancelButton.innerHTML = 'Cancel'; 
+                 $('#detaildeleteConfirmationModal').modal('hide');
+             }, 500);
+             
+         });
+        }
+    </script>
+
+    <script>
+        const closeBtn = document.getElementById('closeBtn')
+        closeBtn.addEventListener('click',function(){
+            closeBtn.disabled = true;
+            closeBtn.innerHTML = '<span class="loader"></span>';
+            setTimeout(function() {
+                closeBtn.disabled = false;
+                closeBtn.innerHTML = 'Close'; 
+                $('#myModal3').modal('hide');
+            }, 500);
+        });
+    </script>
+
+ <script>
+    const editCancelBtn = document.getElementById('editCancelBtn')
+    const modalId = document.getElementById('myModal_{{ forloop.counter }}')
+     editCancelBtn.addEventListener('click', function(){
+                editCancelBtn.disabled = true;
+                editCancelBtn.innerHTML = '<span class="loader"></span>';
+                setTimeout(function() {
+                    editCancelBtn.disabled = false;
+                    editCancelBtn.innerHTML = 'Cancel'; 
+                    $(`#${modalId}`).modal('hide');
+                }, 500);
+    });   
+ </script>
+
+
+ <script>
+    function handleCancel(riskAssessmentId) {
+        const url = '/risk-assessment-delete/';
+    
+        fetch(`${url}?risk_assessment_id=${riskAssessmentId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json(); 
+            } else {
+                throw new Error('Failed to delete risk assessment.');
+            }
+        })
+    }
+    </script>
+    
+{% endblock javascripts %}

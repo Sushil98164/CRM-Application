@@ -1,0 +1,407 @@
+
+{% extends "base_rostering.html" %}
+{% load static %}
+{% load company_admin_tags %}
+{% block title %}
+Rostering
+{% endblock title %}
+{% block stylesheets %}
+
+
+<style>
+    .dtp {
+z-index: 99999;
+}
+li{
+list-style: none;
+}
+@media (max-width:768px) {
+    .emp-sel{
+         margin-right: 15px !important;
+         width:100% !important;
+        }
+    .colum{
+        position: relative;
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .mob{
+        margin-bottom: 10px;
+    }
+
+    .col-md-3{
+        display: ruby-text;
+        margin-bottom: 5px;
+    }
+        }
+</style>
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Shifts Report</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+       
+            {% comment %} <li><a class="parent-item" href="">Shifts</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li> {% endcomment %}
+            <li class="active">Shifts Report</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-box">
+                    <div class="card-head">
+                        <header>Admin Reports</header>
+
+                        <div class="tools">
+                            {% comment %} <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                            <a class="t-collapse btn-color fa fa-chevron-down"
+                                href="javascript:;"></a>
+                            <a class="t-close btn-color fa fa-times" href="javascript:;"></a> {% endcomment %}
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% if  request.user|has_permission:'rostering.export_all_shift_reports' or request.user|has_permission:'rostering.export_own_team_shift_reports'%}
+                                <div class="btn-group pull-right mob">
+                                    <a class="btn deepPink-bgcolor btn-outline dropdown-toggle {% if not data %}disabled{% endif %}" data-toggle="dropdown" {% if not data %}disabled{% endif %}>
+                                        Download Reports
+                                        <i class="fa fa-angle-down"></i>
+                                    </a>
+                                    <ul class="dropdown-menu shift_download_report pull-right">
+                                        <li>
+                                            <a href="javascript:;" data-file-type="csv">
+                                                <!-- <i class="fa fa-file-text-o"></i> Save as CSV -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 512 512">
+                                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                                    <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM200 352l16 0c22.1 0 40 17.9 40 40l0 8c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-8c0-4.4-3.6-8-8-8l-16 0c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l16 0c4.4 0 8-3.6 8-8l0-8c0-8.8 7.2-16 16-16s16 7.2 16 16l0 8c0 22.1-17.9 40-40 40l-16 0c-22.1 0-40-17.9-40-40l0-80c0-22.1 17.9-40 40-40zm133.1 0l34.9 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-34.9 0c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1L304 512c-8.8 0-16-7.2-16-16s7.2-16 16-16l42.9 0c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16l0 31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66l0-31.6c0-8.8 7.2-16 16-16s16 7.2 16 16l0 31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6l0-31.6c0-8.8 7.2-16 16-16z"/>
+                                                </svg>
+                                                 Save as CSV
+
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:;" data-file-type="excel">
+                                                <i class="fa fa-file-excel-o"></i> Save as Excel
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="filter-form col-md-12" style="margin-left:25px;">
+                                <form action="" method="get" class="row disable-on-submit">
+                                    <input type="hidden" value="{{reset_filter}}" id="reset_filter">
+                                    <div class="emp-sel">
+                                        <div class = "colum">
+                                            <div class="form-group mb-1">
+                                                <label for="status">Select Employee/Client</label>
+                                                <select name="employee_client" class="form-control" id="employee_client">
+                                                    <option value="" selected="">---------</option>
+                                                    <option value="employee">Employee</option>
+                                                    <option value="client">Client</option>
+        
+                                                    </select>
+                                            </div> 
+                                        </div>
+                                        
+                                    </div>
+                                     
+
+                                     <div class="col-md-2">
+                                        <div class="form-group mb-1">
+                                            <label for="status">Select Name</label>
+                                            <select name="name_select" class="form-control" id="name_select">
+                                                <option value="" selected>---------</option>
+
+                                            </select>
+                                        </div>
+                                    </div> 
+
+
+                                                          
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="status">Start Date</label>
+                                            <input type="date" class="form-control" id="start_date"
+                                                name="start_date" value="{{ start_date }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="status">End Date</label>
+                                            <input type="date" class="form-control" id="end_date"
+                                                name="end_date" value="{{ end_date }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="margin-top:31px;">Submit</button>
+                                        <a href="{% url 'rostering:manager_shift_report_view' %}"><button id="clearFilterBtn" type="button" class="btn btn-secondary"
+                                                style="margin-top:31px;" >Clear Filters</button>
+                                            </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-scrollable">
+                            <table
+                                class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+                                id="example4">
+                                <thead>
+                                    <tr>
+                                        <th>S.no</th>
+                                        <th> Name </th>
+                                        <th> Morning Shift (hr) </th>
+                                        <th> Evening Shift (hr) </th>
+                                        <th> Night Shift (hr) </th>
+                                        <th> Open Shift(hr) </th>
+                                        <th> Total Hours </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if is_employee %}
+                                    <!-- Render employee data -->
+                                    {% if data %}
+                                        {% for emp_data in data %}
+                                            <input type="hidden" class="shift-id" value="{{ emp_data.shift_ids }}">
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ emp_data.employee_name }}</td>
+                                                <td>{{ emp_data.morning_hours }}</td>
+                                                <td>{{ emp_data.evening_hours }}</td>
+                                                <td>{{ emp_data.night_hours }}</td>
+                                                <td>{{ emp_data.open_shift_hours }}</td>
+                                                <td>{{ emp_data.total_hours }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7">No Records Found</td>
+                                        </tr>
+                                    {% endif %}
+                                {% else %}
+                                    <!-- Render client data -->
+                                    {% if data %}
+                                        {% for client_data in data %}
+                                            <input type="hidden" class="shift-id" value="{{ client_data.shift_ids }}">
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ client_data.client_name }}</td>
+                                                <td>{{ client_data.morning_hours }}</td>
+                                                <td>{{ client_data.evening_hours }}</td>
+                                                <td>{{ client_data.night_hours }}</td>
+                                                <td>{{client_data.open_shift_hours}}</td>
+                                                <td>{{ client_data.total_hours }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7">No Records Found</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+
+<script>
+	$(document).ready(function() {
+    $('.fc-event-container').on('click', function() {
+        $('#eventcalendar').modal('show');
+    });
+});
+  </script>
+
+
+
+  <!---downlaod report js -->
+ <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.shift_download_report').addEventListener('click', function(event) {
+                const target = event.target.closest('a');
+                if (target && target.dataset.fileType) {
+                    event.preventDefault();
+                    const selectedFileType = target.dataset.fileType;
+                    const shiftIdElements = document.querySelectorAll('.shift-id');
+                    const shiftIds = Array.from(shiftIdElements).map(element => element.value);
+    
+                    if (shiftIds.length === 0) {
+                        console.error('No shift IDs found');
+                        return;
+                    }
+    
+                    const isEmployee = '{{ is_employee|yesno:"true,false" }}';
+    
+                    $.ajax({
+                        url: "{% url 'rostering:download_shifts_report' %}",
+                        type: 'GET',
+                        data: {
+                            shiftIdElements_ids: shiftIds.join(','),
+                            file_type: selectedFileType,
+                            is_employee: isEmployee 
+                        },
+                        xhrFields: {
+                            responseType: 'blob'
+                        },
+                        success: function(data, textStatus, jqXHR) {
+                            const fileType = jqXHR.getResponseHeader('X-File-Type');
+                            if (fileType == 'csv') {
+                                const now = new Date();
+                                const day = String(now.getDate()).padStart(2, '0');
+                                const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+                                const year = now.getFullYear();
+                                const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+                                const minutes = String(now.getMinutes()).padStart(2, '0');
+                                const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+                                const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+                                const filename = `shifts_report_${timestamp}.${selectedFileType === 'csv' ? 'csv' : 'xlsx'}`;
+    
+                                const blob = new Blob([data], { type: selectedFileType === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                const url = window.URL.createObjectURL(blob);
+    
+                                const a = document.createElement('a');
+                                a.style.display = 'none';
+                                a.href = url;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+    
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            } else if (fileType == 'excel') {
+                                const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    
+                                const url = window.URL.createObjectURL(blob);
+    
+                                const now = new Date();
+                                const day = String(now.getDate()).padStart(2, '0');
+                                const month = now.toLocaleString('default', { month: 'short' }).toLowerCase();
+                                const year = now.getFullYear();
+                                const hours = now.getHours() % 12 || 12; // Convert 24-hour clock to 12-hour clock
+                                const minutes = String(now.getMinutes()).padStart(2, '0');
+                                const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+                                const timestamp = `${day}-${month}-${year}-${hours}.${minutes}${ampm}`;
+                                const filename = `shifts_report_${timestamp}.xlsx`;
+    
+                                const a = document.createElement('a');
+                                a.style.display = 'none';
+                                a.href = url;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+    
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            document.getElementById('date_error').textContent = 'No records available for the given date range.';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+  <!--end -->
+
+<script>
+    $(document).ready(function() {
+        var storedEmployeeClient = localStorage.getItem('employeeClient');
+        var storedName = localStorage.getItem('name');
+        var resetFilter = $('#reset_filter').val();
+    
+        if (resetFilter === 'False') {
+            localStorage.removeItem('employeeClient');
+            localStorage.removeItem('name');
+            $('#employee_client').val('');
+            $('#name_select').html('<option value="" selected>---------</option>');
+        } else if (storedEmployeeClient) {
+            $('#employee_client').val(storedEmployeeClient);
+            populateNameSelect(storedEmployeeClient, storedName);
+        }
+    
+        $('#employee_client').change(function() {
+            var selectedValue = $(this).val();
+            if (selectedValue === 'employee' || selectedValue === 'client') {
+                populateNameSelect(selectedValue, storedName);
+            } else {
+                $('#name_select').html('<option value="" selected>---------</option>');
+            }
+    
+            localStorage.setItem('employeeClient', selectedValue);
+        });
+    
+        $('#name_select').change(function() {
+            var selectedName = $(this).val();
+            localStorage.setItem('name', selectedName);
+        });
+    
+        $('#clear-filter').click(function() {
+            localStorage.removeItem('employeeClient');
+            localStorage.removeItem('name');
+    
+            $('#employee_client').val('');
+            $('#name_select').html('<option value="" selected>---------</option>');
+        });
+    });
+    
+    function populateNameSelect(selectedValue, storedName) {
+        var get_client_employee_url = '{% url "rostering:get_employee_client" %}';
+        $.ajax({
+            url: get_client_employee_url,
+            method: 'GET',
+            data: { employee: selectedValue },
+            success: function(response) {
+                var options = '<option value="" selected>---------</option>';
+    
+                if (selectedValue === 'employee') {
+                    $.each(response.employees, function(index, employee) {
+                        options += '<option value="' + employee.id + '">' + employee.name + '</option>';
+                    });
+                } else if (selectedValue === 'client') {
+                    $.each(response.clients, function(index, client) {
+                        options += '<option value="' + client.id + '">' + client.name + '</option>';
+                    });
+                }
+    
+                $('#name_select').html(options);
+    
+                if (storedName) {
+                    $('#name_select').val(storedName);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+</script>
+
+{% endblock javascripts %} 
+

@@ -1,0 +1,169 @@
+{% load widget_tweaks %}
+{% load rostering_tags %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable-line">
+	
+			<ul class="nav customtab nav-tabs" role="tablist">
+	
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					{% if messages %}
+					<div class="container-fluid">
+					  <ul class="list-unstyled">
+						{% for message in messages %}
+						  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							  <span aria-hidden="true">&times;</span>
+							</button>
+						  </li>
+						{% endfor %}
+					  </ul>
+					</div>
+					<script>
+						// Automatically close alerts after 5 seconds
+						window.setTimeout(function () {
+						  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+							$(this).remove();
+						  });
+						}, 5000);
+					  </script>
+				  {% endif %}
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Shift notes list</header>
+							
+								</div>
+								<div class="card-body ">
+								
+									<div class="table-scrollable">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th>S.no</th>
+													<th>Employee name</th>
+													<th> Client name </th>
+													<th> Submission date and time </th>
+													<th> End date and time </th>
+													<th> Action </th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for shift in shifts %}
+												<tr class="odd gradeX">
+													<td class="patient-img">
+														{% get_proper_counter forloop.counter shifts %}
+													</td>
+													<td>{% if shift.employee.person.first_name %}{{shift.employee.person.first_name}}{% endif %} {% if shift.employee.person.last_name %} {{shift.employee.person.last_name}}{% endif %}</td>
+													<td>{% if shift.client.person.first_name %}{{shift.client.person.first_name}} {% endif %} {% if shift.client.person.last_name %}{{shift.client.person.last_name}}{% endif %} </td>
+													<td class="left">{% if shift.start_date_time %}{{shift.start_date_time}}{% endif %}</td>
+													<td class="left">{% if shift.end_date_time %}{{shift.end_date_time}}{% endif %}</td>
+													<td>
+														
+														<a href="{% url 'employee:client_progress_note_detail' client_id shift.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a>
+													</td>
+												</tr>
+												{% endfor %}
+
+											</tbody>
+										</table>
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+												Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+												<ul class="pagination float-right">
+													<!-- Previous Button -->
+													<li class="paginate_button page-item previous {% if not shifts.has_previous %}disabled{% endif %}">
+														{% if shifts.has_previous %}
+															<a href="?page={{ shifts.previous_page_number }}" class="page-link">Previous</a>
+														{% else %}
+															<a href="#" class="page-link">Previous</a>
+														{% endif %}
+													</li>
+
+													<!-- First Page -->
+													{% if shifts.number > 4 %}
+														<li class="paginate_button page-item">
+															<a href="?page=1" class="page-link">1</a>
+														</li>
+														{% if shifts.number > 5 %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+														{% endif %}
+													{% endif %}
+
+													<!-- Page Numbers -->
+													{% for num in shifts.paginator.page_range %}
+														{% if num|add:"-3" <= shifts.number and num|add:"3" >= shifts.number %}
+															<li class="paginate_button page-item {% if shifts.number == num %}active{% endif %}">
+																<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+															</li>
+														{% endif %}
+													{% endfor %}
+
+													<!-- Last Page -->
+													{% if shifts.number < shifts.paginator.num_pages|add:"-3" %}
+														<li class="paginate_button page-item disabled">
+															<span class="page-link">...</span>
+														</li>
+														<li class="paginate_button page-item">
+															<a href="?page={{ shifts.paginator.num_pages }}" class="page-link">{{ incidents.paginator.num_pages }}</a>
+														</li>
+													{% endif %}
+
+													<!-- Next Button -->
+													<li class="paginate_button page-item next {% if not shifts.has_next %}disabled{% endif %}">
+														{% if shifts.has_next %}
+															<a href="?page={{ shifts.next_page_number }}" class="page-link">Next</a>
+														{% else %}
+															<a href="#" class="page-link">Next</a>
+														{% endif %}
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+	<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+					<h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+				</div>
+				<div class="modal-body">
+					You won't be able to revert it!
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" id="deleteConfirmed">Yes, delete it!</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--pop up end-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- end widget -->

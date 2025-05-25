@@ -1,0 +1,366 @@
+{% load widget_tweaks %}
+    <style>
+        @media (max-width:768px) {
+            #edit-shift-form .modal-dialog {
+                margin: 0px !important;
+                padding: 5px !important;
+            }
+            
+            #edit-shift-form .modal-content {
+                height: 456px;
+            overflow-y: scroll;
+            }
+            #deleteConfirmationModal .modal-content {
+                height: auto !important;
+            }
+        }
+    </style>
+
+
+    <form class="edit-shift-form"  method="POST">
+        {% csrf_token %}
+        {% render_field shift_form.author %}
+        {% render_field shift_form.company %}
+        {% render_field shift_form.shift_category %}
+        {% render_field shift_form.status %}
+        <div class="card-body row">
+            <input type="hidden" id="shiftIdInput" value="{{ shift_form.initial.id }}", name="shift_id">
+            <input type="hidden" value="{{ shift_form.instance.status }}" name="shift_status">
+
+            <div class="col-lg-12 p-t-20 p-0">
+                <div class="col">
+                <div class="form-group">
+                        <label for="client">Shift Type</label>
+                        {% render_field shift_form.shift_type class="mdl-textfield__input" %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 p-t-20">
+                <div
+                class="edit_required mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                <div class="form-control-wrapper">
+                    {% render_field shift_form.start_date_time class="mdl-textfield__input" placeholder="" id="id_start_date_time" %}
+                    <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift.start_date_time.errors.0 }}</span>
+                    <label class="mdl-textfield__label capitalize">Start Date And Time</label>
+                </div>
+            </div>
+            </div>
+            <div class="col-lg-6 p-t-20">
+            <div
+                class="edit_required mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                <div class="form-control-wrapper">
+                    {% render_field shift_form.end_date_time class="mdl-textfield__input" placeholder="" id="id_end_date_time" %}
+                    <span class="focus-input100 error-label" id="end_date_id" style="color: red; font-size: 13px; position: absolute; padding-top: 5px;" data-field="end_date_time" data-placeholder="&#xf191;">{{ shift_form.end_date_time.errors.0 }}</span>
+                    <label class="mdl-textfield__label capitalize">End Date And Time</label>
+
+                </div>
+            </div>
+            </div>
+            <div class="col-lg-6 p-t-20">
+            <div
+                class="edit_required mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                <div class="form-control-wrapper">
+                    {% render_field shift_form.client class="mdl-textfield__input edit-select-client" placeholder=""%}
+                    <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.client.errors.0 }}</span>
+                    <label class="mdl-textfield__label capitalize">Client Name</label>
+                </div>
+            </div>
+            </div>
+            <div class="col-lg-6 p-t-20">
+                <div
+                class="edit_required mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                <div class="form-control-wrapper">
+                    {% render_field shift_form.employee class="mdl-textfield__input filter_employee" placeholder=""%}
+                    <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ shift_form.employee.errors.0 }}</span>
+                    <label class="mdl-textfield__label capitalize">Employee Name</label>
+                </div>
+            </div>
+            </div> 
+            <p id="status_error" style="color:red"></p>
+         
+            <div class="col-lg-12 p-t-20 text-center">
+              
+                <!-- <button type="submit"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect  m-r-20 btn-blue">Update</button>
+                    
+                {% comment %} <button type="button" class="btn btn-secondary delete-shift-btn btn-danger" data-dismiss="modal">Delete</button> {% endcomment %} -->
+                {% if shift_id in show_update_button_for %}
+                <!-- <div class="col-lg-12 p-t-20 text-center"> -->
+                    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue" id="editpublishButton">Update</button>
+                    <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue d-none" id="editreloadbtn"><i class="fa fa-circle-o-notch fa-spin"></i></button>
+                <!-- </div> -->
+                {% endif %}
+                {% if shift_id in show_delete_button_for %}
+                <button type="button" class="btn btn-secondary delete-shift-btn btn-danger" data-shift-id="{{ shift_form.initial.id }}" data-toggle="modal" data-target="#deleteConfirmationModal" id="selectDelete" >Delete</button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    <div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="icon-alert">
+                        <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+                    </div>
+                    <h2 class="modal-title" id="exampleModalLongTitle">Are you Sure?</h2>
+                </div>
+                <div class="modal-body">
+                    You won't be able to revert it!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn mdl-button mdl-js-button mdl-button--raised" id="deleteConfirmed">Yes, delete it!</button>
+                    <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised btn-default" data-dismiss="modal" id="deleteCanceled">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div  id="edit_errorContainer" style="color:red"></div>
+
+    {% block javascripts %}
+
+    <script>
+        $(document).ready(function () {
+            function checkValidity(element, inputField) {
+                if (!inputField.value || inputField.value === "---------") {
+                    element.classList.add('is-invalid');
+                } else {
+                    element.classList.remove('is-invalid');
+                }
+            }
+            const requiredElements = document.querySelectorAll('.edit_required');
+        
+            requiredElements.forEach(function(element) {
+                const inputField = element.querySelector('input[required], select[required]');
+        
+                if (inputField) {
+                    checkValidity(element, inputField);
+        
+                    inputField.addEventListener('input', function() {
+                        checkValidity(element, inputField);
+                    });
+                    inputField.addEventListener('change', function() {
+                        checkValidity(element, inputField);
+                    });
+                }
+            });
+        });
+    </script>
+    
+
+    <script>
+
+        $(document).ready(function () {
+            $('.edit-select-client').change(function () {
+    
+                var clientId = $(this).val();
+                var url = '{% url "rostering:edit_filter_employees_by_client" %}';
+    
+                $.ajax({
+                    url: url,
+                    data: {
+                        'client_id': clientId
+                    },
+                    success: function (data) {
+                  
+                        var $employeeSelect = $('.filter_employee');
+                        $employeeSelect.empty();    
+    
+                        if (data.employees.length > 0) {
+                            $employeeSelect.append($('<option>', {
+                                value: '',
+                                text: 'Select an employee',
+                                disabled: true,
+                                selected: true 
+                            }));
+                        
+                            $.each(data.employees, function (index, employee) {
+                                $employeeSelect.append($('<option>', {
+                                    value: employee.id,
+                                    text: employee.name
+                                }));
+                            });
+                        } else {
+                            $employeeSelect.append($('<option>', {
+                                value: '',
+                                text: 'No employee found related to client'
+                            }));
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $('.edit-shift-form').on('submit', function (e) {
+            
+            e.preventDefault();
+            var statusValue = $(this).find('input[name="shift_status"]').val();
+            const publishButton = $('#editpublishButton');
+            const loaderContainer = $('#editreloadbtn');
+            var errorMessages = {
+                 'Ongoing': 'Cannot update shift because the shift is in progress.',
+            //     'Completed': 'Cannot update shift because the shift is completed.'
+             };
+    
+            if (statusValue === 'Ongoing') {
+                
+                $('#status_error').text(errorMessages[statusValue]).css('color', 'red');
+                
+                return;
+             }
+
+            publishButton.addClass('d-none');
+            loaderContainer.removeClass('d-none');
+            
+            var formData = $(this).serialize();
+
+            var csrftoken = $('[name=csrfmiddlewaretoken]').val();
+            
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "rostering:edit_employee_shift" %}',
+                data: formData,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                },
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (xhr, errmsg, err) {
+                    let errorData = xhr.responseJSON;
+                    if (errorData.errors) {
+                        const formErrors = JSON.parse(errorData.errors);
+                        const errorContainer = document.getElementById('edit_errorContainer');
+                        errorContainer.innerHTML = '';
+                
+                        for (const key in formErrors) {
+                            if (formErrors.hasOwnProperty(key)) {
+                                const errors = formErrors[key];
+                                for (const error of errors) {
+                                    const errorElement = document.createElement('p');
+                                    errorElement.textContent = error.message;
+                                    errorContainer.appendChild(errorElement);
+                                }
+                            }
+                        }
+                    }
+                    publishButton.removeClass('d-none');
+                    loaderContainer.addClass('d-none');
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        let deleteURL = '{% url "rostering:delete_shift" %}';
+        const deleteCancelButton = document.getElementById('deleteCanceled')
+
+        $('.delete-shift-btn').on('click', function() {
+            var shiftId = $(this).data('shift-id');
+            $('#shiftIdInput').val(shiftId);
+        });
+    
+        $('#deleteConfirmed').on('click', function() {
+            var shiftId = $('#shiftIdInput').val();
+            const csrftoken = document.cookie.match(/csrftoken=([^;]+)/)[1];
+            const statusError = document.getElementById('status_error');
+            statusError.textContent = ''; // Clear previous errors
+
+            const deleteConfirmBtn = document.getElementById('deleteConfirmed')
+            // const deleteCancelButton = document.getElementById('deleteCanceled')
+    
+            $.ajax({
+                url: deleteURL,
+                type: 'GET',
+                data: {
+                    'shift_id': shiftId
+                },
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Shift deleted successfully');
+                        deleteConfirmBtn.disabled = true;
+                        deleteConfirmBtn.innerHTML = '<span class="loader"></span>';
+                        window.location.reload();
+                    } else {
+                        console.error('Failed to delete shift:', response.error);
+                        statusError.textContent = response.error;
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    statusError.textContent = 'You cannot delete an ongoing shift..';
+                }
+            });
+            // $('#deleteConfirmationModal').modal('hide');
+        });
+        deleteCancelButton.addEventListener('click',function(){
+			 
+             deleteCancelButton.disabled = true;
+             deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+             setTimeout(function() {
+                 deleteCancelButton.disabled = false;
+                 deleteCancelButton.innerHTML = 'Cancel'; 
+                 $('#deleteConfirmationModal').modal('hide');
+             }, 500);
+             
+         });
+    });
+</script>
+
+<script>
+    const selectDeleteButton = document.getElementById('selectDelete')
+    selectDeleteButton.addEventListener('click',function(){
+        selectDeleteButton.disabled = true;
+        selectDeleteButton.innerHTML = '<span class="loader cancel-btn"></span>';
+        setTimeout(function() {
+            selectDeleteButton.disabled = false;
+            selectDeleteButton.innerHTML = 'Delete'; 
+                 $('#deleteConfirmationModal').modal('show');
+             }, 500);
+            });
+</script>
+<script>
+    var prevStartValue = '';
+    var prevEndValue = '';
+
+    var startDateTimeInput = document.getElementById('id_start_date_time');
+    var endDateTimeInput = document.getElementById('id_end_date_time');
+
+    startDateTimeInput.addEventListener('change', handleDateChange);
+    startDateTimeInput.addEventListener('input', handleDateChange);
+    endDateTimeInput.addEventListener('change', handleDateChange);
+    endDateTimeInput.addEventListener('input', handleDateChange);
+
+    function handleDateChange(e) {
+        var inputField = e.target;
+        var prevValue = inputField === startDateTimeInput ? prevStartValue : prevEndValue;
+        
+        if (inputField.value !== prevValue && inputField.value !== '') {
+            if (inputField === startDateTimeInput) {
+                prevStartValue = inputField.value;
+            } else {
+                prevEndValue = inputField.value;
+            }
+            
+            setTimeout(function() {
+                if (navigator.userAgent.indexOf('iPhone') > -1 || navigator.userAgent.indexOf('iPad') > -1) {
+                    document.activeElement.blur();
+                } else {
+                    inputField.blur();
+                }
+            }, 10);
+        }
+    }
+</script>
+{% endblock javascripts %}

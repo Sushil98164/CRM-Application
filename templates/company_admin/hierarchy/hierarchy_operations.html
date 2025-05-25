@@ -1,0 +1,3484 @@
+{% extends 'base_company_admin.html' %}
+{% load static %}
+{% block title %}
+{% load company_admin_tags %}
+investigation Stages
+{% endblock %}
+{% block stylesheets %}
+<style>
+
+ /* Smaller modal and centered content */
+#deleteStageModal .modal-dialog {
+   max-width: 400px;
+   margin: auto;
+ }
+ 
+ #deleteStageModal .modal-content {
+   padding: 20px;
+   border-radius: 0px;
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+ }
+ 
+ #deleteStageModal .modal-title {
+    color: #000;
+text-align: center;
+font-family: Poppins;
+font-size: 18px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+ }
+ 
+ #deleteStageModal p {
+    color: #000;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+ }
+ 
+ #deleteStageModal .btn {
+   min-width: 90px;
+   font-size: 14px;
+ }
+ 
+ #deleteStageModal .btn-danger {
+   background-color: #dc3545;
+   border-color: #dc3545;
+ }
+ 
+ #deleteStageModal .btn-secondary {
+   background-color: #6c757d;
+   border-color: #6c757d;
+ }
+ 
+   .table-checkable tr>td:first-child,
+   .table-checkable tr>th:first-child {
+   max-width: 100% !important;
+   min-width: 100% !important;
+   }
+   .left-side-hierarchy-levels {
+   padding: 14px;
+   background-color: white;
+   border-radius: 2px;
+   }
+   .ps-3 {
+   padding-left: 17px;
+   }
+   .hierarchy-level-heading {
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 20px !important;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   margin-bottom: 16px;
+   }
+   .show-how-many-level-and-days label {
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 16px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   opacity: 0.6;
+   }
+   .feature-list-hierarchy {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   }
+   .feature-list-hierarchy li {
+   font-size: 18px;
+   font-weight: 500;
+   line-height: 21.78px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .collaps-accodians {
+   margin-top: 40px;
+   background-color: #E2E5E88C;
+   border: 1px solid #BECDD9;
+   border-radius: 5px !important;
+   }
+   .accodians-collaps-buttons {
+   width: 100%;
+   border: none !important;
+   padding: 13px;
+   border-radius: 5px;
+   }
+   .accodians-collaps-buttons:focus {
+   width: 100%;
+   outline: none !important;
+   border: none !important;
+   }
+   .icone-rotate-accodians {
+   height: 10px;
+   width: 20px;
+   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='14' viewBox='0 0 24 14' fill='none'%3E%3Cpath d='M2 2.44531L12 11.5538L22 2.44531' stroke='%2328303F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+   background-size: contain;
+   background-repeat: no-repeat;
+   transform: rotate(180deg);
+   }
+   .accodian-inner-infomatin {
+   background-color: #ffffff8f;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   }
+   .customise-inner-accodin {
+   background-color: transparent;
+   border-top: none;
+   border-left: none;
+   border-right: none;
+   padding: 10px;
+   border-bottom: 1px solid;
+   }
+   .customise-inner-accodin:focus {
+   border: none, none, 1px solid #BECDD9, none !important;
+   outline: none !important;
+   }
+   .stage-owner-name {
+   font-size: 19px;
+   font-weight: 400;
+   line-height: 22.99px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .customise-inner-accodin {
+   font-size: 19px;
+   font-weight: 400;
+   line-height: 22.99px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .checkboxxx {
+   background-color: #FEFEFE8C;
+   transform: translateY(4px);
+   margin-right: 5px;
+   width: 17px;
+   height: 16px;
+   }
+   .other-rotateicons {
+   transform: rotate(0deg);
+   }
+   .card-box {
+   background-color: transparent !important;
+   }
+   .herarchy-view-boxes-gray {
+   padding: 30px;
+   background-color: #F4F4F4;
+   border-radius: 19px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   }
+   .hierarchy-position {
+   color: #1E1B1B;
+   font-family: Inter;
+   font-size: 16px !important;
+   font-style: normal;
+   font-weight: 600;
+   line-height: normal;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .customize-modal {
+   width: 100%;
+   background-color: rgba(0, 0, 0, 0.349);
+   top: 0;
+   left: 0;
+   display: none;
+   animation: forwards scale-up .5s alternate;
+   backdrop-filter: blur(10px);
+   }
+   @keyframes scale-up {
+   0% {
+   transform: translateY(-600px);
+   opacity: 0;
+   }
+   50% {
+   opacity: .7;
+   }
+   100% {
+   transform: translateY(0);
+   }
+   }
+   .modal-inner-divv {
+   position: relative;
+   height: 100%;
+   width:95%;
+   display: -webkit-box;
+   justify-content: center;
+   align-items: flex-start;
+   margin-left: auto;
+   margin-right: auto;
+   -moz-box-align: center;
+   -webkit-box-align: baseline; 
+   }
+   .mian-customize-modal {
+   max-width: 800px;
+   width: 95%;
+   margin-left: auto;
+   margin-right: auto;
+   padding: 30px 20px;
+   background-color: white;
+   display: flex;
+   flex-direction: column;
+   }
+   .emplooyee-table,
+   th,
+   td,
+   tr {
+   border: 1px solid;
+   border-collapse: collapse;
+   }
+   .emplooyee-table {
+   width: 100%;
+   overflow-y: scroll;
+   /* height: 400px; */
+   }
+   th,
+   td {
+   padding: 10px 12px;
+   text-align: center !important;
+   }
+   td {
+   font-size: 24px;
+   font-weight: 400;
+   line-height: 29.05px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   th {
+   font-size: 24px;
+   font-weight: 600;
+   line-height: 29.05px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .scrollable-table {
+   height: 325px;
+   overflow-y: scroll;
+   }
+   .scrollable-table::-webkit-scrollbar-thumb {
+   background-color: rgba(0, 0, 0, 0.096) !important;
+   width: 10px !important;
+   border-radius: 5px;
+   }
+   .scrollable-table::-webkit-scrollbar {
+   background-color: transparent !important;
+   width: 10px;
+   transform: translateX(20px);
+   position: absolute;
+   }
+   .scrollable-table::-webkit-scrollbar-track {
+   width: 10px;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   }
+   .figma-close-buuton {
+   margin-top: 29px;
+   border: 3px solid #D9D9D9;
+   background: #FFF;
+   color: #000;
+   font-family: Poppins;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   padding: 10px 43px; 
+   margin-left: auto;
+   margin-right: auto;
+   }
+   .figma-close-buuton:focus {
+   border: none;
+   outline: none;
+   scale: 1.1;
+   transition: .2s;
+   }
+   .form-cancle-button {
+   padding: 10px 48px;
+   font-size: 23px;
+   font-weight: 500;
+   line-height: 27.84px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   background-color: #FFFFFF;
+   }
+   .form-submit-button {
+   padding: 10px 48px;
+   font-size: 23px;
+   font-weight: 500;
+   line-height: 27.84px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   background-color: #D9D9D9;
+   }
+   .form-cancle-button:focus,
+   .form-submint-button:focus {
+   border: none;
+   outline: none;
+   box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.377);
+   }
+   /* General Accordion Styles */
+   .accordion {
+   width: 100%;
+   overflow: hidden;
+   padding: 20.852px 14px 36.148px 13.787px;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #FFF;
+   }
+   .accordion-button {
+   width: 100%;
+   border: 1px solid #BECDD9;
+   background: rgba(226, 229, 232, 0.55);
+   padding: 0px 16px;
+   font-size: 14px;
+   text-align: left;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   cursor: pointer;
+   transition: background 0.3s ease;
+   position: relative;
+   /* z-index: 1; */
+   }
+   .accordion-button:hover {
+   background: #e2e2e2;
+   }
+   /* 
+   .accordion-button span {
+   transition: transform 0.3s ease;
+   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='10' viewBox='0 0 21 10' fill='none'%3E%3Cpath d='M1.75 1.55469L10.5 8.55469L19.25 1.55469' stroke='%2328303F' stroke-width='2.625' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+   background-repeat: no-repeat;
+   background-size: contain;
+   width: 17.5px;
+   height: 7px;
+   } */
+   /* Default state: icon is not rotated */
+   /* Default state: the icon is not rotated */
+   .accordion-button .rotate-icon {
+   transition: transform 0.3s ease;
+   display: inline-block;
+   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='10' viewBox='0 0 21 10' fill='none'%3E%3Cpath d='M1.75 1.55469L10.5 8.55469L19.25 1.55469' stroke='%2328303F' stroke-width='2.625' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+   background-repeat: no-repeat;
+   background-size: contain;
+   width: 17.5px;
+   height: 7px;
+   margin-left: auto;
+   margin-right: 10px;
+   }
+   /* Rotate the icon when the collapse is shown */
+   .accordion-button:not(.collapsed) .rotate-icon {
+   transform: rotate(180deg); /* Rotate icon when expanded */
+   }
+   /* Optional: You can also reverse the rotation for the collapsed state */
+   .accordion-button.collapsed .rotate-icon {
+   transform: rotate(0deg); /* Reset the rotation when collapsed */
+   }
+   .accordion-button.active {
+   border: none !important;
+   }
+   .accordion-button.active .accordion-button {
+   border-bottom: none !important;
+   }
+   .accordion-button:focus {
+   border: 1px solid #BECDD9;
+   outline: none;
+   }
+   /* Rotate icon when active */
+   /* .accordion-button.active span {
+   transform: rotate(180deg);
+   } */
+   .accordion-content {
+   opacity: 0;
+   visibility: hidden;
+   height: 0;
+   padding: 0 15px;
+   /* Keep padding, but avoid collapsing */
+   border-right: 1px solid #BECDD9;
+   border-bottom: 1px solid #BECDD9;
+   border-left: 1px solid #BECDD9;
+   background: rgba(239, 241, 242, 0.37);
+   transition: opacity 0.3s ease-out, visibility 0.5s ease-out, height 0.3s ease-out, padding 0.3s ease-out;
+   }
+   .accordion-content.show {
+   opacity: 1;
+   visibility: visible;
+   height: auto;
+   padding: 32px 15px;
+   background: rgba(239, 241, 242, 0.37);
+   }
+   .accordion-content.show~.accordion-item {
+   border: 1px solid red;
+   }
+   .gap-24 {
+   gap: 20px;
+   }
+   .inputs-upper-div-styele input {
+   border-left: none;
+   border-right: none;
+   border-top: none;
+   border-bottom: 1px solid #BECDD9;
+   outline: none;
+   background-color: transparent;
+   padding: 10px;
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .inputs-upper-div-styele input::placeholder{
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   opacity: 0.42;
+   }
+   .inputs-upper-div-styele input:focus {
+   border-left: none;
+   border-right: none;
+   border-top: none;
+   border-bottom: 1px solid #BECDD9;
+   outline: none;
+   }
+   .dropdown-container {
+   position: relative;
+   width: 100%;
+   }
+   .dropdown-trigger {
+   padding: 12px 10px;
+   background: transparent;
+   border-bottom: 1px solid #BECDD9;
+   cursor: pointer;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   user-select: none;
+   transition: all 0.2s ease;
+   overflow-x: auto;
+   color: #000;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .dropdown-trigger::-webkit-scrollbar{
+   height: 1px;
+   }
+   .dropdown-arrow {
+   border: solid #666;
+   border-width: 0 2px 2px 0;
+   display: inline-block;
+   padding: 3px;
+   transform: rotate(45deg);
+   transition: transform 0.2s ease;
+   }
+   .dropdown-trigger.active .dropdown-arrow {
+   transform: rotate(-135deg);
+   margin-top: 4px;
+   }
+   .dropdown-menu {
+   position: absolute;
+   top: calc(100% + 5px);
+   left: 0;
+   width: max-content;
+   background: white;
+   border: 1px solid #e0e0e0;
+   border-radius: 8px;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   display: none;
+   z-index: 1000;
+   max-height: 300px;
+   }
+   .dropdown-menu.show {
+   display: block;
+   animation: fadeIn 0.2s ease;
+   }
+   .dropdown-item {
+   padding: 12px 16px;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   }
+   .dropdown-item:hover {
+   background: #f5f5f5;
+   }
+   .dropdown-item.selected {
+   background: #e3f2fd;
+   color: #1976d2;
+   font-weight: 500;
+   }
+   @keyframes fadeIn {
+   from {
+   opacity: 0;
+   transform: translateY(-10px);
+   }
+   to {
+   opacity: 1;
+   transform: translateY(0);
+   }
+   }
+   /* Scrollbar styling */
+   .dropdown-menu::-webkit-scrollbar {
+   width: 6px;
+   }
+   .dropdown-menu::-webkit-scrollbar-track {
+   background: #f1f1f1;
+   border-radius: 3px;
+   }
+   .dropdown-menu::-webkit-scrollbar-thumb {
+   background: #888;
+   border-radius: 3px;
+   }
+   .dropdown-menu::-webkit-scrollbar-thumb:hover {
+   background: #555;
+   }
+   .dropdown-text {
+   margin-right: 5px;
+   /* opacity: 0.42; */
+   color: #1E1B1B;
+   text-wrap: nowrap;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .dropdown-text:focus{
+   width: max-content;
+   white-space: nowrap;
+   }
+   .gap-14 {
+   gap: 14px;
+   }
+   .enter-question-input {
+   padding: 12.5px 69px 16.5px 6px;
+   border-bottom: 1px solid #7F919E;
+   border-top: none;
+   border-left: none;
+   background-color: transparent;
+   border-right: none;
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   border-radius: 0px;
+   }
+   .enter-question-input ::placeholder{
+   opacity: 0.42;
+   }
+   .enter-question-input:focus {
+   outline: none !important;
+   }
+   .addd-button {
+   margin-top: -7px;
+   }
+   .permisson-ww {
+   color: rgba(30, 27, 27, 0.60);
+   font-family: Poppins;
+   font-size: 14px !important;
+   font-style: normal;
+   font-weight: 600;
+   line-height: normal;
+   }
+   .gap-27 {
+   gap: 27px;
+   }
+   .checkbox-with-lable {
+   display: inline-flex;
+   gap: 5px;
+   align-items: baseline;
+   }
+   .checkbox-with-lable input[type=checkbox] {
+   /* scale: 1.2; */
+   transform: translateY(2px);
+   width: 14px;
+   height: 14px;
+   aspect-ratio: 1/1;      
+   border: 1px solid #BECDD9;
+   background: rgba(254, 254, 254, 0.55);
+   }
+   .timelineinput{
+   border-top: none;
+   border-left: none;
+   border-right: none;
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .timelineinput:focus{
+   border-bottom: 1px solid #BECDD9 !important;
+   border-right: none !;
+   border-left: none !;
+   border-top: none !;
+   outline: none !important;
+   }
+   .show-over-flow {
+   width: 100%;  
+   overflow-x: auto; 
+   }
+   .show-over-flow::-webkit-scrollbar{
+   height: 1px;
+   }
+   .show-over-flow::-webkit-scrollbar-thumb{
+   }
+   .show-over-flow::-webkit-scrollbar-track{
+   }
+   .timelineinput:focus {
+   width: max-content !important; /* Ensure the input expands based on content */
+   white-space: nowrap; 
+   }
+   .dropdown-and-delete{
+   display: flex;
+   gap: 20px;
+   align-items: center;
+   justify-content: center;
+   }
+   .delete-button-cover{
+    width: 41px;
+    height: 22.51px;
+   background-color: #F5707A;
+   display: flex !important;
+   justify-content: center;
+   align-items: center;
+   border-radius: 5px;
+   transform: translateX(-50px);
+   position: absolute;
+   right: 33px;
+   pointer-events: auto;
+    isolation: isolate;
+    margin-top: 14px;
+}
+
+.delete-button-cover svg {
+    pointer-events: none;
+}
+
+.accordion-button .delete-button-cover {
+    pointer-events: auto !important;
+}
+.dropdown-container-outer-div{
+   position: absolute;
+   height: 100%;
+   width: 100%;
+   left: 0;
+   display: flex;
+   justify-content: end;
+   align-items: center;
+   z-index: 222;
+   }
+   .how-many-levels-input{
+   border-top: none;
+   border-left: none;
+   background-color: transparent;
+   border-right: none;
+   border-bottom: 1px solid #BECDD9;
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 14px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .how-many-levels-input:focus{
+   border-right: none;
+   border-left: none;
+   border-top: none;
+   outline: none;
+   }
+   .how-many-days-input{
+   border-top: none;
+   border-left: none;
+   background-color: transparent;
+   border-right: none;
+   border-bottom: 1px solid #BECDD9;
+   color: #1E1B1B;
+    font-family: Poppins;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+   }
+   .how-many-days-input:focus{
+   border-right: none;
+   border-left: none;
+   border-top: none;
+   outline: none;
+   }
+   .show-how-many-level-and-days{
+   display: flex;
+   /* gap: 25px; */
+   flex-direction: column;
+   }
+   .show-how-many-level-and-days-form{
+   margin-bottom: 34px;    
+   }
+   .question-content label {
+   color: rgba(30, 27, 27, 0.60);
+   font-family: Poppins;
+   font-size: 14px;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   }
+   .checkbox-with-lable label {
+   color: #1E1B1B;
+   font-family: Poppins;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   table.emplooyee-table td {
+   color: #000;
+   text-align: center;
+   font-family: Inter;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   table.emplooyee-table th {
+   color: #000;
+   text-align: center;
+   font-family: Poppins;
+   font-size: 14px;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   }
+   /* .mdl-textfield {
+   padding: 16px 0;
+   } */
+   .mdl-textfield__input {
+   border: none;
+   display: block;
+   font-size: 16px;
+   font-family: "Helvetica","Arial",sans-serif;
+   margin: 0;
+   padding: 4px 0;
+   width: 100%;
+   background: 0 0;
+   text-align: left;
+   color: inherit;
+   border-bottom: 1px solid #BECDD9;
+   }
+   /* Default state: icon is not rotated */
+   .mdl-textfield__input ::placeholder {
+   color: #1E1B1B !important;
+   font-family: Poppins;
+   font-size: 10px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   opacity: 0.42;
+   }
+   .mdl-textfield__input{
+   color: #1E1B1B !important;
+   font-family: Poppins;
+   font-size: 10px !important;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   padding: 10px 0;
+   }
+   .mdl-textfield_input.is-focused  {
+   outline: none !important;
+   box-shadow: none !important;
+   }
+   h2, h3 {
+   margin: 0px 0 !important;
+   }
+   .modal-dialog-centered {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   min-height: 100vh;
+   /* Full height for vertical centering */
+   }
+   .step-indicator {
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
+   }
+   .step-indicator div {
+   width: 10px;
+   height: 10px;
+   margin: 0 5px;
+   border-radius: 50%;
+   background-color: #ccc;
+   }
+   .step-indicator .active {
+   background-color: #007bff;
+   }
+   .modal-footer {
+   justify-content: space-between;
+   }
+   .investigation-add-new-button {
+   background-color: #d9d9d9 !important;
+   color: black !important;
+   font-weight: 400;
+   border: none !important;
+   }
+   .investigation-add-new-button:hover {
+   background-color: #d9d9d9 !important;
+   color: black !important;
+   border: none !important;
+   box-shadow: none !important;
+   }
+   .investigation-add-new-button:focus {
+   background-color: #d9d9d9 !important;
+   color: black !important;
+   border: none !important;
+   box-shadow: none !important;
+   }
+   .maxxxx-width {
+   max-width: 666px !important;
+   min-height: 394px !important;
+   }
+   .prev-btn {
+   display: none;
+   border: 1.886px solid #d9d9d9;
+   background: #fff !important;
+   display: flex;
+   width: 108.776px;
+   height: 30.181px;
+   padding: 6.288px 27.037px;
+   justify-content: center;
+   align-items: center;
+   gap: 6.288px;
+   color: #000;
+   font-family: Inter;
+   font-size: 14.462px;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   }
+   .cross-close-modal {
+   width: 32px;
+   /* Adjust the width */
+   height: 20px;
+   /* Adjust the height */
+   background-image: url('data:image/svg+xml,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%2218%22 height%3D%2218%22 viewBox%3D%220%200%2018%2018%22 fill%3D%22none%22%3E%3Cpath d%3D%22M15.9999 2.00009L2 16M15.9999 15.9999L2 2%22 stroke%3D%22%2328303F%22 stroke-width%3D%222.47486%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22/%3E%3C/svg%3E') !important;
+   /* background-size: 20px 20px; */
+   /* Ensure the SVG fits */
+   background-repeat: no-repeat;
+   background-position: center;
+   right: 8px;
+   top: 8px;
+   position: absolute;
+   z-index: 222;
+   padding: 15px 5px !important;
+   }
+   .hierarchy-list {
+   color: #1e1b1b;
+   font-family: Poppins;
+   font-size: 16px;
+   font-style: normal;
+   font-weight: 500;
+   line-height: normal;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   list-style-type: none;
+   }
+   .select-feture-div {
+   padding: 18px 15px;
+   background-color: #f4f4f4;
+   }
+   .ps-4 {
+   padding-left: 24px !important;
+   }
+   #feature-select {
+   background-color: #bdb9b926;
+   border: gray;
+   }
+   #feature-select:focus {
+   background-color: #bdb9b926;
+   border: gray;
+   }
+   #feature-select option {
+   font-family: Inter;
+   font-size: 16px;
+   font-weight: 500;
+   line-height: 19.36px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .select-feture-div h5 {
+   font-family: Inter;
+   font-size: 18px;
+   font-weight: 500;
+   line-height: 21.78px;
+   text-align: left;
+   text-underline-position: from-font;
+   text-decoration-skip-ink: none;
+   }
+   .back-and-next-button {
+   display: flex;
+   justify-content: center;
+   gap: 10px;
+   padding-top: 60px;
+   }
+   .step-indicator {
+   align-items: center;
+   }
+   .step-indicator .active {
+   width: 25px !important;
+   height: 10px !important;
+   border-radius: 50px !important;
+   }
+   .border-danger {
+   border: 2px solid red !important;
+   }
+   .hidden-btn {
+   display: none;
+   }
+   .hidden-btn-2 {
+   display: none;
+   }
+   .gap-10 {
+   gap: 10px;
+   }
+   input[type='radio'] {
+   scale: 1.3;
+   }
+   input[type='number'] {
+   height: 100%;
+   width: 100%;
+   }
+   {% comment %} input[type='text'] {
+   height: 100%;
+   width: 100%;
+   } {% endcomment %}
+   input::-webkit-outer-spin-button,
+   input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+   }
+   .input-group {
+   position: relative;
+   width: 100%;
+   }
+   .error-message {
+   color: #dc3545;
+   font-size: 0.875rem;
+   margin-top: 0.25rem;
+   }
+   .form-control.levels {
+   border-radius: 4px;
+   border: 1px solid #D9D9D9;
+   background: #FAFAFA;
+   opacity: 0.51;
+   padding: 13px 14px !important;
+   color: #444;
+   font-family: Poppins;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .form-control.levels:focus {
+   color: #444;
+   font-family: Poppins;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   opacity: 1;
+   }
+   .form-control.days {
+   opacity: 0.51 !important;
+   flex-shrink: 0;
+   border-radius: 4px;
+   border: 1px solid #D9D9D9;
+   background: #FAFAFA;
+   padding: 13px 14px !important;
+   color: #444;
+   font-family: Poppins;
+   font-size: 12px;
+   font-style: normal;
+   font-weight: 400;
+   line-height: normal;
+   }
+   .form-control.error {
+   border-color: #dc3545;
+   }
+   input[type='radio'].error + label {
+   color: #dc3545;
+   }
+   div#addlevel .modal-content {
+   border-radius: 0px;
+   background: #fff;
+   padding: 23px !important;
+   width: auto !important;
+   }
+   .next-btn {
+   display: flex;
+   width: 100px;
+   height: 30px;
+   padding: 7.933px 32.526px;
+   justify-content: center;
+   align-items: center;
+   gap: 7.933px;
+   }
+   .select-days-wrapper {
+   position: relative;
+   }
+   .select-days-wrapper::after {
+   content: 'days';
+   position: absolute;
+   right: 15px;
+   top: 50%;
+   transform: translateY(-50%);
+   pointer-events: none;
+   font-size: 14px;
+   color: #444;
+   font-family: Poppins, sans-serif;
+   opacity: 0.7;
+   }
+   .mdl-textfield.is-invalid .mdl-textfield__input {
+    border-color: #BECDD9;
+    box-shadow: none;
+}
+.getmdl-select .mdl-textfield__input:focus-visible{
+    outline: none !important;
+}
+.mdl-textfield__input:focus-visible{
+    outline: none !important;
+}
+#formErrorModal .modal-dialog {
+    max-width: 520px;
+    margin: auto;
+}
+h3#formErrorModalLabel {
+    color: #000;
+    text-align: center;
+    font-family: Inter;
+    font-size: 28px !important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin:33px 0px 16px 0px !important;
+}
+#formErrorModal p {
+    color: #000;
+    text-align: center;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.error-icon-img{
+    height: 90px;
+    width: 90px;
+}
+button.close.cross-close-modal:focus {
+    outline: none !important;
+}
+.customize-modal {
+    position: absolute;
+}
+@media screen and (max-width: 768px) {
+    /* .customize-modal {
+    background-color: rgba(0, 0, 0, 0);
+    position: relative;
+} */
+/* .mian-customize-modal {
+    padding: 0px !important;
+} */
+.modal-inner-divv {
+    width: 100% !important;
+}
+.mdl-textfield {
+    padding: 10px 0;
+}
+.scrollable-table{
+        height: auto !important;
+        overflow-y: scroll;
+}
+}
+@media (min-width: 992px) {
+    .page-footer {
+        margin-top: 0px !important;
+    }
+}
+</style>
+{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<!-- startwidget -->
+<div class="page-bar">
+   <div class="page-title-breadcrumb">
+      <div class=" pull-left">
+         <div class="page-title">Settings</div>
+      </div>
+      <ol class="breadcrumb page-breadcrumb pull-right">
+         <li><a class="parent-item" href="{% url 'company:company_settings' %}">Settings</a>&nbsp;<i class="fa fa-angle-right"></i>
+         </li>
+         <li><a class="parent-item" href="{% url 'company:company_hierarchy_list' %}">Hierarchy</a> &nbsp;<i class="fa fa-angle-right"></i></li>
+        {% if request.resolver_match.url_name == 'hierarchy_stages_list' %}
+             <li>Add</li>
+        {% elif request.resolver_match.url_name == 'company_hierarchy_update' %}
+            <li>Edit</li>
+        {% else %}
+            <li>View</li>
+        {% endif %}
+
+      </ol>
+   </div>
+</div>
+<div class="row">
+   <div class="col-md-12">
+      {% if messages %}
+      <div class="col-md-12">
+         {% for message in messages %}
+         <div class="alert alert-success">{{ message }}</div>
+         {% endfor %}
+      </div>
+      {% endif %}
+      <ul class="nav customtab nav-tabs" role="tablist">
+      </ul>
+      <div class="tabbable-line">
+         <ul class="nav customtab nav-tabs" role="tablist">
+         </ul>
+         <div class="tab-content">
+            <div class="tab-pane active fontawesome-demo" id="tab1">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="card card-box">
+                        <div class="row">
+                           <div class="col-lg-7">
+                              <div class="accordion h-100" id="investigation-accordian">
+                                 <!-- Accordion Item 1 -->
+                                 <h2 class="mt-0 hierarchy-level-heading">Hierarchy levels</h2>
+                                 <div class="show-how-many-level-and-days">
+                                    <span style="color:red" id= "invalid_level_span"></span>
+                                    <div class="">
+                                       <label for="">How many days do you want to limit the hierarchy?</label>
+                                       <input id="hierarchy-timeline" type="text" onkeypress="return /[0-9]/i.test(event.key)" {% if hierarchy_timeline_days %} value="{{hierarchy_timeline_days}}" {% else %} value="" {% endif %} class="how-many-days-input w-100" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%}>
+                                       <span id="hierarchy-timeline-error" class="timeline-error-msg" style="color: red; font-size: 13px;"></span>
+                                    </div>
+                                 
+                                 </div>
+                                 {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                                 <div class="d-flex justify-content-start mt-2">
+                                    <button type="button" class="btn btn-primary" data-stage-index="0" data-toggle="modal" data-target="#addlevel" >+ Add Level</button>
+
+                                </div>
+                                       {% endif %}
+                                
+                                 <!--current URL-->
+                                 <input type="hidden" value="{{request.resolver_match.url_name}}" id="current_url">
+                                 
+                                 <!--hidden inputs-->
+                                 <input type ="hidden" id="hierarchy-levels" value="{{hierarchy_levels}}">
+                                 <input id="hierarchy_id" type="hidden" value="{{hierarchy_id}}"> 
+
+                                 <!--- Js form operations-->
+                                 <div id="base-form-container">
+                                    <input type="hidden" id="deleted-stages" name="deleted_stages" value="">
+                                    <input type="hidden" id="deleted-owners" name="deleted_owners" value="">
+                                    <input type="hidden" id="deleted-questions" name="deleted_questions" value="">
+                                    <form class="base-stage-form">
+                                       
+                                       {% csrf_token %}
+                                       <div class="accordion-item">
+                                          <div class="accordian-heading" id="heading1">
+                                             <h2 class="mb-0 d-flex">
+                                                <button class="accordion-button" type="button" data-toggle="collapse"
+                                                   data-target="#collapse1"
+                                                   aria-expanded="true"
+                                                   aria-controls="collapse1">
+                                                   <span class="stage-level">level</span>
+                                                   <span class="rotate-icon"></span>
+                                                </button>
+                                                {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                                                <a class="delete-button-cover">
+                                                   <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.02925 2.34625C6.02925 1.11949 7.02374 0.125 8.2505 0.125C9.47726 0.125 10.4718 1.11949 10.4718 2.34625V2.48006C12.3982 2.7145 14.1979 3.24927 15.7854 4.02293C16.0862 4.1695 16.2112 4.53213 16.0646 4.83289C15.9181 5.13365 15.5554 5.25865 15.2547 5.11208C13.2421 4.13131 10.8387 3.55785 8.25049 3.55785C5.66232 3.55785 3.25888 4.13131 1.24632 5.11208C0.945557 5.25865 0.582926 5.13365 0.436359 4.83289C0.289793 4.53213 0.414791 4.1695 0.715551 4.02293C2.30313 3.24927 4.10283 2.71449 6.02925 2.48005V2.34625ZM13.3112 13.28C13.1904 14.9707 11.7835 16.2807 10.0885 16.2807H6.41245C4.71739 16.2807 3.31052 14.9707 3.18975 13.28L2.63385 5.49741C4.34407 4.90106 6.24626 4.56864 8.25046 4.56864C10.2547 4.56864 12.1568 4.90106 13.8671 5.49741L13.3112 13.28ZM7.2408 7.39569C7.2408 7.06112 6.96957 6.7899 6.635 6.7899C6.30043 6.7899 6.02921 7.06112 6.02921 7.39569V12.2421C6.02921 12.5766 6.30043 12.8479 6.635 12.8479C6.96957 12.8479 7.2408 12.5766 7.2408 12.2421V7.39569ZM9.86591 6.7899C10.2005 6.7899 10.4717 7.06112 10.4717 7.39569V12.2421C10.4717 12.5766 10.2005 12.8479 9.86591 12.8479C9.53134 12.8479 9.26012 12.5766 9.26012 12.2421V7.39569C9.26012 7.06112 9.53134 6.7899 9.86591 6.7899Z" fill="white"/>
+                                                   </svg>
+                                                </a>
+                                                {% endif %}
+                                             </h2>
+                                          </div>
+                                          <div id="collapse1" class="collapse show accordion-content accordian-collapse" aria-labelledby="heading1" data-parent="#investigation-accordian">
+                                             <div class="card-body p-0">
+                                                <div class="d-flex flex-column gap-24">
+                                                   <!-- Stage Form Fields -->
+                                                   <div class="row stage-container">
+                                                      <div class="col-lg-6">
+                                                         <div class="inputs-upper-div-styele stage-fields">
+                                                            <input type="text" class="w-100 stage-name-fields" required placeholder="Stage name" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%}>
+                                                         </div>
+                                                      </div>
+                                                      <div class="col-lg-6">
+                                                         <div class="inputs-upper-div-styele">
+                                                            <input type="text" required class="w-100 stage-timeline-fields" onkeypress="return /[0-9]/i.test(event.key)" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%}  placeholder="Timeline for the stage" >
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                   <!-- Owner form -->
+                                                   <div class="stage-owner-container">
+                                                      <div class="owners-formset-container">
+                                                         <div class="row dublicate-select-items owner-item">
+                                                            <div class="col-lg-3">
+                                                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height txt-full-width">
+                                                                    <select  class="mdl-textfield__input owner-dropdown" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%} required>
+                                                                     <option value="" disabled selected>Stage owner</option>
+                                                                     <option value=""></option>
+                                                                  </select>
+                                                               </div>
+                                                            </div>
+                                                            <!-- Substitute Stage Owner Dropdown (Using <select> instead of <ul>) -->
+                                                            <div class="col-lg-4">
+                                                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height txt-full-width">
+                                                                  <select class="mdl-textfield__input substitute-dropdown" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%}>
+                                                                     <option value="" disabled selected>Substitute stage owner</option>
+                                                                     <option value=""></option>
+                                                                  </select>
+                                                               </div>
+                                                            </div>
+                                                            <div class="col-lg-4 px-lg-1">
+                                                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                                  <input type="text" class="mdl-textfield__input stage-timeline-time" onkeypress="return /[0-9]/i.test(event.key)" {% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%} placeholder="Timeline for substitute stage owner">
+                                                                  <span class="focus-input100 error-label" style="color: red; font-size: 13px; position: absolute; padding-top:5px;" data-placeholder="&#xf191;"></span>
+                                                               </div>
+                                                            </div>
+                                                            {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+
+                                                            <div class="col-lg-1 d-flex align-items-center">
+                                                               <a class="owner-delete-button">
+                                                                  <svg class="mt-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                                     <rect x="0.855734" y="0.943625" width="18.1445" height="18.1445" rx="9.07224" fill="#F5707A"/>
+                                                                     <rect x="0.855734" y="0.943625" width="18.1445" height="18.1445" rx="9.07224" stroke="#F5707A" stroke-width="0.824749"/>
+                                                                     <path d="M5.03223 10.9081V9.11719H14.8245V10.9081H5.03223Z" fill="white"/>
+                                                                  </svg>
+                                                               </a>
+                                                            </div>
+                                                            {% endif %}
+                                                         </div>
+                                                      </div>
+                                                      {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                                                      <div class="d-flex justify-content-end mt-2">
+                                                         <button type="button" class="add-owner-button btn btn-primary">+ Add</button>
+                                                      </div>
+                                                      {% endif %}
+                                                   </div>
+                                                   <!-- Questions form -->
+                                                   <div class="questions-container">
+                                                      <div class="gap-14 d-flex flex-column question-content">
+                                                         <label class="mb-0">Questions</label>
+                                                         <div class="question-items row">
+                                                            <div class="question-item mb-2 col-lg-11">
+                                                               <input type="text" class="form-control enter-question-input w-100 stage-question"  placeholder="Enter the question" {% if request.resolver_match.url_name == 'view_hierarchy' %}readonly{% endif %} required>
+                                                            </div>
+                                                            {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                                                                <div class="col-lg-1 d-flex align-items-center">   
+                                                                <a class="question-delete-button">
+                                                                    <svg class="mt-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                                        <rect x="0.855734" y="0.943625" width="18.1445" height="18.1445" rx="9.07224" fill="#F5707A"/>
+                                                                        <rect x="0.855734" y="0.943625" width="18.1445" height="18.1445" rx="9.07224" stroke="#F5707A" stroke-width="0.824749"/>
+                                                                        <path d="M5.03223 10.9081V9.11719H14.8245V10.9081H5.03223Z" fill="white"/>
+                                                                    </svg>
+                                                                </a>
+                                                                </div>
+                                                            {% endif %}
+                                                         </div>
+                                                      </div>
+                                                      {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                                                      <div class="d-flex justify-content-end mt-2">
+                                                         <button type="button" class="add-question-button btn btn-primary" data-stage-index="0">+ Add</button>
+                                                      </div>
+                                                      {% endif %}
+                                                   </div>
+                                                   <!-- Permissions -->
+                                                   <div class="permissions-container">
+                                                      <div class="gap-14 d-flex flex-column">
+                                                         <h5 class="permisson-ww">Permissions</h5>
+                                                         <div class="d-flex flex-column gap-27">
+                                                            <div class="checkbox-with-lable permissions-checkbox-div">
+                                                               <input type="checkbox" value="can_change_to_inprogress_not_closed" class="stage-report-permission"  value="Can change the incident report status to InProgress but can't mark it as closed"{% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%} >
+                                                               <label class="mb-0" for="stage-report-permission-1">Can change the incident report status to InProgress but can't mark it as closed</label>
+                                                            </div>
+                                                            <div class="checkbox-with-lable">
+                                                               <input type="checkbox" value="can_mark_inprogress_and_closed" class="stage-status-permission"  value="Can change the incident report status to In progress and can mark it as closed"{% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%} >
+                                                               <label class="mb-0" for="stage-status-permission-1">Can change the incident report status to In progress and can mark it as closed</label>
+                                                            </div>
+                                                            {% comment %} <div class="checkbox-with-lable">
+                                                               <input type="checkbox" value="can_view_incident_investigation_details" class="stage-investigation-permission" value="View the incident and investigation details."{% if request.resolver_match.url_name == 'view_hierarchy' %}disabled{%endif%} >
+                                                               <label class="mb-0" for="stage-investigation-permission-1">View the incident and investigation details.</label>
+                                                            </div> {% endcomment %}
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </form>
+                                    {% comment %} <span id = "level-span-error"><span> {% endcomment %}
+
+                                 </div>
+                                 <!--end-->
+                              </div>
+                           </div>
+                           <div class="col-lg-5 pl-lg-0 parent-hierarchy-view div">
+                              <div class="left-side-hierarchy-levels h-100 position-relative">
+                                 <h2 class="mt-0 hierarchy-level-heading mb-5">Hierarchy view</h2>
+                                 <div class="hierarchy-view-div d-flex flex-column justify-content-between"
+                                    style="gap: 33px;">
+                                    <div class="herarchy-view-boxes-gray">
+                                       <h4 class="m-0 hierarchy-position"></h4>
+                                       <a href="javascript:void(0)" class="btn btn-primary btn-xs "
+                                          onclick="openTable() ">
+                                       <i class="fa fa-eye"></i>
+                                       </a>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                       <svg xmlns="http://www.w3.org/2000/svg" width="30" height="109" viewBox="0 0 30 109" fill="none">
+                                          <path d="M13.4561 107.001C13.4609 108.105 14.3602 108.997 15.4647 108.992C16.5693 108.987 17.4608 108.088 17.456 106.984L13.4561 107.001ZM16.4081 0.57657C15.6236 -0.201074 14.3573 -0.195574 13.5797 0.588856L0.90714 13.3719C0.129491 14.1564 0.134991 15.4227 0.919425 16.2003C1.70386 16.978 2.97018 16.9725 3.74783 16.1881L15.0123 4.82532L26.375 16.0898C27.1595 16.8674 28.4258 16.8619 29.2034 16.0775C29.9811 15.2931 29.9756 14.0267 29.1911 13.2491L16.4081 0.57657ZM17.456 106.984L17 1.98823L13 2.0056L13.4561 107.001L17.456 106.984Z" fill="black"/>
+                                       </svg>
+                                    </div>
+                                    <div class="herarchy-view-boxes-gray">
+                                       <h4 class="m-0 hierarchy-position"></h4>
+                                       <a href="" class="btn btn-primary btn-xs">
+                                       <i class="fa fa-eye"></i>
+                                       </a>
+                                    </div>
+                                 </div>
+                                 <div class="position-md-absolute position-lg-absolute position-sm-relative h-100  customize-modal" id="moadalcustoize">
+                                    <div class="position-relative modal-inner-divv">
+                                       <div class="mian-customize-modal my-4 mx-3">
+                                          <div class="scrollable-table">
+                                             <table class="emplooyee-table table table-striped table-bordered table-hover order-column valign-middle">
+                                                <thead>
+                                                   <tr>
+                                                      <th class="px-0" style="width: 15%;">S no</th>
+                                                      <th style="width: 42.5%;">Stage owner</th>
+                                                      <th style="width:42.5%;">Substitute stage owner</th>
+                                                   </tr>
+                                                </thead>
+                                                <tbody>
+                                                   <tr>
+                                                      <td>1</td>
+                                                      <td>James Levin</td>
+                                                      <td>James Levin</td>
+                                                   </tr>
+                                                   <tr>
+                                                      <td>2</td>
+                                                      <td>Chance Geidt</td>
+                                                      <td>Chance Geidt</td>
+                                                   </tr>
+                                                   <tr>
+                                                      <td>3</td>
+                                                      <td>Angel Bergson</td>
+                                                      <td>Angel Bergson</td>
+                                                   </tr>
+                                                   <tr>
+                                                      <td>4</td>
+                                                      <td>Lincoln Donin</td>
+                                                      <td>Lincoln Donin</td>
+                                                   </tr>
+                                                   <tr>
+                                                      <td>5</td>
+                                                      <td>Lindsey Gouse</td>
+                                                      <td>Lindsey Gouse</td>
+                                                   </tr>
+                                                   <tr>
+                                                      <td>6</td>
+                                                      <td>Gretchen Kenter</td>
+                                                      <td>Gretchen Kenter</td>
+                                                   </tr>
+                                                </tbody>
+                                             </table>
+                                          </div>
+                                          <button class="close-btn figma-close-buuton" id="hierarchyViewCancel">Cancel</button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               
+               <div class="mt-5">
+                <span style="color:red;width: 100%;text-align: center;display: flex;justify-content: center;padding-bottom: 10px;" id="invalid_stage_form"></span>
+
+                  <div class="d-flex align-items-center justify-content-center" style="gap: 20px;">
+                    {% if not request.resolver_match.url_name == 'view_hierarchy' %}
+                    {% if request.resolver_match.url_name == 'hierarchy_stages_list' %}
+                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue template-submit-button" id="investigation-stage-submit-button">Submit</button>
+                    {% elif request.resolver_match.url_name == 'company_hierarchy_update' %}
+                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue template-submit-button" id="investigation-stage-submit-button">Update</button>
+                    {% endif %}
+                    {% endif %}
+                    <a href="{% url 'company:company_hierarchy_list' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default template-cancle-button" id="hierarchyCancelBtn">Cancel</a>
+                  </div>
+                  <div style="text-align:center">
+                     <span style="color:red;" id="invalid_stage_form"></span>
+                  </div>
+                
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="modal p-0 fade" id="addlevel" tabindex="-1" role="dialog" aria-labelledby="addlevellLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm mx-auto my-auto h-100 d-flex justify-content-center align-items-center" role="document">
+      <div class="modal-content p-3">
+         <button type="button" class="close cross-close-modal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-body p-0">
+               <ul class="pl-0 mb-2 mt-4">
+                  <li class="mt-3 hierarchy-list">
+                     <span>1.</span> At what level do you want to add the stage?
+                  </li>
+               </ul>
+               <div class="input-group">
+                  <input type="text" class="form-control levels" onkeypress="return /[0-9]/i.test(event.key)" id="level_number" placeholder="Enter number of levels" />
+               </div>
+               <div class="error-message text-danger mt-2">{{hierarchy_form.levels.errors.0}}</div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: center; gap: 6px;">
+                <button type="button" id="level-modal-next-button" class=" btn btn-primary next-btn m-0" >Next</button>
+               <button type="button" class="mdl-button mdl-button--raised btn-default prev-btn m-0" data-dismiss="modal" aria-label="Close" id="levelCancelBtn">Cancel</button>
+            </div>
+      </div>
+   </div>
+</div>
+
+<div class="modal fade" id="deleteStageModal" tabindex="-1" role="dialog" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+     <div class="modal-content p-3">
+       <div class="modal-body text-center">
+        <img src="{% static 'assets/img/error-icon.svg' %}" alt="delete-icon" class="delete-icon-img">
+         <h5 class="modal-title mb-3" id="deleteStageModalLabel">Delete Level?</h5>
+         <p>Are you sure you want to delete this level? This action cannot be undone.</p>
+         <div class="mt-4 d-flex justify-content-center" style="gap:16px">
+            <button type="button" class="btn btn-blue" id="confirmDeleteStageBtn">Delete</button>
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+ 
+
+ <div class="modal fade" id="formErrorModal" tabindex="-1" role="dialog" aria-labelledby="formErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content p-3">
+        <button type="button" class="close cross-close-modal" data-dismiss="modal" aria-label="Close"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23" fill="none">
+            <path opacity="0.5" d="M20.8203 2.34386L2.55078 20.6134M20.8203 20.6133L2.55078 2.34375" stroke="#28303F" stroke-width="3.22963" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg></button>
+        <div class="modal-body text-center">
+         <img src="{% static 'assets/img/error-icon.svg' %}" alt="delete-icon" class="error-icon-img">
+          <h3 class="modal-title mb-3" id="formErrorModalLabel">Days Mismatch</h3>
+          <p>The total number of days doesn't match your previous entry. Please correct it before submitting the form.</p>
+          {% comment %} <div class="mt-4 d-flex justify-content-center" style="gap:16px">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-blue" id="confirmDeleteStageBtn">Delete</button>
+          </div> {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+ {% comment %} <div class="modal fade" id="formErrorModal" tabindex="-1" role="dialog" aria-labelledby="formErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content p-3">
+        <div class="modal-body text-center">
+            <img src="{% static 'assets/img/delete-icon.png' %}" alt="delete-icon" class="delete-icon-img">
+            <h5 class="modal-title mb-3" id="formErrorModalLabel">Days Mismatch</h5>
+          <p id="formErrorMessage">Please correct the errors in the form before submitting.</p>
+          <div class="mt-4 d-flex justify-content-center">
+            <button type="button" class="btn btn-blue" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> {% endcomment %}
+  
+
+{% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.stagesJson = '{{ stages_json|escapejs }}';
+        window.ownerOptions = JSON.parse('{{ owner_options|escapejs }}');
+        window.substituteOptions = JSON.parse('{{ substitute_options|escapejs }}');
+        const baseFormContainer = document.getElementById('base-form-container');
+        const baseForm = document.querySelector('.base-stage-form');
+        const levelInput = $('#level_number');
+        const levelNextButton = $('#level-modal-next-button');
+
+        baseForm.style.display = 'none';
+
+        let formLevels = [];
+
+        // Utility: get form data from DOM
+        function getFormData(form) {
+            if (!form) return {
+                name: '',
+                timeline: '',
+                owners: [],
+                questions: [],
+                permissions: []
+            };
+
+            const nameField = form.querySelector('.stage-name-fields');
+            const timelineField = form.querySelector('.stage-timeline-fields');
+
+            // Collect all owner items
+            const owners = [];
+            const ownerItems = form.querySelectorAll('.owner-item');
+
+            ownerItems.forEach(item => {
+                const ownerDropdown = item.querySelector('.owner-dropdown');
+                const substituteDropdown = item.querySelector('.substitute-dropdown');
+                const timelineInput = item.querySelector('.stage-timeline-time');
+
+                if (ownerDropdown) {
+                    owners.push({
+                        owner: ownerDropdown.value || '',
+                        substitute: substituteDropdown?.value || '',
+                        timeline: timelineInput?.value || ''
+                    });
+                }
+            });
+
+            // Collect all question items
+            const questions = [];
+            const questionItems = form.querySelectorAll('.question-items');
+
+            questionItems.forEach(item => {
+                const questionInput = item.querySelector('.enter-question-input');
+                if (questionInput) {
+                    questions.push({
+                        question: questionInput.value || ''
+                    });
+                }
+            });
+
+            // Collect all permissions checkboxes
+            const permissions = [];
+            const permissionsContainer = form.querySelector('.permissions-container');
+            if (permissionsContainer) {
+                const permissionCheckboxes = permissionsContainer.querySelectorAll('input[type="checkbox"]');
+                permissionCheckboxes.forEach(checkbox => {
+                    permissions.push({
+                        id: checkbox.id,
+                        value: checkbox.value,
+                        checked: checkbox.checked
+                    });
+                });
+            }
+
+            return {
+                name: nameField?.value || '',
+                timeline: timelineField?.value || '',
+                owners: owners.length ? owners : [{
+                    owner: '',
+                    substitute: '',
+                    timeline: ''
+                }],
+                questions: questions.length ? questions : [{
+                    question: ''
+                }],
+                permissions: permissions
+            };
+        }
+
+        // Utility: create a new cloned form for given level and optional data
+        function createForm(level, data = {}) {
+            const newForm = baseForm.cloneNode(true);     
+            newForm.style.display = 'block';
+            newForm.id = `stage-id-${level}`;
+            newForm.setAttribute('stage-sno', level.toString());
+            if (data.s_no && data.s_no !== level.toString()) {
+                newForm.setAttribute('data-original-sno', data.s_no);
+            }
+
+            // Update accordion item IDs and attributes
+            const accordionItem = newForm.querySelector('.accordion-item');
+            const accordionHeading = newForm.querySelector('.accordian-heading');
+            const accordionButton = newForm.querySelector('.accordion-button');
+            const accordionContent = newForm.querySelector('.accordion-content');
+            
+            // Update IDs for accordion components
+            if (accordionHeading) {
+                accordionHeading.id = `heading${level}`;
+            }
+            
+            if (accordionButton) {
+                accordionButton.setAttribute('data-target', `#collapse${level}`);
+                accordionButton.setAttribute('aria-controls', `collapse${level}`);
+            }
+            
+            if (accordionContent) {
+                accordionContent.id = `collapse${level}`;
+                accordionContent.setAttribute('aria-labelledby', `heading${level}`);
+            }
+
+            const maxLevel = Math.max(...formLevels.map(f => f.level)); 
+            if (level === maxLevel) {
+                accordionContent.classList.add('show');
+            } else {
+                accordionContent.classList.remove('show');
+            }
+
+            const deleteButtonCover = newForm.querySelector('.delete-button-cover');
+
+            if (deleteButtonCover) {
+                deleteButtonCover.id = `stage-id-${level}`;
+                deleteButtonCover.setAttribute('stage-delete-sno', level.toString());
+            }
+
+            const stageSpan = newForm.querySelector('.stage-level');
+            if (stageSpan) {
+                stageSpan.id = `stage-level-${level}`;
+                stageSpan.textContent = `Level ${level}`;
+            }
+
+            const stageContainer = newForm.querySelector('.stage-container');
+
+            if (stageContainer) {
+                const nameInput = stageContainer.querySelector('.stage-name-fields');
+                const timelineInput = stageContainer.querySelector('.stage-timeline-fields');
+
+                if (nameInput) {
+                    nameInput.id = `stage-name-${level}`;
+                    nameInput.name = `stage-name-${level}`;
+                    nameInput.value = data.name || '';
+                }
+
+                if (timelineInput) {
+                    timelineInput.id = `stage-timeline-${level}`;
+                    timelineInput.name = `stage-timeline-${level}`;
+                    timelineInput.value = data.timeline || '';
+                }
+            }
+
+            ownerContainer = newForm.querySelector('.stage-owner-container');
+            if (ownerContainer) {
+                ownerContainer.id = `owner-container-${level}`;
+            }
+
+            const formsetContainer = newForm.querySelector('.owners-formset-container');
+            if (formsetContainer) {
+                const firstItem = formsetContainer.querySelector('.owner-item');
+                if (firstItem) {
+                    const ownerItems = formsetContainer.querySelectorAll('.owner-item');
+                    for (let i = 1; i < ownerItems.length; i++) {
+                        formsetContainer.removeChild(ownerItems[i]);
+                    }
+                    const ownerData = data.owners && data.owners.length ? data.owners[0] : {
+                        owner: '',
+                        substitute: '',
+                        timeline: ''
+                    };
+
+                    if (ownerData.id) {
+                        firstItem.setAttribute('data-owner-id', ownerData.id);
+                    }
+
+                    const ownerDropdown = firstItem.querySelector('.owner-dropdown');
+                    const substituteDropdown = firstItem.querySelector('.substitute-dropdown');
+                    const timelineInput = firstItem.querySelector('.stage-timeline-time');
+                    const deleteButton = firstItem.querySelector('.owner-delete-button');
+
+                    if (ownerDropdown) {
+                        ownerDropdown.id = `owner-${level}-1`;
+                        ownerDropdown.name = `owner-${level}-1`;
+                        ownerDropdown.innerHTML = '<option value="">Select Owner</option>';
+                        if (window.ownerOptions && window.ownerOptions.length) {
+                            window.ownerOptions.forEach(owner => {
+                                const option = document.createElement('option');
+                                option.value = owner.id;
+                                option.textContent = owner.name;
+                                if (ownerData.owner == owner.id) {
+                                    option.selected = true;
+                                }
+                                ownerDropdown.appendChild(option);
+                            });
+                        }
+                    }
+
+                    if (substituteDropdown) {
+                        substituteDropdown.id = `substitute-${level}-1`;
+                        substituteDropdown.name = `substitute-${level}-1`;
+
+                        substituteDropdown.innerHTML = '<option value="">Select Substitute</option>';
+                        if (window.substituteOptions && window.substituteOptions.length) {
+                            window.substituteOptions.forEach(sub => {
+                                const option = document.createElement('option');
+                                option.value = sub.id;
+                                option.textContent = sub.name;
+                                if (ownerData.substitute == sub.id) {
+                                    option.selected = true;
+                                }
+                                substituteDropdown.appendChild(option);
+                            });
+                        }
+                    }
+
+                    if (timelineInput) {
+                        timelineInput.id = `timeline-${level}-1`;
+                        timelineInput.name = `timeline-${level}-1`;
+                        timelineInput.value = ownerData.timeline || '';
+                    }
+
+                    if (deleteButton) {
+                        deleteButton.id = `delete-owner-${level}-1`;
+                        if (ownerData.id) {
+                            deleteButton.setAttribute('data-real-owner-id', ownerData.id);
+                        }
+                    }
+                    if (data.owners && data.owners.length > 1) {
+                        for (let i = 1; i < data.owners.length; i++) {
+                            const ownerData = data.owners[i];
+                            const clonedItem = firstItem.cloneNode(true);
+                            if (ownerData.id) {
+                                clonedItem.setAttribute('data-owner-id', ownerData.id);
+                            }
+                            const clonedOwner = clonedItem.querySelector('.owner-dropdown');
+                            const clonedSubstitute = clonedItem.querySelector('.substitute-dropdown');
+                            const clonedTimeline = clonedItem.querySelector('.stage-timeline-time');
+
+                            if (clonedOwner) {
+                                clonedOwner.id = `owner-${level}-${i+1}`;
+                                clonedOwner.name = `owner-${level}-${i+1}`;
+                                clonedOwner.innerHTML = '<option value="">Select Owner</option>';
+                                if (window.ownerOptions && window.ownerOptions.length) {
+                                    window.ownerOptions.forEach(owner => {
+                                        const option = document.createElement('option');
+                                        option.value = owner.id;
+                                        option.textContent = owner.name;
+                                        if (ownerData.owner == owner.id) {
+                                            option.selected = true;
+                                        }
+                                        clonedOwner.appendChild(option);
+                                    });
+                                }
+                            }
+
+                            if (clonedSubstitute) {
+                                clonedSubstitute.id = `substitute-${level}-${i+1}`;
+                                clonedSubstitute.name = `substitute-${level}-${i+1}`;
+                                clonedSubstitute.innerHTML = '<option value="">Select Substitute</option>';
+                                if (window.substituteOptions && window.substituteOptions.length) {
+                                    window.substituteOptions.forEach(sub => {
+                                        const option = document.createElement('option');
+                                        option.value = sub.id;
+                                        option.textContent = sub.name;
+                                        if (ownerData.substitute == sub.id) {
+                                            option.selected = true;
+                                        }
+                                        clonedSubstitute.appendChild(option);
+                                    });
+                                }
+                            }
+
+                            if (clonedTimeline) {
+                                clonedTimeline.id = `timeline-${level}-${i+1}`;
+                                clonedTimeline.name = `timeline-${level}-${i+1}`;
+                                clonedTimeline.value = ownerData.timeline || '';
+                            }
+                            const deleteButton = clonedItem.querySelector('.owner-delete-button');
+                            if (deleteButton) {
+                                deleteButton.id = `delete-owner-${level}-${i+1}`;
+                                if (ownerData.id) {
+                                    deleteButton.setAttribute('data-real-owner-id', ownerData.id);
+                                }
+                            }
+                            formsetContainer.appendChild(clonedItem);
+                        }
+                    }
+                }
+            }
+            const questionContent = newForm.querySelector('.question-content');
+            const questionContainer = newForm.querySelector('.questions-container');
+
+            if (questionContainer) {
+                questionContainer.id = `questions-container-${level}`;
+            }
+
+            if (questionContent) {
+                const firstItem = questionContent.querySelector('.question-items');
+                if (firstItem) {
+                    const questionItems = questionContent.querySelectorAll('.question-items');
+                    for (let i = 1; i < questionItems.length; i++) {
+                        questionContent.removeChild(questionItems[i]);
+                    }
+                    const questionData = data.questions && data.questions.length ? data.questions[0] : {
+                        question: ''
+                    };
+                    if (questionData.id) {
+                        firstItem.setAttribute('data-question-id', questionData.id);
+                    }
+
+                    const questionInput = firstItem.querySelector('.enter-question-input');
+                    const deleteButton = firstItem.querySelector('.question-delete-button');
+
+                    if (questionInput) {
+                        questionInput.id = `question-${level}-1`;
+                        questionInput.name = `question-${level}-1`;
+                        questionInput.value = questionData.question || '';
+                    }
+
+                    if (deleteButton) {
+                        deleteButton.id = `delete-question-${level}-1`;
+                        if (questionData.id) {
+                            deleteButton.setAttribute('data-real-question-id', questionData.id);
+                        }
+                    }
+
+                    if (data.questions && data.questions.length > 1) {
+                        for (let i = 1; i < data.questions.length; i++) {
+                            const questionData = data.questions[i];
+                            const clonedItem = firstItem.cloneNode(true);
+                            if (questionData.id) {
+                                clonedItem.setAttribute('data-question-id', questionData.id);
+                            }
+                            const clonedQuestion = clonedItem.querySelector('.enter-question-input');
+
+                            if (clonedQuestion) {
+                                clonedQuestion.id = `question-${level}-${i+1}`;
+                                clonedQuestion.name = `question-${level}-${i+1}`;
+                                clonedQuestion.value = questionData.question || '';
+                            }
+                            const deleteButton = clonedItem.querySelector('.question-delete-button');
+                            if (deleteButton) {
+                                deleteButton.id = `delete-question-${level}-${i+1}`;
+                                if (questionData.id) {
+                                    deleteButton.setAttribute('data-real-question-id', questionData.id);
+                                }
+                            }
+                            questionContent.appendChild(clonedItem);
+                        }
+                    }
+                }
+            }
+            const permissionsContainer = newForm.querySelector('.permissions-container');
+            if (permissionsContainer) {
+                const permissionCheckboxes = permissionsContainer.querySelectorAll('input[type="checkbox"]');
+                permissionCheckboxes.forEach((checkboxInput) => {
+                    const label = checkboxInput.nextElementSibling;
+
+                    if (checkboxInput && label) {
+                        const baseValue = checkboxInput.value.trim(); 
+                        const formattedValue = baseValue.replace(/_/g, '-'); 
+                        const finalId = `${formattedValue}-${level}`;
+
+                        checkboxInput.id = finalId;
+                        checkboxInput.name = finalId;
+                        label.setAttribute('for', finalId);
+                        checkboxInput.checked = false; 
+
+                        if (data.permissions && data.permissions.length) {
+                            const matchingPermission = data.permissions.find(p => p.value === baseValue);
+                            if (matchingPermission) {
+                                checkboxInput.checked = matchingPermission.checked || false; // Use the checked value from the permission
+                            }
+                        }
+                    }
+                });
+            }
+            return newForm;
+        }
+        function renderForms() {
+            baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])').forEach(f => f.remove());
+            formLevels.sort((a, b) => b.level - a.level);
+            formLevels.forEach(f => {
+                const form = createForm(f.level, f.data);
+                baseFormContainer.appendChild(form);
+            });
+        }
+
+        function loadInitialForms() {
+            const stagesData = window.stagesJson ? JSON.parse(window.stagesJson) : null;
+            formLevels = [];
+
+            if (stagesData && stagesData.length > 0) {
+                stagesData.forEach(stage => {
+                    formLevels.push({
+                        level: stage.level,
+                        data: {
+                            s_no: stage.level,
+                            name: stage.name || '',
+                            timeline: stage.timeline || '',
+                            owners: stage.owners || [{
+                                owner: '',
+                                substitute: '',
+                                timeline: ''
+                            }],
+                            questions: stage.questions || [{
+                                question: ''
+                            }],
+                            permissions: stage.permissions || []
+                        }
+                    });
+                });
+
+                document.getElementById('hierarchy-levels').value = formLevels.length;
+            } else {
+                const totalLevels = parseInt(document.getElementById('hierarchy-levels')?.value || '1', 10);
+
+                for (let i = totalLevels; i >= 1; i--) {
+                    formLevels.push({
+                        level: i,
+                        data: {
+                            s_no: i,
+                            name: '',
+                            timeline: '',
+                            owners: [{
+                                owner: '',
+                                substitute: '',
+                                timeline: ''
+                            }],
+                            questions: [{
+                                question: ''
+                            }],
+                            permissions: []
+                        }
+                    });
+                }
+            }
+
+            renderForms();
+            mapDatatoHierarchy(); 
+        }
+        function insertNewLevel(newLevel) {
+            newLevel = parseInt(newLevel, 10);
+            if (isNaN(newLevel) || newLevel < 1) return;
+            let currentLevelCount = parseInt($('#hierarchy-levels').val()) || 0;
+            const updatedFormLevels = [];
+            formLevels.forEach(f => {
+                const domForm = document.getElementById(`stage-id-${f.level}`);
+                const formData = getFormData(domForm);
+                if (domForm) {
+                    const stageSno = domForm.getAttribute('stage-sno');
+                    if (stageSno) {
+                        formData.s_no = stageSno;
+                    }
+                }
+
+                updatedFormLevels.push({
+                    level: f.level,
+                    data: formData
+                });
+            });
+            formLevels = updatedFormLevels;
+            let highestLevel = 0;
+            formLevels.forEach(f => {
+                if (f.level > highestLevel) {
+                    highestLevel = f.level;
+                }
+            });
+            if (newLevel > highestLevel + 1) {
+                for (let level = highestLevel + 1; level < newLevel; level++) {
+                    formLevels.push({
+                        level: level,
+                        data: {
+                            s_no: level.toString(),
+                            name: '',
+                            timeline: '',
+                            owners: [{
+                                owner: '',
+                                substitute: '',
+                                timeline: ''
+                            }],
+                            questions: [{
+                                question: ''
+                            }],
+                            permissions: []
+                        }
+                    });
+                }
+            }
+            const levelExists = formLevels.some(f => f.level === newLevel);
+
+            if (levelExists) {
+                formLevels = formLevels.map(f => {
+                    if (f.level >= newLevel) {
+                        const shiftedForm = {
+                            level: f.level + 1,
+                            data: f.data
+                        };
+                        shiftedForm.data.s_no = shiftedForm.level.toString();
+                        return shiftedForm;
+                    }
+                    return f;
+                });
+            }
+            formLevels.push({
+                level: newLevel,
+                data: {
+                    s_no: newLevel.toString(),
+                    name: '',
+                    timeline: '',
+                    owners: [{
+                        owner: '',
+                        substitute: '',
+                        timeline: ''
+                    }],
+                    questions: [{
+                        question: ''
+                    }],
+                    permissions: []
+                }
+            });
+            $('#hierarchy-levels').val(formLevels.length);
+
+            renderForms();
+            mapDatatoHierarchy();
+        }
+
+        function setupLevelInputHandler() {
+            levelNextButton.addClass('disabled');
+
+            levelInput.on('input', function() {
+                const levelVal = $(this).val();
+                if (levelVal) {
+                    levelNextButton.removeClass('disabled');
+                } else {
+                    levelNextButton.addClass('disabled');
+                }
+            });
+
+            levelNextButton.on('click', function() {
+                const levelToInsert = levelInput.val();
+                if (levelToInsert) {
+                    const originalBtnHtml = levelNextButton.html();
+                    levelNextButton.addClass('disabled').html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>');
+                    insertNewLevel(levelToInsert);
+                    levelInput.val('');
+                    $('#addlevel').modal('hide');
+                    $('#addlevel').on('hidden.bs.modal', function () {
+                        levelNextButton.html(originalBtnHtml).addClass('disabled');
+                    });
+                }
+            });
+        }
+
+        function setupAddOwnerHandler() {
+            const container = document.getElementById('base-form-container');
+            if (!container) {
+                console.error('Container with id "base-form-container" not found.');
+                return;
+            }
+            container.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('add-owner-button')) {
+                    const stageOwnerContainer = event.target.closest('.stage-owner-container');
+
+                    if (!stageOwnerContainer) {
+                        console.error('Stage owner container not found');
+                        return;
+                    }
+
+                    const form = stageOwnerContainer.closest('.base-stage-form');
+                    const stageId = form ? form.id : null;
+
+                    if (!stageId) {
+                        console.error('Stage ID not found');
+                        return;
+                    }
+
+                    const formLevel = parseInt(stageId.replace('stage-id-', ''), 10);
+                    console.log('Form Level:', formLevel);
+
+                    const formsetContainer = stageOwnerContainer.querySelector('.owners-formset-container');
+                    if (formsetContainer) {
+                        const ownerItems = formsetContainer.querySelectorAll('.owner-item'); 
+                        const newOwnerIndex = ownerItems.length + 1; 
+                        const clonedItem = ownerItems[0].cloneNode(true);
+
+                        clonedItem.querySelectorAll('select').forEach(select => {
+                            if (select.classList.contains('owner-dropdown')) {
+                                select.name = `owner-${formLevel}-${newOwnerIndex}`;
+                                select.id = `owner-${formLevel}-${newOwnerIndex}`;
+                                select.value = ''; 
+                            }
+                            if (select.classList.contains('substitute-dropdown')) {
+                                select.name = `substitute-${formLevel}-${newOwnerIndex}`;
+                                select.id = `substitute-${formLevel}-${newOwnerIndex}`;
+                                select.value = ''; 
+                            }
+                        });
+
+                        clonedItem.querySelectorAll('input').forEach(input => {
+                            if (input.classList.contains('stage-timeline-time')) {
+                                input.name = `timeline-${formLevel}-${newOwnerIndex}`;
+                                input.id = `timeline-${formLevel}-${newOwnerIndex}`;
+                                input.value = ''; 
+                            }
+                        });
+
+                        const deleteButton = clonedItem.querySelector('.owner-delete-button');
+                        if (deleteButton) {
+                            deleteButton.id = `delete-owner-${formLevel}-${newOwnerIndex}`;
+                        }
+
+                        formsetContainer.appendChild(clonedItem);
+                    } else {
+                        console.error('Owners container not found for stage', formLevel);
+                    }
+                }
+            });
+        }
+
+        function setupAddQuestionHandler() {
+            const container = document.getElementById('base-form-container');
+            if (!container) {
+                console.error('Container with id "base-form-container" not found.');
+                return;
+            }
+
+            container.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('add-question-button')) {
+                    const questionsContainer = event.target.closest('.questions-container');
+                    if (!questionsContainer) {
+                        console.error('Questions container not found');
+                        return;
+                    }
+
+                    const form = questionsContainer.closest('.base-stage-form');
+                    const stageId = form ? form.id : null;
+
+                    if (!stageId) {
+                        console.error('Stage ID not found');
+                        return;
+                    }
+
+                    const formLevel = parseInt(stageId.replace('stage-id-', ''), 10);
+                    console.log('Form Level:', formLevel);
+
+                    const questionContent = questionsContainer.querySelector('.question-content');
+                    const questionItems = questionContent.querySelectorAll('.question-items');
+                    const newQuestionIndex = questionItems.length + 1;
+
+                    const firstRow = questionItems[0];
+                    const clonedRow = firstRow.cloneNode(true);
+
+                    const inputField = clonedRow.querySelector('.enter-question-input');
+                    if (inputField) {
+                        inputField.value = '';
+                        inputField.name = `question-${formLevel}-${newQuestionIndex}`;
+                        inputField.id = `question-${formLevel}-${newQuestionIndex}`;
+                    }
+
+                    const deleteButton = clonedRow.querySelector('.question-delete-button');
+                    if (deleteButton) {
+                        deleteButton.id = `delete-question-${formLevel}-${newQuestionIndex}`;
+                    }
+                    questionContent.appendChild(clonedRow);
+                }
+            });
+        }
+
+        function setupDeleteQuestionHandler() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+
+            container.addEventListener('click', function(event) {
+                const deleteButton = event.target.closest('.question-delete-button');
+
+                if (deleteButton) {
+                    const questionItem = deleteButton.closest('.question-items');
+                    const questionContent = questionItem.parentElement;
+                    const realQuestionId = deleteButton.getAttribute('data-real-question-id');
+
+                    const allQuestionItems = questionContent.querySelectorAll('.question-items');
+                    if (allQuestionItems.length > 1) {
+                        console.log('Deleting question with real ID:', realQuestionId);
+
+                        if (realQuestionId) {
+                            const deletedQuestionsInput = document.getElementById('deleted-questions');
+
+                            if (!deletedQuestionsInput) {
+                                console.error('Hidden input #deleted-questions not found in the DOM');
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.id = 'deleted-questions';
+                                hiddenInput.name = 'deleted-questions';
+                                hiddenInput.value = realQuestionId;
+                                document.querySelector('form').appendChild(hiddenInput);
+                            } else {
+                                const currentIds = deletedQuestionsInput.value ? deletedQuestionsInput.value.split(',') : [];
+
+                                if (!currentIds.includes(realQuestionId)) {
+                                    currentIds.push(realQuestionId);
+                                    deletedQuestionsInput.value = currentIds.join(',');
+
+                                    console.log('Updated deleted questions:', deletedQuestionsInput.value);
+                                }
+                            }
+                        }
+
+                        questionContent.removeChild(questionItem);
+                        updateQuestionIndices(questionContent);
+                    }
+                }
+                toggleQuestionDeleteVisibility();
+            });
+        }
+        function updateQuestionIndices(questionContent) {
+            const form = questionContent.closest('.base-stage-form');
+            const formLevel = parseInt(form.id.replace('stage-id-', ''), 10);
+
+            const questionItems = questionContent.querySelectorAll('.question-items');
+            questionItems.forEach((item, index) => {
+                const questionIndex = index + 1;
+                const inputField = item.querySelector('.enter-question-input');
+                if (inputField) {
+                    inputField.id = `question-${formLevel}-${questionIndex}`;
+                    inputField.name = `question-${formLevel}-${questionIndex}`;
+                }
+                const deleteButton = item.querySelector('.question-delete-button');
+                if (deleteButton) {
+                    deleteButton.id = `delete-question-${formLevel}-${questionIndex}`;
+                }
+            });
+        }
+        function setupDeleteOwnerHandler() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+
+            container.addEventListener('click', function(event) {
+                const deleteButton = event.target.closest('.owner-delete-button');
+
+                if (deleteButton) {
+                    const ownerItem = deleteButton.closest('.owner-item');
+                    const formsetContainer = ownerItem.parentElement;
+                    const realOwnerId = deleteButton.getAttribute('data-real-owner-id');
+
+                    const allOwnerItems = formsetContainer.querySelectorAll('.owner-item');
+                    if (allOwnerItems.length > 1) {
+                        if (realOwnerId) {
+                            const deletedOwnersInput = document.getElementById('deleted-owners');
+                            const currentIds = deletedOwnersInput.value ? deletedOwnersInput.value.split(',') : [];
+
+                            if (!currentIds.includes(realOwnerId)) {
+                                currentIds.push(realOwnerId);
+                                deletedOwnersInput.value = currentIds.join(',');
+                            }
+                        }
+
+                        formsetContainer.removeChild(ownerItem);
+                        updateOwnerIndices(formsetContainer);
+                    }
+                }
+                toggleOwnerDeleteVisibility();
+            });
+        }
+
+        function updateOwnerIndices(formsetContainer) {
+            const form = formsetContainer.closest('.base-stage-form');
+            const formLevel = parseInt(form.id.replace('stage-id-', ''), 10);
+
+            const ownerItems = formsetContainer.querySelectorAll('.owner-item');
+            ownerItems.forEach((item, index) => {
+                const ownerIndex = index + 1;
+
+                item.querySelectorAll('select').forEach(select => {
+                    if (select.classList.contains('owner-dropdown')) {
+                        select.id = `owner-${formLevel}-${ownerIndex}`;
+                        select.name = `owner-${formLevel}-${ownerIndex}`;
+                    }
+                    if (select.classList.contains('substitute-dropdown')) {
+                        select.id = `substitute-${formLevel}-${ownerIndex}`;
+                        select.name = `substitute-${formLevel}-${ownerIndex}`;
+                    }
+                });
+
+                const timelineInput = item.querySelector('.stage-timeline-time');
+                if (timelineInput) {
+                    timelineInput.id = `timeline-${formLevel}-${ownerIndex}`;
+                    timelineInput.name = `timeline-${formLevel}-${ownerIndex}`;
+                }
+
+                const deleteButton = item.querySelector('.owner-delete-button');
+                if (deleteButton) {
+                    deleteButton.id = `delete-owner-${formLevel}-${ownerIndex}`;
+                }
+            });
+        }
+
+        function collectFormData() {
+            formLevels = [];
+
+            const visibleForms = baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])');
+
+            visibleForms.forEach(form => {
+                const level = parseInt(form.id.replace('stage-id-', ''), 10);
+                const data = getFormData(form);
+
+                formLevels.push({
+                    level: level,
+                    data: data
+                });
+            });
+
+            formLevels.sort((a, b) => b.level - a.level);
+
+            console.log('Collected form data:', formLevels);
+        }
+
+        function toggleQuestionDeleteVisibility() {
+            const baseContainer = document.getElementById('base-form-container');
+            if (!baseContainer) return;
+
+            const questionContainers = baseContainer.querySelectorAll('.questions-container');
+
+            questionContainers.forEach(container => {
+                const questionItems = container.querySelectorAll('.question-items');
+                const deleteButtons = container.querySelectorAll('.question-delete-button');
+
+                deleteButtons.forEach(button => {
+                    if (questionItems.length === 1) {
+                        button.style.display = 'none';
+                    } else {
+                        button.style.display = 'inline-block';
+                    }
+                });
+            });
+        }
+
+        function toggleOwnerDeleteVisibility() {
+            const baseContainer = document.getElementById('base-form-container');
+            if (!baseContainer) return;
+
+            const ownerContainers = baseContainer.querySelectorAll('.stage-owner-container');
+
+            ownerContainers.forEach(container => {
+                const ownerItems = container.querySelectorAll('.owner-item');
+                const deleteButtons = container.querySelectorAll('.owner-delete-button');
+
+                deleteButtons.forEach(button => {
+                    if (ownerItems.length === 1) {
+                        button.style.display = 'none';
+                    } else {
+                        button.style.display = 'inline-block';
+                    }
+                });
+            });
+        }
+
+
+        function mapDatatoHierarchy() {
+            const hierarchyWrapper = document.querySelector('.hierarchy-view-div');
+            const template = document.querySelector('.herarchy-view-boxes-gray');
+            let hierarchylevelInput = document.getElementById("hierarchy-levels");
+            hierarchyWrapper.innerHTML = '';
+            formLevels.sort((a, b) => b.level - a.level);
+
+            formLevels.forEach((f, index) => {
+                const {
+                    level,
+                    data
+                } = f;
+                const stageName = data?.name ? data.name.trim() : '';
+                const displayName = stageName || `Level ${level}`;
+
+                const boxClone = template.cloneNode(true);
+                const headings = boxClone.querySelectorAll('.hierarchy-position');
+                headings.forEach(h => h.textContent = displayName);
+                const eyeButton = boxClone.querySelector('.btn-primary');
+                if (eyeButton) {
+                    eyeButton.setAttribute('data-level', level);
+                    eyeButton.removeAttribute('onclick');
+                    eyeButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        collectFormData();
+                        showOwnerDetails(level);
+                    });
+                }
+                hierarchyWrapper.append(boxClone);
+
+                if (index !== formLevels.length - 1) {
+                    const arrowDiv = document.createElement('div');
+                    arrowDiv.className = 'd-flex justify-content-center align-items-center';
+                    arrowDiv.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="109" viewBox="0 0 30 109" fill="none">
+                            <path d="M13.4561 107.001C13.4609 108.105 14.3602 108.997 15.4647 108.992C16.5693 108.987 17.4608 108.088 17.456 106.984L13.4561 107.001ZM16.4081 0.57657C15.6236 -0.201074 14.3573 -0.195574 13.5797 0.588856L0.90714 13.3719C0.129491 14.1564 0.134991 15.4227 0.919425 16.2003C1.70386 16.978 2.97018 16.9725 3.74783 16.1881L15.0123 4.82532L26.375 16.0898C27.1595 16.8674 28.4258 16.8619 29.2034 16.0775C29.9811 15.2931 29.9756 14.0267 29.1911 13.2491L16.4081 0.57657ZM17.456 106.984L17 1.98823L13 2.0056L13.4561 107.001L17.456 106.984Z" fill="black"/>
+                        </svg>`;
+                    hierarchyWrapper.append(arrowDiv);
+                }
+            });
+        }
+
+        function showOwnerDetails(level) {
+            const levelData = formLevels.find(f => f.level === parseInt(level, 10));
+
+            if (!levelData || !levelData.data || !levelData.data.owners) {
+                console.error('No data found for level', level);
+                return;
+            }
+
+            const {
+                data
+            } = levelData;
+            const {
+                owners
+            } = data;
+
+            const modal = document.getElementById('moadalcustoize');
+            const tableBody = modal.querySelector('tbody');
+            tableBody.innerHTML = '';
+            owners.forEach((ownerData, index) => {
+                const ownerName = getNameFromId(ownerData.owner, window.ownerOptions);
+                const substituteName = getNameFromId(ownerData.substitute, window.substituteOptions);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${ownerName || 'Not assigned'}</td>
+                <td>${substituteName || 'Not assigned'}</td>
+            `;
+
+                tableBody.appendChild(row);
+            });
+
+            const modalHeading = modal.querySelector('.mian-customize-modal h2');
+            if (modalHeading) {
+                modalHeading.textContent = `Level ${level} - ${data.name || 'Unnamed Stage'} - Owner Details`;
+            }
+            modal.classList.add('active');
+            modal.style.display = 'block';
+        }
+        function getNameFromId(id, optionsArray) {
+            if (!id || !optionsArray) return '';
+
+            const option = optionsArray.find(opt => opt.id == id);
+            return option ? option.name : '';
+        }
+
+        function closeTable() {
+            
+            const modal = document.getElementById('moadalcustoize');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
+        }
+
+        function setupRealtimeOwnerUpdates() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+            container.addEventListener('change', function(event) {
+                const target = event.target;
+                if (target && (target.classList.contains('owner-dropdown') ||
+                        target.classList.contains('substitute-dropdown'))) {
+                    collectFormData();
+                }
+            });
+
+            container.addEventListener('click', function(event) {
+                const target = event.target;
+
+                if (target && (target.classList.contains('add-owner-button') ||
+                        target.closest('.owner-delete-button'))) {
+                    setTimeout(() => {
+                        collectFormData();
+                    }, 100);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            //const closeBtn = document.querySelector('.figma-close-buuton');
+            const closeBtn = document.getElementById('hide-hierarchy-modal');
+            
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    closeTable();
+                });
+            }
+            setupRealtimeOwnerUpdates();
+        });
+
+
+        function setupHierarchyUpdateListeners() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+
+            container.addEventListener('input', function(event) {
+                const target = event.target;
+
+                if (target && target.classList.contains('stage-name-fields')) {
+                    setTimeout(() => {
+                        collectFormData();
+                        mapDatatoHierarchy();
+                    }, 100);
+                }
+            });
+        }
+
+
+
+
+        function handleDeleteStage() {
+            const container = document.getElementById("base-form-container");
+            let pendingDeleteId = null;
+            let pendingStageSno = null;
+            function toggleDeleteButtonVisibility() {
+                
+                const visibleForms = baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])');
+                //const deleteButtons = baseFormContainer.querySelectorAll('.delete-button-cover');
+                const deleteButtons = baseFormContainer.querySelectorAll('[id^="stage-id-"].delete-button-cover');
+
+                if (visibleForms.length <= 1) {
+                    deleteButtons.forEach(btn => {
+                    //btn.style.display = 'none';
+                    btn.style.cssText = 'display: none !important';
+                    btn.classList.add('hidden-delete-button');
+                    });
+                } else {
+                    deleteButtons.forEach(btn => {
+                        btn.style.display = 'block'; 
+                    });
+                }
+            }
+            toggleDeleteButtonVisibility();
+
+            container.addEventListener('click', function(event) {
+                const deleteBtn = event.target.closest('.delete-button-cover');
+                if (deleteBtn) {
+                    event.preventDefault();
+
+                    const deleteBtnId = deleteBtn.getAttribute('id');
+                    const stageSno = deleteBtn.getAttribute('stage-delete-sno');
+
+                    if (deleteBtnId) {
+                        pendingDeleteId = deleteBtnId;
+                        pendingStageSno = stageSno;
+                        $('#deleteStageModal').modal('show');
+                    }
+                }
+            });
+            document.getElementById('confirmDeleteStageBtn').addEventListener('click', function() {
+                if (pendingDeleteId) {
+                    const levelToDelete = parseInt(pendingDeleteId.replace('stage-id-', ''), 10);
+                    const formToDelete = document.getElementById(pendingDeleteId);
+
+                    if (formToDelete) {
+                        if (pendingStageSno) {
+                            const deletedStagesInput = document.getElementById('deleted-stages');
+                            if (!deletedStagesInput) {
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.id = 'deleted-stages';
+                                hiddenInput.name = 'deleted-stages';
+                                hiddenInput.value = pendingStageSno;
+                                document.querySelector('form').appendChild(hiddenInput);
+                            } else {
+                                const currentIds = deletedStagesInput.value ? deletedStagesInput.value.split(',') : [];
+
+                                if (!currentIds.includes(pendingStageSno)) {
+                                    currentIds.push(pendingStageSno);
+                                    deletedStagesInput.value = currentIds.join(',');
+                                }
+                            }
+                        }
+
+                        formToDelete.remove();
+                        console.log(`Form with level "${levelToDelete}" deleted. Stage s_no: ${pendingStageSno || 'none (new stage)'}`);
+                        formLevels.sort((a, b) => a.level - b.level);
+                        const updatedFormLevels = [];
+                        let newLevel = 1;
+
+                        formLevels.forEach(f => {
+                            if (f.level !== levelToDelete) {
+                                updatedFormLevels.push({
+                                    level: newLevel,
+                                    data: {
+                                        ...f.data,
+                                        s_no: newLevel.toString() 
+                                    }
+                                });
+                                newLevel++;
+                            }
+                        });
+                        formLevels = updatedFormLevels;
+                        baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])').forEach(f => f.remove());
+                        renderForms();
+                        mapDatatoHierarchy();
+                        let currentLevels = parseInt($('#hierarchy-levels').val()) || 0;
+                        $('#hierarchy-levels').val(currentLevels - 1);
+                        toggleDeleteButtonVisibility();
+                    }
+
+                    pendingDeleteId = null;
+                    pendingStageSno = null;
+                    $('#deleteStageModal').modal('hide');
+                }
+            });
+            const originalInsertNewLevel = insertNewLevel;
+            insertNewLevel = function(newLevel) {
+                originalInsertNewLevel(newLevel);
+                toggleDeleteButtonVisibility();
+            };
+        }
+        function renumberLevels(deletedLevel) {
+            let totalLevels = parseInt($('#hierarchy-levels').val()) || 0;
+            $('#hierarchy-levels').val(totalLevels - 1);
+            const updatedFormLevels = [];
+            formLevels.forEach(f => {
+                if (f.level !== deletedLevel) {
+                    if (f.level > deletedLevel) {
+                        updatedFormLevels.push({
+                            level: f.level - 1,
+                            data: f.data
+                        });
+                    } else {
+                        updatedFormLevels.push({
+                            level: f.level,
+                            data: f.data
+                        });
+                    }
+                }
+            });
+            formLevels = updatedFormLevels;
+            baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])').forEach(f => f.remove());
+            renderForms();
+        }
+
+        function validateOwnerSubstituteCombinations(form) {
+            const formLevel = parseInt(form.id.replace('stage-id-', ''), 10);
+            const ownerItems = form.querySelectorAll('.owner-item');
+            const combinations = [];
+            const ownersList = [];
+            let isValid = true;
+            let errorMessage = '';
+            
+            ownerItems.forEach((item, index) => {
+                const ownerDropdown = item.querySelector('.owner-dropdown');
+                const substituteDropdown = item.querySelector('.substitute-dropdown');
+                
+                if (!ownerDropdown || !substituteDropdown) return;
+                
+                const ownerId = ownerDropdown.value;
+                const substituteId = substituteDropdown.value;
+                
+                // Skip validation if either value is empty
+                if (!ownerId) return;
+                
+                // Check 3: Owner must be unique per stage
+                if (ownerId && ownersList.includes(ownerId)) {
+                    isValid = false;
+                    errorMessage = `Duplicate owner in Level ${formLevel}. An owner can appear only once per level.`;
+                    return; // Exit the forEach early
+                } else if (ownerId) {
+                    ownersList.push(ownerId);
+                }
+                
+                // Skip remaining validations if substitute is empty
+                if (!substituteId) return;
+                
+                // Check 1: Duplicate owner-substitute combination
+                const combinationKey = `${ownerId}-${substituteId}`;
+                if (combinations.includes(combinationKey)) {
+                    isValid = false;
+                    errorMessage = `This owner-substitute pair already exists in another level. Please use a unique pair.`;
+                    return;
+                } else {
+                    combinations.push(combinationKey);
+                }
+                
+                // Check 2: Same user cannot be both owner and substitute
+                if (ownerId === substituteId) {
+                    isValid = false;
+                    errorMessage = `A user cannot be both owner and substitute in Level ${formLevel}. Please choose different users.`;
+                    return;
+                }
+            });
+            
+            return { isValid, errorMessage };
+        }
+          function validateAllForms() {
+            const forms = baseFormContainer.querySelectorAll('.base-stage-form:not([style*="display: none"])');
+            let isValid = true;
+            let errorMessage = '';
+            
+            forms.forEach(form => {
+              const validation = validateOwnerSubstituteCombinations(form);
+              if (!validation.isValid) {
+                isValid = false;
+                errorMessage = validation.errorMessage;
+              }
+            });
+            
+            return { isValid, errorMessage };
+          }
+          function showValidationError(message) {
+            let alertContainer = document.getElementById('validation-alert');
+            if (!alertContainer) {
+              alertContainer = document.createElement('div');
+              alertContainer.id = 'validation-alert';
+              alertContainer.className = 'alert alert-danger mt-3';
+              alertContainer.role = 'alert';
+              baseFormContainer.parentNode.insertBefore(alertContainer, baseFormContainer);
+            }
+            
+            alertContainer.textContent = message;
+            alertContainer.style.display = 'block';
+            alertContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+              alertContainer.style.display = 'none';
+            }, 5000);
+          }
+          
+          function clearValidationErrors() {
+            const alertContainer = document.getElementById('validation-alert');
+            if (alertContainer) {
+              alertContainer.style.display = 'none';
+            }
+          }
+          
+          function enhanceSetupAddOwnerHandler() {
+            const originalAddOwnerHandler = setupAddOwnerHandler;
+            
+            setupAddOwnerHandler = function() {
+              originalAddOwnerHandler();
+              
+              const container = document.getElementById('base-form-container');
+              if (!container) return;
+              
+              container.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('add-owner-button')) {
+                  const form = event.target.closest('.base-stage-form');
+                  if (form) {
+                    const validation = validateOwnerSubstituteCombinations(form);
+                    if (!validation.isValid) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      showValidationError(validation.errorMessage);
+                      return false;
+                    }
+                  }
+                }
+              }, true); 
+            };
+          }
+          
+          function enhanceFormSubmission() {
+            const form = document.querySelector('form');
+            if (!form) return;
+            const originalSubmit = form.onsubmit;
+            
+            form.onsubmit = function(event) {
+              const validation = validateAllForms();
+              if (!validation.isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                showValidationError(validation.errorMessage);
+                return false;
+              }
+              
+              if (originalSubmit) {
+                return originalSubmit.call(this, event);
+              }
+              return true;
+            };
+          }
+          
+          {% comment %} function setupDropdownValidation() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+            
+            container.addEventListener('change', function(event) {
+              const target = event.target;
+              
+              if (target && (target.classList.contains('owner-dropdown') || 
+                  target.classList.contains('substitute-dropdown'))) {
+                clearValidationErrors();
+                const form = target.closest('.base-stage-form');
+                if (form) {
+                  setTimeout(() => {
+                    const validation = validateOwnerSubstituteCombinations(form);
+                    if (!validation.isValid) {
+                      showValidationError(validation.errorMessage);
+                      if (validation.isValid === false) {
+                        target.value = '';
+                      }
+                    }
+                  }, 100);
+                }
+              }
+            });
+          } {% endcomment %}
+
+          function setupDropdownValidation() {
+            const container = document.getElementById('base-form-container');
+            if (!container) return;
+            
+            container.addEventListener('change', function(event) {
+                const target = event.target;
+                
+                if (target && (target.classList.contains('owner-dropdown') || 
+                    target.classList.contains('substitute-dropdown'))) {
+                    clearValidationErrors();
+                    const form = target.closest('.base-stage-form');
+                    if (form) {
+                        setTimeout(() => {
+                            const validation = validateOwnerSubstituteCombinations(form);
+                            if (!validation.isValid) {
+                                showValidationError(validation.errorMessage);
+                                // Reset the value of the dropdown that caused the error
+                                target.value = '';
+                            }
+                        }, 100);
+                    }
+                }
+            });
+        }
+  
+        enhanceSetupAddOwnerHandler();
+        enhanceFormSubmission();
+        setupDropdownValidation();
+        loadInitialForms();
+        setupLevelInputHandler();
+        setupAddOwnerHandler();
+        setupAddQuestionHandler();
+        setupDeleteQuestionHandler();
+        setupDeleteOwnerHandler();
+        toggleQuestionDeleteVisibility();
+        toggleOwnerDeleteVisibility();
+        mapDatatoHierarchy();
+        setupHierarchyUpdateListeners();
+        handleDeleteStage()
+        document.querySelector('form')?.addEventListener('submit', function(event) {
+            collectFormData();
+        });
+    }); 
+</script>
+<script>   
+document.addEventListener('DOMContentLoaded', function () {
+    const closeBtn = document.getElementById('hierarchyViewCancel')
+    closeBtn.addEventListener('click', function() {
+        closeTable();
+    });
+    function closeTable() {
+        const modal = document.getElementById('moadalcustoize');
+        closeBtn.disabled = true;
+        closeBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+        if (modal) {
+            setTimeout(() => {
+                closeBtn.disabled = false;
+                closeBtn.innerHTML = 'Cancel';
+                modal.style.display = 'none';  
+            }, 500);
+        }
+    }
+});
+</script> 
+
+{% comment %} <script>
+    $(document).ready(function () {
+        $('#investigation-stage-submit-button').click(function (e) {
+            e.preventDefault();
+
+            const submitBtn = $(this);
+            const originalBtnHtml = submitBtn.html();
+
+            let current_url = $('#current_url').val();
+            let formData = new FormData();
+            const visibleForms = document.querySelectorAll('.base-stage-form:not([style*="display: none"])');
+
+            let csrfToken = '{{ csrf_token }}';
+            let hierarchyId = $('#hierarchy_id').val();
+            let validationPassed = true;
+
+            $('#invalid_stage_form').text('');
+            $('#level-span-error').empty();
+            $('#hierarchy-timeline-error').text('');
+            $('#hierarchy-timeline').css('border', '');
+
+            let postUrl = '';
+            if (current_url === 'company_hierarchy_update') {
+                postUrl = '{% url "company:company_hierarchy_update" hierarchy_id %}';
+            } else {
+                postUrl = '{% url "company:add_hierarchy_stages" hierarchy_id %}';
+            }
+
+            const hierarchyTimelineVal = $('#hierarchy-timeline').val().trim();
+            if (!hierarchyTimelineVal || isNaN(hierarchyTimelineVal) || parseInt(hierarchyTimelineVal) < 1) {
+                $('#hierarchy-timeline-error').text('Timeline must be a number greater than or equal to 1.');
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+                return;
+            }                   
+
+            formData.append('hierarchy_id', hierarchyId);
+            formData.append('hierarchy_levels', $('#hierarchy-levels').val());
+            formData.append('hierarchy_timeline', $('#hierarchy-timeline').val());
+
+            const deletedStages = $('#deleted-stages').val();
+            if (deletedStages) formData.append('deleted_stages', deletedStages);
+
+            const deletedOwners = $('#deleted-owners').val();
+            if (deletedOwners) formData.append('deleted_owners', deletedOwners);
+
+            const deletedQuestions = $('#deleted-questions').val();
+            if (deletedQuestions) formData.append('deleted_questions', deletedQuestions);
+
+            let errorMessages = [];
+
+            visibleForms.forEach((form) => {
+                const stageId = form.getAttribute('data-stage-id');
+                if (stageId) formData.append('stage_ids', stageId);
+
+                const stageSno = form.getAttribute('stage-sno');
+                if (stageSno) formData.append(`stage_sno_${form.id}`, stageSno);
+
+                const inputs = form.querySelectorAll('input, select, textarea');
+
+                let formHasErrors = false;
+
+                inputs.forEach(input => {
+                    // Append values
+                    if (input.type === 'checkbox') {
+                        if (input.checked) {
+                            formData.append(input.name, input.value);
+                        }
+                    } else {
+                        formData.append(input.name, input.value);
+                    }
+
+                    // Real-time validation to clear red border on input
+                    if (input.hasAttribute('required')) {
+                        $(input).off('input change').on('input change', function () {
+                            if ($(this).val().trim() !== '') {
+                                $(this).css('border-bottom', '');
+                            }
+                        });
+
+                        let value = input.value;
+                        if (!value || value.trim() === "") {
+                            validationPassed = false;
+                            formHasErrors = true;
+                            $(input).css('border-bottom', '1px solid red');
+                        } else {
+                            $(input).css('border-bottom', '');
+                        }
+                    }
+                });
+
+              
+                // Validate substitute timeline if a substitute is selected
+                const substituteDropdowns = form.querySelectorAll('.substitute-dropdown');
+
+                substituteDropdowns.forEach((dropdown) => {
+                    const selectedValue = dropdown.value;
+                    const dropdownId = dropdown.id; 
+                    const timelineInputId = dropdownId.replace('substitute', 'timeline'); 
+                    const timelineInput = document.getElementById(timelineInputId);
+
+                    if (selectedValue && (!timelineInput || timelineInput.value.trim() === '')) {
+                        validationPassed = false;
+                        formHasErrors = true;
+
+                        if (timelineInput) {
+                            $(timelineInput).css('border-bottom', '1px solid red');
+
+                            $(timelineInput).off('input').on('input', function () {
+                                if ($(this).val().trim() !== '') {
+                                    $(this).css('border-bottom', '');
+                                }
+                            });
+                        }
+
+                        const stageLevel = form.querySelector('.stage-level');
+                        const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                        errorMessages.push(`${levelText}: Please enter timeline for the selected substitute.`);
+                        $('#invalid_stage_form').text(`${levelText}: Timeline is required for selected substitute.`);
+                    }
+                });
+
+                if (formHasErrors) {
+                    
+                    const stageLevel = form.querySelector('.stage-level');
+                    const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                    errorMessages.push(`${levelText} has required fields that need to be filled`);
+                    $('#invalid_stage_form').html('Please complete all required fields before submitting.')
+                    return;
+
+                }
+
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                const isAnyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                if (!isAnyChecked) {
+                    validationPassed = false;
+                    formHasErrors = true;
+                    const stageLevel = form.querySelector('.stage-level');
+                    const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                    errorMessages.push(`${levelText} must have at least one permission selected.`);
+                    $('#invalid_stage_form').text(`${levelText} must have at least one permission selected.`);
+                    return;
+
+                }
+            });
+            
+        
+            if (errorMessages.length > 0) {
+                $('#level-span-error').html(errorMessages.join('<br>')).css({
+                    'color': 'red',
+                    'display': 'block',
+                    'margin-top': '10px',
+                    'margin-bottom': '10px'
+                });
+
+                $('#level-span-error')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                $('#invalid_stage_form').text('Please complete all required fields before submitting.');
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+                return;
+            } else {
+                $('#invalid_stage_form').text('');
+            }
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>');
+
+            $.ajax({
+                url: postUrl,
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    
+                    if (response.status === 'fail' && response.time_line_status === 'lesser') {
+                        let errorMessages = 'Stage timelines are shorter than the total hierarchy timeline!';
+                        $('#formErrorMessage').html(errorMessages);
+                        $('#formErrorModal').modal('show');
+                        $('#level-span-error').html(errorMessages).css({
+                            'color': 'red',
+                            'display': 'block',
+                            'margin-top': '10px',
+                            'margin-bottom': '10px'
+                        });
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    } else if (response.status === 'fail' && response.time_line_status === 'greator') {
+                        let errorMessages = 'Stage timelines are greater than the total hierarchy timeline!';
+                        $('#formErrorMessage').html(errorMessages);
+                        $('#formErrorModal').modal('show');
+                        $('#level-span-error').html(errorMessages).css({
+                            'color': 'red',
+                            'display': 'block',
+                            'margin-top': '10px',
+                            'margin-bottom': '10px'
+                        });
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    }
+                    else if (response.status.status === false) {
+                        let errorMessages = response.status.message;
+                        $('#invalid_stage_form').text(errorMessages);
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+
+                    }
+                    else {
+                        console.log('Form submitted successfully');
+                        setTimeout(function () {
+                            window.location.href = response.redirect_url;
+                        }, 1000);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Form submission failed', error);
+                    $('#invalid_stage_form').css('color', 'red').text('Form submission failed. Please try again.');
+                    submitBtn.prop('disabled', false).html(originalBtnHtml);
+                }
+            });
+        });
+        $('#hierarchy-timeline').on('input', function () {
+            if ($(this).val().trim() !== '') {
+                $(this).css('border', '');
+                $('#hierarchy-timeline-error').text('');
+            }
+        });
+    });
+</script> {% endcomment %}
+
+<script>
+    $(document).ready(function () {
+        $('#investigation-stage-submit-button').click(function (e) {
+            e.preventDefault();
+
+            const submitBtn = $(this);
+            const originalBtnHtml = submitBtn.html();
+
+            let current_url = $('#current_url').val();
+            let formData = new FormData();
+            const visibleForms = document.querySelectorAll('.base-stage-form:not([style*="display: none"])');
+
+            let csrfToken = '{{ csrf_token }}';
+            let hierarchyId = $('#hierarchy_id').val();
+            let validationPassed = true;
+
+            $('#invalid_stage_form').text('');
+            $('#level-span-error').empty();
+            $('#hierarchy-timeline-error').text('');
+            $('#hierarchy-timeline').css('border', '');
+
+            let postUrl = '';
+            if (current_url === 'company_hierarchy_update') {
+                postUrl = '{% url "company:company_hierarchy_update" hierarchy_id %}';
+            } else {
+                postUrl = '{% url "company:add_hierarchy_stages" hierarchy_id %}';
+            }
+
+            const hierarchyTimelineVal = $('#hierarchy-timeline').val().trim();
+            if (!hierarchyTimelineVal || isNaN(hierarchyTimelineVal) || parseInt(hierarchyTimelineVal) < 1) {
+                $('#hierarchy-timeline-error').text('Timeline must be a number greater than or equal to 1.');
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+                return;
+            }                   
+
+            formData.append('hierarchy_id', hierarchyId);
+            formData.append('hierarchy_levels', $('#hierarchy-levels').val());
+            formData.append('hierarchy_timeline', $('#hierarchy-timeline').val());
+
+            const deletedStages = $('#deleted-stages').val();
+            if (deletedStages) formData.append('deleted_stages', deletedStages);
+
+            const deletedOwners = $('#deleted-owners').val();
+            if (deletedOwners) formData.append('deleted_owners', deletedOwners);
+
+            const deletedQuestions = $('#deleted-questions').val();
+            if (deletedQuestions) formData.append('deleted_questions', deletedQuestions);
+
+            let errorMessages = [];
+
+            visibleForms.forEach((form) => {
+                const stageId = form.getAttribute('data-stage-id');
+                if (stageId) formData.append('stage_ids', stageId);
+
+                const stageSno = form.getAttribute('stage-sno');
+                if (stageSno) formData.append(`stage_sno_${form.id}`, stageSno);
+
+                const inputs = form.querySelectorAll('input, select, textarea');
+
+                let formHasErrors = false;
+
+                inputs.forEach(input => {
+                    // Append values
+                    if (input.type === 'checkbox') {
+                        if (input.checked) {
+                            formData.append(input.name, input.value);
+                        }
+                    } else {
+                        formData.append(input.name, input.value);
+                    }
+
+                    // Real-time validation to clear red border on input
+                    if (input.hasAttribute('required')) {
+                        $(input).off('input change').on('input change', function () {
+                            if ($(this).val().trim() !== '') {
+                                $(this).css('border-bottom', '');
+                            }
+                        });
+
+                        let value = input.value;
+                        if (!value || value.trim() === "") {
+                            validationPassed = false;
+                            formHasErrors = true;
+                            $(input).css('border-bottom', '1px solid red');
+                        } else {
+                            $(input).css('border-bottom', '');
+                        }
+                    }
+                });
+
+              
+                // Validate substitute timeline if a substitute is selected
+                const substituteDropdowns = form.querySelectorAll('.substitute-dropdown');
+
+                substituteDropdowns.forEach((dropdown) => {
+                    const selectedValue = dropdown.value;
+                    const dropdownId = dropdown.id; 
+                    const timelineInputId = dropdownId.replace('substitute', 'timeline'); 
+                    const timelineInput = document.getElementById(timelineInputId);
+
+                    if (selectedValue && (!timelineInput || timelineInput.value.trim() === '')) {
+                        validationPassed = false;
+                        formHasErrors = true;
+
+                        if (timelineInput) {
+                            $(timelineInput).css('border-bottom', '1px solid red');
+
+                            $(timelineInput).off('input').on('input', function () {
+                                if ($(this).val().trim() !== '') {
+                                    $(this).css('border-bottom', '');
+                                }
+                            });
+                        }
+
+                        const stageLevel = form.querySelector('.stage-level');
+                        const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                        errorMessages.push(`${levelText}: Please enter timeline for the selected substitute.`);
+                        $('#invalid_stage_form').text(`${levelText}: Timeline is required for selected substitute.`);
+                    }
+                });
+
+                if (formHasErrors) {
+                    
+                    const stageLevel = form.querySelector('.stage-level');
+                    const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                    errorMessages.push(`${levelText} has required fields that need to be filled`);
+                    $('#invalid_stage_form').html('Please complete all required fields before submitting.')
+                    return;
+
+                }
+
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                const isAnyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                if (!isAnyChecked) {
+                    validationPassed = false;
+                    formHasErrors = true;
+                    const stageLevel = form.querySelector('.stage-level');
+                    const levelText = stageLevel ? stageLevel.textContent : `Level ${form.id.replace('stage-id-', '')}`;
+                    errorMessages.push(`${levelText} must have at least one permission selected.`);
+                    $('#invalid_stage_form').text(`${levelText} must have at least one permission selected.`);
+                    return;
+
+                }
+            });
+            
+        
+            if (errorMessages.length > 0) {
+                $('#level-span-error').html(errorMessages.join('<br>')).css({
+                    'color': 'red',
+                    'display': 'block',
+                    'margin-top': '10px',
+                    'margin-bottom': '10px'
+                });
+
+                $('#level-span-error')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                $('#invalid_stage_form').text('Please complete all required fields before submitting.');
+                submitBtn.prop('disabled', false).html(originalBtnHtml);
+                return;
+            } else {
+                $('#invalid_stage_form').text('');
+            }
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>');
+
+            $.ajax({
+                url: postUrl,
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    
+                    if (response.status === 'fail' && response.time_line_status === 'lesser') {
+                        let errorMessages = 'Stage timelines are shorter than the total hierarchy timeline!';
+                        $('#formErrorMessage').html(errorMessages);
+                        $('#formErrorModal').modal('show');
+                        $('#level-span-error').html(errorMessages).css({
+                            'color': 'red',
+                            'display': 'block',
+                            'margin-top': '10px',
+                            'margin-bottom': '10px'
+                        });
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    } else if (response.status === 'fail' && response.time_line_status === 'greator') {
+                        let errorMessages = 'Stage timelines are greater than the total hierarchy timeline!';
+                        $('#formErrorMessage').html(errorMessages);
+                        $('#formErrorModal').modal('show');
+                        $('#level-span-error').html(errorMessages).css({
+                            'color': 'red',
+                            'display': 'block',
+                            'margin-top': '10px',
+                            'margin-bottom': '10px'
+                        });
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    }
+                    else if (response.status.status === false) {
+                        let errorMessages = response.status.message;
+                        $('#invalid_stage_form').text(errorMessages);
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+
+                    }
+                    else {
+                        console.log('Form submitted successfully');
+                        setTimeout(function () {
+                            window.location.href = response.redirect_url;
+                        }, 1000);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Form submission failed', error);
+                    $('#invalid_stage_form').css('color', 'red').text('Form submission failed. Please try again.');
+                    submitBtn.prop('disabled', false).html(originalBtnHtml);
+                }
+            });
+        });
+        $('#hierarchy-timeline').on('input', function () {
+            if ($(this).val().trim() !== '') {
+                $(this).css('border', '');
+                $('#hierarchy-timeline-error').text('');
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const closeBtn = document.getElementById('hierarchyCancelBtn');
+        const CancelBtn = document.getElementById('levelCancelBtn');
+        const stepModal = document.getElementById('addlevel'); 
+    
+        closeBtn.addEventListener('click', function (e) {
+            closeBtn.disabled = true;
+            closeBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+            setTimeout(() => {
+                closeBtn.disabled = false;
+                closeBtn.innerHTML = 'Cancel';
+            }, 500);
+        });  
+        CancelBtn.addEventListener('click', function() {
+            CancelBtn.disabled = true;
+            CancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+            setTimeout(() => {
+                CancelBtn.disabled = false;
+                CancelBtn.innerHTML = 'Cancel';
+              $('#addlevel').modal('hide');
+            }, 500);
+          });     
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        function validateTimelineInput(input) {
+            let value = $(input).val().replace(/[^\d]/g, '');
+            let numericValue = parseInt(value, 10);
+    
+            $(input).val(value); 
+    
+            const errorMsgId = $(input).attr('id') ? `${$(input).attr('id')}-error-msg` : '';
+            const existingError = $(input).siblings('.timeline-error-msg');
+    
+            if (!value || numericValue < 1) {
+    
+                if (existingError.length === 0) {
+                    $(input).after('<span class="timeline-error-msg" style="color:red;font-size:13px;">Timeline must be greater than 0.</span>');
+                }
+            } else {
+    
+                existingError.remove();
+            }
+        }
+    
+        $('#hierarchy-timeline, .stage-timeline-fields, .stage-timeline-time').on('keyup change', function () {
+            validateTimelineInput(this);
+        });
+    });    
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Function to handle the substitute dropdown and timeline relationship
+        function handleSubstituteTimeline() {
+            // Process all substitute dropdowns on the page
+            $('.substitute-dropdown').each(function() {
+                // Ensure we have a valid element with an ID
+                if (this.id) {
+                    const dropdownId = this.id;
+                    const timelineInputId = dropdownId.replace('substitute', 'timeline');
+                    const timelineInput = $('#' + timelineInputId);
+                    
+                    // Only proceed if we found the matching timeline input
+                    if (timelineInput.length > 0) {
+                        // Set state based on whether substitute has a value
+                        if ($(this).val()) {
+                            timelineInput.prop('readonly', false);
+                        } else {
+                            timelineInput.prop('readonly', true);
+                            timelineInput.val(''); // Clear any existing value
+                        }
+                    }
+                } else {
+                    console.warn("A substitute-dropdown element found without an id attribute");
+                }
+            });
+        }
+        
+        // Run on page load
+        handleSubstituteTimeline();
+        
+        // Add change event listener to all substitute dropdowns
+        $(document).on('change', '.substitute-dropdown', function() {
+            // Ensure the dropdown has an ID
+            if (this.id) {
+                const dropdownId = this.id;
+                const timelineInputId = dropdownId.replace('substitute', 'timeline');
+                const timelineInput = $('#' + timelineInputId);
+                
+                // Only proceed if we found the matching timeline input
+                if (timelineInput.length > 0) {
+                    if ($(this).val()) {
+                        // If a substitute is selected, enable the timeline field
+                        timelineInput.prop('readonly', false);
+                    } else {
+                        // If no substitute is selected, disable the timeline field and clear its value
+                        timelineInput.prop('readonly', true);
+                        timelineInput.val('');
+                    }
+                }
+            } else {
+                console.warn("A substitute-dropdown element triggered a change event without an id attribute");
+            }
+        });
+        
+        // Handle dynamically added elements (if applicable)
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    handleSubstituteTimeline();
+                }
+            });
+        });
+        
+        // Start observing changes to the document body
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+{% endblock javascripts %}

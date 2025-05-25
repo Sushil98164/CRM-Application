@@ -1,0 +1,134 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+
+{% load widget_tweaks %}
+{% block title %}
+Privacy policy
+{% endblock %}
+{% block stylesheets %}
+<style>
+    .django-ckeditor-widget {
+    width: 100%;
+}
+
+.ck-editor__editable {
+    min-height: 250px !important; /* Adjust as needed */
+}
+.ck .ck-powered-by{
+    display: none!important;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-bar">
+	<div class="page-title-breadcrumb">
+		<div class=" pull-left">
+			<div class="page-title">Privacy policy</div>
+		</div>
+		<ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="{% url 'company:company_settings' %}">Settings</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+			<li><a class="parent-item" href="{% url 'company:company_documents' %}">Company policies</a>&nbsp;<i class="fa fa-angle-right"></i>
+			</li>
+			<li class="active">Privacy policy</li>
+		</ol>
+	</div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <form method="post" class="disable-on-submit">
+            {% csrf_token %}
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Privacy policy</header>
+                </div>
+                {{form.type}}
+                {{form.company}}
+                {% if request.resolver_match.url_name == 'company_privacy_policy_view' %}
+
+                <div class="card-body row">
+                    <div class="col-lg-12 p-t-20">
+                        {% if description %}
+
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width w-100 d-block">
+                            <p>{{ description|safe }}</p>
+                        </div>
+                        {% else %}
+                        <div class="txt-full-width w-100 d-block text-center">
+                            <p>No data to display</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-body row">
+                    <div class="col-lg-12 p-t-20">
+                        <div class="txt-full-width w-100 d-block">
+                            <span class="focus-input100 error-label w-100 p-2" style="color: red; font-size: 13px;">
+                                {{ form.description.errors|join:"" }}
+                            </span>
+                            {{ form.description }}
+                          
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-lg-12 p-t-20 text-center">
+                    {% if request.resolver_match.url_name == 'company_privacy_policy_edit' %}
+                    <button type="submit"
+                        class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue">Submit</button>
+                    {% endif %}
+                        <a href="{% url 'company:company_documents' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Back</a>
+
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+ {% block javascripts %}
+{% comment %} <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>  {% endcomment %}
+
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#id_description'), {
+            toolbar: {
+                items: [
+                    'heading', '|',
+                    'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', '|',
+                    'bulletedList', 'numberedList', 'todoList', '|',
+                    'alignment', 'indent', 'outdent', '|',
+                    'blockQuote', 'link', 'insertTable', '|',
+                    'undo', 'redo', 'findAndReplace', '|',
+                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+                    'highlight', 'horizontalLine', 'codeBlock', '|',
+                    'specialCharacters', 'removeFormat', '|',
+                    'sourceEditing'
+                ]
+            },
+            language: 'en',
+            image: {
+                toolbar: [
+                    'imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
+                ]
+            },
+            table: {
+                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
+            },
+            mediaEmbed: {
+                previewsInData: true
+            }
+        })
+        .then(editor => {
+            editor.ui.getEditableElement().classList.add('ckeditor-min-rows');
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
+
+{% endblock %}

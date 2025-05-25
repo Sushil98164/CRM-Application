@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>BellsCRM</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" href="{% static 'assets/img/new_logo.png' %}" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'landing_page/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'landing_page/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <!-- Template Main CSS File -->
+  <link href="{% static 'landing_page/css/style.css' %}" rel="stylesheet">
+
+  {% block stylesheets %}
+  {% endblock stylesheets %}
+</head>
+<body>
+{% block content %}
+{% endblock %}
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'landing_page/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'landing_page/vendor/php-email-form/validate.js' %}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'landing_page/js/main.js' %}"></script>
+  
+  <script>
+    const accordionItems = document.querySelectorAll('.accordion-item');
+  
+    accordionItems.forEach(item => {
+      const button = item.querySelector('.accordion-button');
+      const icon = button.querySelector('img');
+  0
+      item.addEventListener('show.bs.collapse', function () {
+        // Reset all icons to plus
+        document.querySelectorAll('.accordion-button img').forEach(icon => {
+          icon.src = '{% static "landing_page/img/plus-icon.svg" %}';
+        });
+  
+        // Change icon to minus if the clicked button is collapsed
+        icon.src = '{% static "landing_page/img/minus-icon.svg" %}';
+      });
+  
+      item.addEventListener('hide.bs.collapse', function () {
+        // Change icon back to plus when collapsing
+        icon.src = '{% static "landing_page/img/plus-icon.svg" %}';
+      });
+    });
+  </script>
+  
+  {% block javascripts %}
+  {% endblock javascripts %}
+</body>
+
+</html>

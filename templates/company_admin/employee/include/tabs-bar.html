@@ -1,0 +1,45 @@
+{% load company_admin_tags %}
+{% can_access_team_data request.user employee_id=employee_id company_id=request.user.employee.company.id as can_access %}
+
+<div class="col-md-12">
+    <div class="p-rl-20">
+     <ul class="nav customtab nav-tabs" role="tablist">
+    
+
+         {% if request.resolver_match.url_name == 'employee_profile_view' or request.resolver_match.url_name == 'manager_employee_profile_edit' %}
+                 <li class="nav-item"><a href="{% url 'company:employee_profile_view' employee_id %}" class="nav-link active"
+                 >Employee profile</a></li>
+                 {% if can_access  %}
+                 <li class="nav-item"><a href="{% url 'company:company_employee_documents' employee_id %}" class="nav-link"
+                     >Documents</a></li>
+                  {% endif %}
+                  <li class="nav-item"><a href="{% url 'company:manager_employee_profile_clients' employee_id %}" class="nav-link"
+                     >Clients</a></li>
+         {% endif %}
+         
+         {% if request.resolver_match.url_name == 'company_employee_documents' or request.resolver_match.url_name == 'company_employee_document' %}
+              <li class="nav-item"><a href="{% url 'company:employee_profile_view' employee_id %}" class="nav-link "
+              >Employee profile</a></li>
+              {% if can_access %}
+              <li class="nav-item"><a href="{% url 'company:company_employee_documents' employee_id %}" class="nav-link active"
+                 >Documents</a></li>
+                 {% endif %}
+
+                 <li class="nav-item"><a href="{% url 'company:manager_employee_profile_clients' employee_id %}" class="nav-link"
+                    >Clients</a></li>
+         {% endif %}
+
+         {% if request.resolver_match.url_name == 'manager_employee_profile_clients' %}
+         <li class="nav-item"><a href="{% url 'company:employee_profile_view' employee_id %}" class="nav-link "
+         >Employee profile</a></li>
+         {% if can_access %}   
+         <li class="nav-item"><a href="{% url 'company:company_employee_documents' employee_id %}" class="nav-link "
+            >Documents</a></li>
+         {% endif %}
+            <li class="nav-item"><a href="{% url 'company:manager_employee_profile_clients' employee_id %}" class="nav-link active"
+               >Clients</a></li>
+        {% endif %}
+       
+     </ul>
+ </div>
+</div>

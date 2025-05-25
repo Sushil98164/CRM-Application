@@ -1,0 +1,776 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% load company_admin_tags %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% block title %}
+Employee List 
+{% endblock title %}
+
+{% block stylesheets %}
+<style>
+	
+	.modal-header {
+	border: none;
+	}
+	.modal-footer {
+		border: none;
+	}
+	button.btn.btn-secondary {
+	background-color: #188AE2;
+	color: #FEFEFC;
+	font-family: Inter;
+	font-size: 24px;
+	font-weight: 700;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 5px;
+	margin-right: 20px;
+	}
+	
+	.modal-footer {
+	text-align: center;
+	display: block;
+	}
+	.delete-confirmation-modal .icon-alert {
+		border-radius: 50px;
+		width: 77px;
+		height: 77px;
+		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1.875em;
+		border: .25em solid #facea8;
+		color: #f8bb86;
+	}
+	.modal-header {
+	text-align: center;
+	padding-bottom:0px;
+	display: block;
+	}
+	.modal-content{
+		width: 80% !important;
+	}
+	.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+		margin: 0 auto;
+		max-width: 32em;
+		display: flex;
+		justify-content: center;
+	}
+	
+	.delete-confirmation-modal #exampleModalLongTitle {
+		text-align: center;
+		font-weight: 600;
+		color: #595959;
+		font-size: 30px;
+		margin: 0 0 .4em;
+	}
+		.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+			margin: 0 auto;
+			max-width: 32em;
+	}
+	.delete-confirmation-modal .modal-content {
+		padding: 1.25em;
+	}
+	.delete-confirmation-modal.modal .modal-content {
+		-webkit-border-radius: 0.3125em;
+		-moz-border-radius: 0.3125em;
+		-ms-border-radius: 0.3125em;
+		-o-border-radius: 0.3125em;
+		border-radius: 0.3125em;
+	}
+	.delete-confirmation-modal.modal  .modal-header {
+		border-bottom: none;
+		padding: 0;
+	}
+	.delete-confirmation-modal.modal .modal-body {
+		text-align: center;
+		font-size: 1.125em;
+		font-weight: 400;
+		color: #545454;
+		line-height: normal;
+		padding: 0;
+	}
+	
+	.delete-confirmation-modal .modal-footer button.btn {
+		display: inline-block;
+		background-color: rgb(221, 51, 51);
+		border: 0;
+		border-radius: 0.25em;
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		padding: 8px 16px;
+		min-height: 36px;
+		font-size: 14px;
+		text-transform: unset !important;
+	}
+	.delete-confirmation-modal .modal-footer button.btn:hover {
+		background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+	}
+	.delete-confirmation-modal .modal-content .modal-footer {
+		border: 0;
+		padding: 0;
+		margin: 1.25em auto 0;
+	}
+	.delete-confirmation-modal {
+		padding: .625em !important;
+	}
+
+	@media screen and (max-width: 678px) {
+		.modal-content {
+			width: 100% !important;
+		}
+		div.dataTables_wrapper div.dataTables_filter {
+    text-align: left !important;
+}
+div.dataTables_wrapper div.dataTables_filter label {
+    white-space: normal !important;
+}
+.form-control{
+	width: 100% !important;
+}
+
+	}
+	.policy{
+		position: relative;
+	}
+	.policy::after{
+		content:"";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background-color: #188AE2;
+		transition: 0.2s;
+	}
+	.policy:hover::after{
+		width: 100%;
+
+	}
+	.label-pending{
+		background-color: rgb(240, 186, 38);
+	}
+	i.fa.fa-plus {
+		color: #fff;
+	}
+	.policy.active{
+		border-bottom: 2px solid #188AE2;
+	}
+	.table-checkable tr>td:first-child, .table-checkable tr>th:first-child {
+    
+    max-width: 100%!important;
+    min-width: 100% !important;
+	}
+
+	.progress-card {
+		border: 1px solid #f4f4f4;
+		padding: 16px;
+		border-radius: 8px;
+		text-align: center;
+		background-color: white;
+	}
+	.progress-bar {
+		width: 100%;
+		height: 10px;
+		background-color: #f4f4f4;
+		border-radius: 10px;
+		overflow: hidden;
+	}
+	.progress-bar-fill {
+		height: 100%;
+		background-color: orange;
+		transition: width 0.5s ease-in-out;
+	}
+.table {
+	width: 100% !important;
+}
+ </style>
+{% endblock stylesheets %}
+{% block content %}
+
+<!-- startwidget -->
+<div class="page-bar">
+	<div class="page-title-breadcrumb">
+		<div class=" pull-left">
+			<div class="page-title">Employees list</div>
+		</div>
+		<ol class="breadcrumb page-breadcrumb pull-right">
+		
+			<li><a class="parent-item" href="#">Employees</a>&nbsp;<i class="fa fa-angle-right"></i>
+			</li>
+			{% if request.resolver_match.url_name == 'employee_list' %}
+			<li class="active">Employees list</li>
+			{% elif request.resolver_match.url_name == 'company_employee_acknowledgement' %}
+			<li class="active">Acknowledgments</li>
+			{% endif %}
+		</ol>
+	</div>
+</div>
+{% if request.resolver_match.url_name == "company_employee_acknowledgement" %}
+<div class="row">
+    <!-- Terms and Conditions Box -->
+    <div class="col-md-6 col-12">
+        <div class="info-box">
+            <span class="info-box-icon push-bottom">
+                <i class="material-icons mt-4" style="color:white;">group</i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Completed acknowledgments</span>
+                <span class="progress-description">(Terms and conditions)</span>
+                {% if tc_policy_exists %}
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar-fill" style="width: {{ tc_acknowledged_percentage }}%; background-color: 
+                            {% if tc_acknowledged_percentage < 50 %}
+                                #FF4D4D
+                            {% elif tc_acknowledged_percentage >= 50 and tc_acknowledged_percentage < 75 %}
+                                #FFA500
+                            {% else %}
+                                #4CAF50
+                            {% endif %};">
+                        </div>
+                    </div>
+                    <span class="info-box-number">
+                        {{ tc_acknowledged_count }} out of {{ tc_total_employees }}
+                    </span>
+                {% else %}
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar-fill" style="width: 0%; background-color: #808080;"></div>
+                    </div>
+                    <span class="info-box-number">0 out of 0</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Box -->
+    <div class="col-md-6 col-12">
+        <div class="info-box">
+            <span class="info-box-icon push-bottom">
+                <i class="material-icons mt-4" style="color:white;">group</i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Completed acknowledgments</span>
+                <span class="progress-description">(Privacy Policy)</span>
+                {% if privacy_policy_exists %}
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar-fill" style="width: {{ privacy_acknowledged_percentage }}%; background-color: 
+                            {% if privacy_acknowledged_percentage < 50 %}
+                                #FF4D4D
+                            {% elif privacy_acknowledged_percentage >= 50 and privacy_acknowledged_percentage < 75 %}
+                                #FFA500
+                            {% else %}
+                                #4CAF50
+                            {% endif %};">
+                        </div>
+                    </div>
+                    <span class="info-box-number">
+                        {{ privacy_acknowledged_count }} out of {{ privacy_total_employees }}
+                    </span>
+                {% else %}
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar-fill" style="width: 0%; background-color: #808080;"></div>
+                    </div>
+                    <span class="info-box-number">0 out of 0</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="row">
+
+	<div class="col-md-12">
+		<div class="tabbable-line">
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+						{% if messages %}
+						<div class="container-fluid">
+						  <ul class="list-unstyled">
+							{% for message in messages %}
+							  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </li>
+							{% endfor %}
+						  </ul>
+						</div>
+						<script>
+							// Automatically close alerts after 5 seconds
+							window.setTimeout(function () {
+							  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+								$(this).remove();
+							  });
+							}, 5000);
+						  </script>
+					  {% endif %}
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Employees list</header>
+
+								</div>							
+								<div class="card-body ">
+								{% if request.resolver_match.url_name == 'employee_list' %}
+
+									<ul class="nav customtab nav-tabs " role="tablist">
+										{% if request.resolver_match.url_name == 'employee_list' %}
+											<li class="nav-item mb-2">
+												<a href="{% url 'company:employee_list' %}" class="nav-link active">
+													Employees
+												</a>
+											</li>
+											{% if request.user|has_permission:'userauth.read_all_acknowledgements' or request.user|has_permission:'userauth.read_team_acknowledgements' %}
+
+											<li class="nav-item">
+												{% comment %} <a href="{% url 'company:company_employee_acknowledgement' %}?type=terms_and_conditions" class="nav-link" tabindex="-1">
+													Acknowledgments
+												</a> {% endcomment %}
+												<a href="{% url 'company:company_employee_acknowledgement' %}" class="nav-link" tabindex="-1">
+													Acknowledgments
+												</a>
+											</li>
+											{% endif %}
+										{% endif %}
+									</ul>
+									<div class="row">
+										<div class="col-md-12 col-sm-12 d-flex justify-content-end">
+											{% if  request.user|has_permission:'userauth.create_all_employees' %}
+											<div class="btn-group">
+												<a href="{% url 'company:employee_add' %}" id="addRow"
+													class="btn btn-info">
+													Add new <i class="fa fa-plus"></i>
+												</a>
+												
+											</div>
+											{% endif %}
+								
+											{% comment %} <div class="btn-group">
+												<a href="{% url 'employee:employeeassignpermission' %}" id="addRow"
+													class="btn btn-info">
+													Add Permission <i class="fa fa-plus"></i>
+												</a>
+												
+											</div> {% endcomment %}
+										</div>
+										
+									</div>
+									<div class="table-scrollablee">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th>S.no</th>
+													<th> First name </th>
+													<th> Last name </th>
+													<th>Email</th>
+													<th> Phone number </th>
+													<!-- <th> Permission sets</th> -->
+													<th> Approved by admin </th>
+													{% comment %} {% if show_eye_button_for %} {% endcomment %}
+													<th> Action </th>
+													{% comment %} {% endif %} {% endcomment %}
+												</tr>
+											</thead>
+											<tbody>
+												{% for employee in employees %}
+												<tr class="odd gradeX">
+													<td class="patient-img">
+														{% get_proper_counter forloop.counter employees %}
+													</td>
+													<td>{% if employee.person.first_name %} {{employee.person.first_name}}{% endif %}</td>
+													<td class="left">{{employee.person.last_name}}</td>
+													<td><a href="mailto:shuxer@gmail.com">
+														{% if employee.person.email %}{{employee.person.email}}{% endif %} </a></td>
+													<td><a href="tel:4444565756">
+													{% if employee.person.phone_number %}{{employee.person.phone_number}} {% endif %} </a></td>
+													<!-- <td>
+													    {% if employee.template  %}
+														{{employee.template.name|split_string}}
+														{% endif %}
+													</td> -->
+
+													<td>{% if employee.person.is_active%}
+													<span class="label label-sm label-success"> Yes </span>
+													{% else %}
+													<span class="label label-sm label-danger"> No </span>
+													{% endif %}
+													</td>
+													<td>
+														
+														{% comment %} <a href="{% url 'company:employee_profile_view' employee.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-eye"></i>
+														</a> {% endcomment %}
+														{% comment %} {% if employee in show_eye_button_for %} {% endcomment %}
+														<a href="{% url 'company:employee_profile_view' employee.id %}"
+														   class="btn btn-primary btn-xs">
+														   <i class="fa fa-eye"></i>
+														</a>
+														{% comment %} {% endif %} {% endcomment %}
+														
+															{% comment %} <form id="deleteForm_{{ employee.id }}" action="{% url 'company:employee_delete' employee.id %}" method="post">
+																{% csrf_token %}
+																<button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ employee.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+																	<i class="fa fa-trash-o"></i>
+																</button>
+															</form> {% endcomment %}
+
+													</td>
+												</tr>
+												{% endfor %}
+												
+											</tbody>
+										</table>
+										<div class="row">
+											<div class="col-sm-12 col-md-5">
+												<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+													Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+												</div>
+											</div>
+											<div class="col-sm-12 col-md-7">
+												<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+													<ul class="pagination float-right">
+														<!-- Previous Button -->
+														<li class="paginate_button page-item previous {% if not employees.has_previous %}disabled{% endif %}">
+															{% if employees.has_previous %}
+																<a href="?page={{ employees.previous_page_number }}" class="page-link">Previous</a>
+															{% else %}
+																<a href="#" class="page-link">Previous</a>
+															{% endif %}
+														</li>
+
+														<!-- First Page -->
+														{% if employees.number > 4 %}
+															<li class="paginate_button page-item">
+																<a href="?page=1" class="page-link">1</a>
+															</li>
+															{% if employees.number > 5 %}
+																<li class="paginate_button page-item disabled">
+																	<span class="page-link">...</span>
+																</li>
+															{% endif %}
+														{% endif %}
+
+														<!-- Page Numbers -->
+														{% for num in employees.paginator.page_range %}
+															{% if num|add:"-3" <= employees.number and num|add:"3" >= employees.number %}
+																<li class="paginate_button page-item {% if employees.number == num %}active{% endif %}">
+																	<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+																</li>
+															{% endif %}
+														{% endfor %}
+
+														<!-- Last Page -->
+														{% if employees.number < employees.paginator.num_pages|add:"-3" %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+															<li class="paginate_button page-item">
+																<a href="?page={{ employees.paginator.num_pages }}" class="page-link">{{ employees.paginator.num_pages }}</a>
+															</li>
+														{% endif %}
+
+														<!-- Next Button -->
+														<li class="paginate_button page-item next {% if not employees.has_next %}disabled{% endif %}">
+															{% if employees.has_next %}
+																<a href="?page={{ employees.next_page_number }}" class="page-link">Next</a>
+															{% else %}
+																<a href="#" class="page-link">Next</a>
+															{% endif %}
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+									{% if request.resolver_match.url_name == 'company_employee_acknowledgement' %}
+									<ul class="nav customtab nav-tabs " role="tablist">
+											<li class="nav-item mb-2">
+												<a href="{% url 'company:employee_list' %}"class="nav-link" tabindex="-1">
+													Employees
+												</a>
+											</li>
+											<li class="nav-item">
+							
+												<a href="{% url 'company:company_employee_acknowledgement' %}" class="nav-link active">
+													Acknowledgments
+												</a>
+											</li>
+									</ul>
+									<ul class="nav customtab nav-tabs " role="tablist">
+										<li class="nav-item mb-2 mt-2 col-md-6 policy {% if request.GET.type == 'terms_and_conditions' or not request.GET.type  %}active{% endif %} ">
+											<a href="{% url 'company:company_employee_acknowledgement' %}?type=terms_and_conditions"class="nav-link text-center" tabindex="-1">
+												Terms and conditions
+											</a>
+										</li>
+										<li class="nav-item mb-2 mt-2 col-md-6 policy {% if request.GET.type == 'privacy_policy' %}active{% endif %}">
+											<a href="{% url 'company:company_employee_acknowledgement' %}?type=privacy_policy" class="nav-link text-center">
+												Privacy policy
+											</a>
+										</li>
+									</ul>
+									<div class="table-scrollable">
+										
+										<table
+										class="table table-striped table-bordered table-hover order-column valign-middle"
+										id="example4">
+											<thead>
+												<tr>
+													<th class="col-md-1">Sr.no</th>
+													<th class="col-md-2">Image</th>
+													<th class="col-md-3"> Employee name </th>
+													<th class="col-md-4"> Acknowledgment date</th>
+													<th class="col-md-3">status</th>
+												</tr>
+											</thead>
+
+											<tbody>
+												{% if no_data %}
+													<tr class="odd gradeX">
+														<td class="text-center" colspan="5">No entries found</td>
+													</tr>
+												{% else %}
+													{% for employee in employee_status %}
+														<tr class="odd gradeX">
+															<td class="patient-img">{% get_proper_counter forloop.counter employee_status %}</td>
+															<td class="patient-img col-md-1">
+																{% if employee.person.profile_image %}
+																	<img src="{{ employee.person.profile_image.url }}" class="img-responsive" alt="">
+																{% else %}
+																	<img src="{% static 'admin/img/user.png' %}" class="img-responsive" alt="">
+																{% endif %}
+															</td>
+															<td class="col-md-5">
+																{{ employee.person.first_name }} {{ employee.person.last_name }}
+															</td>
+															<td class="col-md-3">
+																{% if employee.is_acknowledged %}
+																	{{ employee.acknowledgment_date|date:"M. j, Y, g:i a" }}
+																{% else %}
+																	<p style="font-size: 15px;">Not acknowledged</p>
+																{% endif %}
+															</td>
+															<td class="col-md-3">
+																{% if employee.is_acknowledged %}
+																	<span class="label label-sm label-success">Completed</span>
+																{% else %}
+																	<span class="label label-sm label-pending">Pending</span>
+																{% endif %}
+															</td>
+														</tr>
+													{% endfor %}
+												{% endif %}
+											</tbody>
+											
+										</table>
+										
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+												Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+												<ul class="pagination float-right">
+													<!-- Previous Button -->
+													<li class="paginate_button page-item previous {% if not employee_status.has_previous %}disabled{% endif %}">
+														{% if employee_status.has_previous %}
+															<a href="?page={{ employee_status.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Previous</a>
+														{% else %}
+															<a href="#" class="page-link">Previous</a>
+														{% endif %}
+													</li>
+
+													<!-- First Page -->
+													{% if employee_status.number > 4 %}
+														<li class="paginate_button page-item">
+															<a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">1</a>
+														</li>
+														{% if employee_status.number > 5 %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+														{% endif %}
+													{% endif %}
+
+													<!-- Page Numbers -->
+													{% for num in employee_status.paginator.page_range %}
+														{% if num|add:"-3" <= employee_status.number and num|add:"3" >= employee_status.number %}
+															<li class="paginate_button page-item {% if employee_status.number == num %}active{% endif %}">
+																<a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ num }}</a>
+															</li>
+														{% endif %}
+													{% endfor %}
+
+													<!-- Last Page -->
+													{% if employee_status.number < employee_status.paginator.num_pages|add:"-3" %}
+														<li class="paginate_button page-item disabled">
+															<span class="page-link">...</span>
+														</li>
+														<li class="paginate_button page-item">
+															<a href="?page={{ employee_status.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ employee_status.paginator.num_pages }}</a>
+														</li>
+													{% endif %}
+
+													<!-- Next Button -->
+													<li class="paginate_button page-item next {% if not employee_status.has_next %}disabled{% endif %}">
+														{% if employee_status.has_next %}
+															<a href="?page={{ employee_status.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Next</a>
+														{% else %}
+															<a href="#" class="page-link">Next</a>
+														{% endif %}
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+
+	<!---delete confirm popup-->
+	<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="icon-alert">
+					<i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+					</div>
+					<h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+				</div>
+				<div class="modal-body">
+					You won't be able to revert it!
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn mdl-button mdl-js-button mdl-button--raised" id="deleteConfirmed">Yes, delete it!</button>
+					<button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal" id="deleteCanceled">Cancel</button>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--pop up end-->
+
+	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(employeeId) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + employeeId).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+
+	
+	$('#example4').DataTable({
+    paging: false,
+    info: false,
+    scrollY: true,
+    scrollX: true,
+    scrollCollapse: true,
+    fixedHeader: false,
+    sScrollX: "100%",
+    sScrollY: "100%"
+});
+
+// CSS to keep header border while removing side borders
+$('<style>')
+    .prop('type', 'text/css')
+    .html(`
+    .dataTables_scrollWrapper {
+    border: none !important;
+}
+
+.dataTables_scrollBody {
+    overflow-x: hidden !important; 
+    overflow-y: hidden !important;
+}
+
+.dataTables_scrollHead {
+    border-bottom: none !important;
+    position: relative !important;  
+    overflow: visible !important;   
+}
+
+.dataTables_scroll {
+    overflow: auto !important;
+    max-height: 400px !important;
+    position: relative !important;		
+}
+
+.dataTable {
+    border-bottom: none !important;
+    margin-top: 0 !important;    
+}
+
+/* Custom scrollbar for dataTables_scroll */
+.dataTables_scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dataTables_scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.dataTables_scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.dataTables_scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+    `)
+    // .appendTo('head');
+</script>
+
+{% endblock javascripts %}

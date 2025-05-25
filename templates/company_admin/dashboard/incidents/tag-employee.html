@@ -1,0 +1,549 @@
+{% extends 'base_company_admin.html' %}
+{% load static %}
+{% load rostering_tags %}
+{% load widget_tweaks %}
+{% load company_admin_tags %}
+{% block title %}
+{% if request.resolver_match.url_name == 'admin_incident_add' %}
+Add Incident
+{% else %}
+Edit Incident
+{% endif %}
+{% endblock %}
+{% block stylesheets %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<style>
+    .entry.input-group.upload-input-group {
+        margin-bottom: 10px;
+    }
+
+    .capitalize {
+        text-transform: capitalize;
+    }
+
+    .fix-button {
+        padding-top: 20px;
+        text-align: center;
+    }
+
+    /* General Modal Styling */
+    .confirmation-modal {
+        padding: 0.625em !important;
+    }
+
+    .confirmation-modal .modal-dialog.modal-dialog-centered {
+        margin: 0 auto;
+        max-width: 32em;
+        display: flex;
+        justify-content: center;
+    }
+
+    .confirmation-modal .modal-content {
+        width: 80% !important;
+        padding: 1.25em;
+        border-radius: 0.3125em;
+    }
+
+    .confirmation-modal .modal-header {
+        border: none;
+        text-align: center;
+        padding-bottom: 0;
+        display: block;
+    }
+
+    .confirmation-modal .icon-alert {
+        border-radius: 50px;
+        width: 77px;
+        height: 77px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.875em;
+        border: 0.25em solid #facea8;
+        color: #f8bb86;
+    }
+
+    .confirmation-modal .modal-header h2 {
+        text-align: center;
+        font-weight: 600;
+        color: #595959;
+        font-size: 30px;
+        margin: 0 0 0.4em;
+    }
+
+    .confirmation-modal .modal-body {
+        text-align: center;
+        font-size: 1.125em;
+        font-weight: 400;
+        color: #545454;
+        line-height: normal;
+        padding: 0;
+    }
+
+    .confirmation-modal .modal-footer {
+        text-align: center;
+        display: block;
+        border: none;
+        padding: 0;
+        margin: 1.25em auto 0;
+    }
+
+    .confirmation-modal .modal-footer button {
+        display: inline-block;
+        background-color: rgb(221, 51, 51);
+        border: none;
+        border-radius: 0.25em;
+        color: #fff;
+        font-size: 1.0625em;
+        margin: 0.3125em;
+        padding: 8px 16px;
+        box-shadow: none;
+        font-weight: 500;
+        min-height: 36px;
+        text-transform: unset !important;
+    }
+
+    .confirmation-modal .modal-footer button:hover {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- start widget -->
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class="pull-left">
+            {% if request.resolver_match.url_name == 'admin_incident_add' %}
+            <div class="page-title">Add incident</div>
+            {% elif request.resolver_match.url_name == 'manager_tag_employee' %}
+            <div class="page-title">Tag incident</div>
+            {% else %}
+            <div class="page-title">Edit incident</div>
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li>
+                <i class="fa fa-home"></i>&nbsp;<a class="parent-item"
+                    href="{% url 'company:client_incident_reports_dashboard' %}">Incident</a>&nbsp;<i
+                    class="fa fa-angle-right"></i>
+            </li>
+            {% if request.resolver_match.url_name == 'manager_tag_employee' %}
+            <li class="active">Tag employees</li>
+            {% endif %}
+        </ol>
+    </div>
+</div>
+
+<ul class="nav customtab nav-tabs" role="tablist">
+    {% if messages %}
+        <div class="container-fluid">
+        <ul class="list-unstyled">
+            {% for message in messages %}
+            <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </li>
+            {% endfor %}
+        </ul>
+        </div>
+        <script>
+        // Automatically close alerts after 5 seconds
+        window.setTimeout(function () {
+            $('.alert')
+            .fadeTo(500, 0)
+            .slideUp(500, function () {
+                $(this).remove()
+            })
+        }, 5000)
+        </script>
+    {% endif %}
+    {% if request.user|has_permission:'company_admin.update_incident_all' or request.user|has_permission:'company_admin.update_incident_own_team' %}
+    {% if incident_view %}
+    <li class="nav-item mb-2">
+        <a href="{% url 'company:admin_incident_view' incident_id=request.session.incident_id %}"
+            class="nav-link{% if request.resolver_match.url_name == 'admin_incident_view' %}active{% endif %}">
+            Incident
+        </a>
+    </li>
+    {% else %}
+    <li class="nav-item mb-2">
+        <a href="{% url 'company:admin_incident_edit' incident_id=request.session.incident_id %}"
+            class="nav-link{% if request.resolver_match.url_name == 'admin_incident_edit' %}active{% endif %}">
+            Incident
+        </a>
+    </li>
+    {% endif %}
+    {% endif %}
+    <li class="nav-item">
+        <a href="{% url 'company:manager_tag_employee' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'manager_tag_employee' %}active{% endif %}"
+            tabindex="-1">Tag Employee</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-box">
+            <div class="card-head">
+                <header> Tagged Employee Information</header>
+            </div>
+            <div class="card-body ">
+                
+                <div class="row">
+                    <div class="col-lg-12 p-t-20">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width incident-employee-present">
+                            <label class=""> Were any other employees present during the incident?</label>
+                            <label>
+                                <input type="radio" name="employees_involved" value="yes" {% if incident_view %} disabled{% endif %} {% if incident_obj.employees_involved == 'yes' %}checked{% endif %}>
+                                Yes
+                            </label>
+                            
+                            <label>
+                                <input type="radio" name="employees_involved" value="no" {% if incident_view %} disabled{% endif %} {% if incident_obj.employees_involved == 'no' %}checked{% endif %}>
+                                No
+                            </label>
+                        </div>
+                        {% if not  incident_view %}
+                        <div class="btn-group mb-3">
+                            {% if incident_obj.employees_involved == 'no' %}
+                            <button class="btn btn-info disabled">
+                                Assign employees <i class="fa fa-plus"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-info " data-toggle="modal" data-target="#employeeModal">
+                                {% if employees_queryset %} Update employees {% else %} Assign employees{% endif %} <i class="fa fa-plus"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="table-scrollable">
+                    <table
+                        class="table table-bordered table-striped table-hover "
+                        >
+                        <thead>
+                            <tr>
+                                <th class="col-md-1">S.no</th>
+                                <th class="col-md-7 text-left">Employee name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if employees_queryset %}
+                            {% for tagged_employee in employees_queryset %}
+                            <tr class="{% cycle 'odd' 'even' %}">
+                                <td colspan="1">{% get_proper_counter forloop.counter employees_queryset %}</td>
+                                <td colspan="3">{{ tagged_employee.tagged_employee.person.first_name }} {{ tagged_employee.tagged_employee.person.last_name }}</td>
+
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align:center;">No tagged employees found</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% comment %} <div class="col-lg-12 p-t-20 text-center">
+                    <a href="{% url 'company:client_incident_reports_dashboard' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="backBtn">Back</a>
+                </div> {% endcomment %}
+          <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+                            Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+                            <ul class="pagination float-right">
+                                <!-- Previous Button -->
+                                <li class="paginate_button page-item previous {% if not employees.has_previous %}disabled{% endif %}">
+                                    {% if employees_queryset.has_previous %}
+                                        <a href="?page={{ employees_queryset.previous_page_number }}" class="page-link">Previous</a>
+                                    {% else %}
+                                        <a href="#" class="page-link">Previous</a>
+                                    {% endif %}
+                                </li>
+
+                                <!-- First Page -->
+                                {% if employees_queryset.number > 4 %}
+                                    <li class="paginate_button page-item">
+                                        <a href="?page=1" class="page-link">1</a>
+                                    </li>
+                                    {% if employees_queryset.number > 5 %}
+                                        <li class="paginate_button page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+
+                                <!-- Page Numbers -->
+                                {% for num in employees_queryset.paginator.page_range %}
+                                    {% if num|add:"-3" <= employees_queryset.number and num|add:"3" >= employees_queryset.number %}
+                                        <li class="paginate_button page-item {% if employees_queryset.number == num %}active{% endif %}">
+                                            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- Last Page -->
+                                {% if employees_queryset.number < employees_queryset.paginator.num_pages|add:"-3" %}
+                                    <li class="paginate_button page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                    <li class="paginate_button page-item">
+                                        <a href="?page={{ employees_queryset.paginator.num_pages }}" class="page-link">{{ employees_queryset.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Next Button -->
+                                <li class="paginate_button page-item next {% if not employees_queryset.has_next %}disabled{% endif %}">
+                                    {% if employees_queryset.has_next %}
+                                        <a href="?page={{ employees_queryset.next_page_number }}" class="page-link">Next</a>
+                                    {% else %}
+                                        <a href="#" class="page-link">Next</a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="incident_id" value="{{ incident_id }}">
+<input type="hidden" id="employee_id" value="{{ employee_id }}">
+<input type="hidden" id="client_id" value="{{ client_id }}">
+<input type="hidden" id="confirmModalFlag" value="{{ request.session.confirm_modal_flag }}">
+
+<!-- Modal for assigning employees -->
+<div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Select Employees</h5>
+            </div>
+            <div class="modal-body">
+                <div class="card-body pb-2">
+                    <div class="input-group mb-2">
+                        <input type="text" id="search-employee-modal" class="form-control pl-3" name="search" placeholder="Enter Employee Name"  style="border-radius:4px ;">
+                        <span span class="input-group-append">
+                            <button class="btn ripple btn-secondary" id="add-clear-search-btn" type="button" style="display: none;">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <form method="POST" action="{% url 'company:manager_tag_employee' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" id="selected_employees" name="selected_employees" value="">
+                    <input type="hidden" id="unselected_employees" name="unselected_employees" value="">
+                    <div class="table-scrollable">
+                        <table class="table table-striped table-bordered table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input id="select-all-checkbox" type="checkbox" />&nbsp; Select all
+                                    </th>
+                                    <th>Employee Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if employees %}
+                                {% for employee in employees %}
+                                <tr class="employee-row">
+                                    <td>
+                                        <input type="checkbox" class="employee-checkbox" name="employees"
+                                            value="{{ employee.id }}" {% if employee.id in tagged_employee_ids %}checked{% endif %} />
+                                    </td>
+                                    <td class="employee-name">{{ employee.person.first_name }} {{employee.person.last_name }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr id="no-employees-row">
+                                    <td colspan="2">No employees found</td>
+                                </tr>
+                                {% endif %}
+                                <tr id="no-employees-row" style="display: none;">
+                                    <td colspan="3">No Employees found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-lg-12 p-t-20 text-center">
+
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue" id="saveEmployees">Add</button>
+                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end-->
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.getElementById('select-all-checkbox').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.employee-checkbox');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    document.querySelector('form').addEventListener('submit', function (event) {
+        let selected = [];
+        let unselected = [];
+
+        document.querySelectorAll('.employee-checkbox:checked').forEach(function (checkbox) {
+            selected.push(checkbox.value);
+        });
+
+        document.querySelectorAll('.employee-checkbox:not(:checked)').forEach(function (checkbox) {
+            unselected.push(checkbox.value);
+        });
+
+        document.getElementById('selected_employees').value = selected.join(',');
+        document.getElementById('unselected_employees').value = unselected.join(',');
+
+        console.log('Selected employees:', selected);
+        console.log('Unselected employees:', unselected);
+        this.submit();
+    });
+</script>
+<script>
+    const searchEmployeeInput = document.getElementById('search-employee-modal');
+    const clearSearchBtn = document.getElementById('add-clear-search-btn');
+    const noEmployeesRow = document.getElementById('no-employees-row');
+
+    searchEmployeeInput.addEventListener('keyup', function() {
+        const query = searchEmployeeInput.value.trim().toLowerCase();
+        const employeeRows = document.querySelectorAll('#employeeModal tbody .employee-row');
+        let visibleEmployees = 0;
+
+        clearSearchBtn.style.display = query.length > 0 ? 'inline-block' : 'none';
+
+        employeeRows.forEach(function(row) {
+            const employeeName = row.querySelector('.employee-name').textContent.toLowerCase();
+            if (employeeName.includes(query)) {
+                row.style.display = ''; 
+                visibleEmployees++;
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+
+        noEmployeesRow.style.display = visibleEmployees === 0 ? '' : 'none';
+        noEmployeesRow.style.backgroundColor = visibleEmployees === 0 ? '#e1e5ec' : '';
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+        searchEmployeeInput.value = '';
+        clearSearchBtn.style.display = 'none';
+
+        const employeeRows = document.querySelectorAll('#employeeModal tbody .employee-row');
+        employeeRows.forEach(function(row) {
+            row.style.display = ''; 
+        });
+
+        noEmployeesRow.style.display = 'none';
+    });
+</script>
+<script>
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const employeeCheckboxes = document.querySelectorAll('#employeeModal .employee-checkbox');
+
+    selectAllCheckbox.addEventListener('change', function () {
+        const isChecked = selectAllCheckbox.checked;
+
+        employeeCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = isChecked;
+        });
+    });
+
+    employeeCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const allChecked = Array.from(employeeCheckboxes).every(cb => cb.checked);
+            
+            selectAllCheckbox.checked = allChecked; 
+            if (!allChecked) {
+                selectAllCheckbox.checked = false; 
+            }
+        });
+    });
+
+    window.addEventListener('load', function () {
+        const allChecked = Array.from(employeeCheckboxes).every(cb => cb.checked);
+        
+        selectAllCheckbox.checked = allChecked;
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('input[name="employees_involved"]').on('change', function() {
+            var employeeInvolved = $('input[name="employees_involved"]:checked').val();
+            var incidentId = '{{ incident_id }}'; 
+
+            var data = {
+                'incident_id': incidentId,
+                'employee_present': employeeInvolved
+            };
+
+            var csrftoken = '{{ csrf_token }}';
+
+            $.ajax({
+                url: '{% url "company:incident_employee_present" %}', 
+                type: 'POST',
+                data: data,
+                headers: {
+                    'X-CSRFToken': csrftoken 
+                },
+                success: function(response) {
+                    console.log('Incident updated successfully');
+                    location.reload();
+
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating incident:', error);
+                }
+            });
+        });
+    });
+</script>
+{% comment %} <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const backBtn = document.getElementById('backBtn')
+    const CancelBtn = document.getElementById('myCancelBtn')
+    const modal = document.getElementById('employeeModal')
+    backBtn.addEventListener('click',function() {            
+        backBtn.disabled = true;
+        backBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+    });
+    
+    CancelBtn.addEventListener('click',function(){
+			 
+        CancelBtn.disabled = true;
+        CancelBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+        setTimeout(function() {
+            CancelBtn.disabled = false;
+            CancelBtn.innerHTML = 'Cancel'; 
+            $('#employeeModal').modal('hide');
+        }, 500);    
+    });
+});
+</script> {% endcomment %}
+{% endblock %}

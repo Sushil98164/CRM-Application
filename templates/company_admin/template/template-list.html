@@ -1,0 +1,211 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% load company_admin_tags %}
+{% block title %} 
+Permission sets
+{% endblock title %}
+{% block stylesheets %}
+<style>
+    .create-new-template{
+    
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 19.36px;
+        border: none;
+        padding: 5px;
+    }
+    .table.dataTable{
+        border-collapse: collapse !important;
+    }
+    i.fa.fa-plus {
+        color: #fff;
+    }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class="pull-left">
+            <div class="page-title">Permission sets List</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="{% url 'company:company_settings' %}">Settings</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'company:template_list' %}">Permission sets</a>&nbsp;</li>
+            {% comment %} <li> <a class="text-dark active" >Template list</a>&nbsp;</li> {% endcomment %}
+           
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+		{% if messages %}
+        <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+		<ul class="nav customtab nav-tabs" role="tablist">
+        </ul>
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+
+			</ul>
+			<div class="tab-content">
+                
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+                        
+                        <div class="col-md-12">
+							<div class="card card-box">
+                                
+								<div class="card-head">
+                                    <ul class="nav customtab nav-tabs" role="tablist">
+                                        {% if request.resolver_match.url_name == 'users_template_list' %}
+                                            <li class="nav-item"><a href="{% url 'company:users_template_list' %}" class="nav-link active">Users</a></li>
+                                            <li class="nav-item"><a href="{% url 'company:template_list' %}" class="nav-link ">Permission sets</a></li>
+                                        {% endif %}
+                                        {% if request.resolver_match.url_name == 'template_list' %}
+                                            <li class="nav-item"><a href="{% url 'company:users_template_list' %}" class="nav-link ">Users</a></li>
+                                            <li class="nav-item"><a href="{% url 'company:template_list' %}" class="nav-link active ">Permission sets</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                <div class="card-body ">
+                                    {% if request.resolver_match.url_name == 'template_list' %}
+                                    <div class="row"> 
+                                        {% if  request.user|has_permission:'userauth.create_templates' %}
+                                        <div class="col-md-12 d-flex justify-content-end" >
+                                            <div class="btn-group">
+                                                <a href="{% url 'company:add_template' %}"  id="template-add"
+                                                    class="btn btn-info addRow">
+                                                    Add new <i class="fa fa-plus"></i>
+                                                </a>
+                                            </div>
+                                        </div>		
+                                        {% endif %}					
+                                    </div>
+                                    {% endif %}
+                                    <div class="table-scrollable">
+										<table
+											class="table table-bordered table-striped table-hover" id="example4">
+											<thead>
+												<tr>
+													<th class="col-md-1">S.no</th>
+                                                    {% if employee_emails %}
+													<th class="col-md-4 text-left">Users</th>
+                                                    {% else %}
+                                                    <th class="col-md-9 text-left">Permission sets</th>
+                                                    {% endif %}
+
+                                                    {% if employee_emails %}
+                                                    <th class="col-md-6 text-left">Email</th>
+                                                    {% endif %}
+                                                    {% if employee_emails %}
+													<th class="col-md-1 w-100" style="width: 100% !important;">Action </th>
+                                                    {% else %}
+                                                    <th class="col-md-2 w-100" style="width: 100% !important;">Action </th>
+
+                                                    {% endif %}
+                                                </tr>
+											</thead>
+											<tbody>     {% if templates %}
+                                                        {% for template in templates %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="col-md-1">
+                                                                {{forloop.counter}}
+                                                            </td>
+
+                                                            {% if employee_emails %}
+                                                            <td class="col-md-3 text-left">
+                                                            {% else %}
+                                                            <td class="col-md-9 text-left">
+                                                            {% endif %}
+                                                                {{ template.group.name|split_string|title }}
+                                                            </td>
+                                                            
+                                                            {% if employee_emails and templates %}
+                                                                <td class="col-md-6 text-left">
+                                                                    {% with employee_emails|group_get_dict_value:template.group.id as emails %}
+                                                                        {% for email in emails %}
+                                                                            {{ email }}{% if not forloop.last %}, {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endwith %}
+                                                                
+                                                                </td>
+                                                            {% endif %} 
+                                                            {% if employee_emails %}
+
+                                                            <td class="col-md-3 w-100" style="width: 100% !important;">
+                                                            {% else %}
+                                                            <td class="col-md-2 w-100" style="width: 100% !important;">
+
+                                                            {% endif %}
+                                                                {% if  request.user|has_permission:'userauth.update_templates' %}
+                                                                {% with template.group.name|split_string as group_name %}
+                                                                {% if group_name != "admin" and group_name != "manager" and group_name != "employee" %}
+                                                                    
+                                                                    {% if  request.resolver_match.url_name == 'users_template_list' %}
+                                                                    <a href="{% url 'company:edit_template' template.group.id %}?user_template_request=true" class="btn btn-primary btn-xs addRow">
+                                                                        <i class="fa fa-pencil"></i>
+                                                                    </a>
+                                                                    {% elif request.resolver_match.url_name == 'template_list'  %}
+                                                                    <a href="{% url 'company:edit_template' template.group.id %}?user_template_request=false" class="btn btn-primary btn-xs addRow">
+                                                                        <i class="fa fa-pencil"></i>
+                                                                    </a>
+                                                                    {% endif %}
+                                                                    
+                                                                {% endif %}
+                                                                {% endwith %}
+                                                                {% endif %}
+                                                                {% if request.user|has_permission:'userauth.read_templates' %}
+                                                                {% if  request.resolver_match.url_name == 'users_template_list' %}
+
+                                                                    <a href="{% url 'company:view_template' template.group.id %}?user_template_request=true"
+                                                                        class="btn btn-primary btn-xs">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </a>
+                                                                {% elif request.resolver_match.url_name == 'template_list'  %}
+                                                                        <a href="{% url 'company:view_template' template.group.id %}?user_template_request=false"
+                                                                        class="btn btn-primary btn-xs">
+                                                                        <i class="fa fa-eye"></i>
+                                                                        </a>
+                                                                {% endif %}
+
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                        <td colspan="3" class="col-md-2 w-100" style="width: 100% !important; text-align: center;">
+                                                        No Permission sets found
+                                                        </td>
+
+                                                        {% endif%}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+	$('#example4').DataTable({
+		paging: false,
+		info: false,
+	});
+</script>
+
+{% endblock javascripts %}

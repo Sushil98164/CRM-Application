@@ -1,0 +1,628 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% load company_admin_tags %}
+{% block title %}
+{% if request.resolver_match.url_name == 'manager_employee_profile_edit'%}
+Edit Employee
+{% endif %}
+{% endblock %}
+{% block stylesheets %}
+<style>
+    .modal-header {
+		border: none;
+	}
+	.modal-footer {
+		border: none;
+		text-align: center;
+		display: block;
+	}
+	
+	/* Permission confirmation modal styling */
+	.permission-confirmation-modal .icon-alert {
+		border-radius: 50px;
+		width: 77px;
+		height: 77px;
+		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1.875em;
+		border: .25em solid #facea8;
+		color: #f8bb86;
+	}
+	.modal-header {
+		text-align: center;
+		padding-bottom: 0px;
+		display: block;
+	}
+	.modal-content {
+		width: 80% !important;
+	}
+	.permission-confirmation-modal .modal-dialog.modal-dialog-centered {
+		margin: 0 auto;
+		max-width: 32em;
+		display: flex;
+		justify-content: center;
+	}
+	
+	.permission-confirmation-modal #permissionModalTitle {
+		text-align: center;
+		font-weight: 600;
+		color: #595959;
+		font-size: 30px;
+		margin: 0 0 .4em;
+	}
+	.permission-confirmation-modal .modal-dialog.modal-dialog-centered {
+		margin: 0 auto;
+		max-width: 32em;
+	}
+	.permission-confirmation-modal .modal-content {
+		padding: 1.25em;
+	}
+	.permission-confirmation-modal.modal .modal-content {
+		-webkit-border-radius: 0.3125em;
+		-moz-border-radius: 0.3125em;
+		-ms-border-radius: 0.3125em;
+		-o-border-radius: 0.3125em;
+		border-radius: 0.3125em;
+	}
+	.permission-confirmation-modal.modal .modal-header {
+		border-bottom: none;
+		padding: 0;
+	}
+	.permission-confirmation-modal.modal .modal-body {
+		text-align: center;
+		font-size: 1.125em;
+		font-weight: 400;
+		color: #545454;
+		line-height: normal;
+		padding: 0;
+	}
+
+	.permission-confirmation-modal .modal-footer button.btn {
+		display: inline-block;
+		background-color: #4CAF50; /* Changed to green for permission */
+		border: 0;
+		border-radius: 0.25em;
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		padding: 8px 16px;
+		min-height: 36px;
+		font-size: 14px;
+	}
+	.permission-confirmation-modal .modal-footer button.btn:hover {
+		background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+	}
+	.permission-confirmation-modal .modal-content .modal-footer {
+		border: 0;
+		padding: 0;
+		margin: 1.25em auto 0;
+	}
+	.permission-confirmation-modal {
+		padding: .625em !important;
+	}
+
+	@media screen and (max-width: 678px) {
+		.modal-content {
+			width: 100% !important;
+		}
+	}
+	i.fa.fa-plus {
+		color: #fff;
+	}
+    
+    .our-profile-info {
+        font-weight: 400;
+    }
+    .card-2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-2 .card-link {
+        color: #000;
+        font-size: 20px;
+        text-decoration: none;
+        width: 100% !important;
+        display: flex;
+    }
+  
+    label.upload-files {
+        font-size: 24px;
+        font-weight: 500;
+    }
+    .upload-sec {
+        justify-content: center;
+        align-items: center;
+        padding-top: 43px;
+
+    }
+
+    .modal-header {
+		border: none;
+		}
+		.modal-footer {
+			border: none;
+		}
+		button.btn.btn-secondary {
+		background-color: #188AE2;
+		color: #FEFEFC;
+		font-family: Inter;
+		font-size: 24px;
+		font-weight: 700;
+		padding: 10px 15px;
+		border: none;
+		border-radius: 5px;
+		margin-right: 20px;
+		}
+		
+		.modal-footer {
+		text-align: center;
+		display: block;
+		}
+		.delete-confirmation-modal .icon-alert {
+			border-radius: 50px;
+			width: 77px;
+			height: 77px;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1.25em auto 1.875em;
+			border: .25em solid #facea8;
+			color: #f8bb86;
+		}
+		.modal-header {
+		text-align: center;
+		padding-bottom:0px;
+		display: block;
+		}
+		
+		.delete-confirmation-modal #exampleModalLongTitle {
+			text-align: center;
+			font-weight: 600;
+			color: #595959;
+			font-size: 30px;
+			margin: 0 0 .4em;
+		}
+			.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+				margin: 0 auto;
+				max-width: 32em;
+		}
+		.delete-confirmation-modal .modal-content {
+			padding: 1.25em;
+		}
+		.delete-confirmation-modal.modal .modal-content {
+			-webkit-border-radius: 0.3125em;
+			-moz-border-radius: 0.3125em;
+			-ms-border-radius: 0.3125em;
+			-o-border-radius: 0.3125em;
+			border-radius: 0.3125em;
+		}
+		.delete-confirmation-modal.modal  .modal-header {
+			border-bottom: none;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal .modal-body {
+			text-align: center;
+			font-size: 1.125em;
+			font-weight: 400;
+			color: #545454;
+			line-height: normal;
+			padding: 0;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed {
+		border-radius: 0.25em;
+		background: initial;
+		display: inline-block;
+		background-color: rgb(48, 133, 214);
+		border-left-color: rgb(48, 133, 214);
+		border-right-color: rgb(48, 133, 214);
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		}
+		.delete-confirmation-modal.modal #deleteConfirmed:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-footer button.btn {
+			display: inline-block;
+			background-color: rgb(221, 51, 51);
+			border: 0;
+			border-radius: 0.25em;
+			color: #fff;
+			font-size: 1.0625em;
+			margin: 0.3125em;
+			padding: 0.625em 2em;
+			box-shadow: none;
+			font-weight: 500;
+		}
+		.delete-confirmation-modal .modal-footer button.btn:hover {
+			background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+		}
+		.delete-confirmation-modal .modal-content .modal-footer {
+			border: 0;
+			padding: 0;
+			margin: 1.25em auto 0;
+		}
+		.delete-confirmation-modal {
+			padding: .625em !important;
+		}   
+        .profile-userpic-2 img {
+            border: 3px solid rgb(210, 214, 222);
+            margin: auto;
+        }
+
+    
+        .read-only-select {
+            pointer-events: none;
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+</style>
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">
+            {% if request.resolver_match.url_name == 'company_employee_document' %}
+                Document information
+            {% else %}
+            Profile information
+            {% endif %}
+            </div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            {% if request.resolver_match.url_name == 'company_employee_document' %}
+
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employees</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employee profile</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li><a class="parent-item" href="{% url 'company:company_employee_documents' employee_id %}">Documents</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            
+            <li class="active">View</li>
+            {% elif request.resolver_match.url_name == 'manager_employee_profile_edit' %}
+            <li><a class="parent-item" href="{% url 'company:employee_list' %}">Employees</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            
+            <li><a class="parent-item" href="{% url 'company:employee_profile_view' employee_id %}">Employee profile</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">Edit</li>
+            {% endif %}
+
+        </ol>
+    </div>
+</div> 
+<div class="row">
+    <div class="col-md-12">
+        <div class="tabbable-line"> 
+          <ul class="nav customtab nav-tabs" role="tablist">
+                {% include 'company_admin/employee/include/tabs-bar.html' %}
+            </ul> 
+            <div class="tab-content">
+                {% if  request.resolver_match.url_name == 'manager_employee_profile_edit' %}
+                <div class="tab-pane active fontawesome-demo">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card-box">
+                                <div class="card-head">
+                                    <header>Employee information</header>
+                                    <!--  -->
+                                </div>
+                                <form method="POST" enctype="multipart/form-data" class="disable-on-submit">
+                                    {% csrf_token %}
+
+                                    <div class="card-body row">
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.first_name class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">First name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.last_name class="mdl-textfield__input"%}
+
+                                                <label class="mdl-textfield__label">Last name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.email class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">Email</label>
+                                                <span class="mdl-textfield__error">Enter valid email address!</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field personform.phone_number class="mdl-textfield__input" pattern="[0-9]{10}" maxlength="10" title="Please enter a 10-digit phone number." %}
+                                                <label class="mdl-textfield__label" for="text5">Mobile number</label>
+                                                <span class="mdl-textfield__error">Phone number must be numeric and have a length 10.</span>
+                                            </div>
+                                        </div>
+
+                                        {{employee_formset.management_form}}
+                                        {% for form in employee_formset %}
+
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field form.date_of_birth placeholder="" class="mdl-textfield__input" %}
+                                                <label class="mdl-textfield__label">Birth date</label>
+                                                <span class="focus-input100 error-label" id="end_date_id" style="color: red; font-size: 13px; position: absolute; padding-top: 5px;" data-field="end_date_time" data-placeholder="&#xf191;">{{ form.date_of_birth.errors|join:"" }}</span>
+                                            </div>
+                                        </div>
+                                        {% render_field form.id %}
+                                        {% render_field form.company %}
+                                        {% render_field form.created_by %}
+                                        <div class="col-lg-6 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                        
+                                                {% render_field personform.gender placeholder="" class="mdl-textfield__input"%}
+                                                <label class="mdl-textfield__label">Gender</label> 
+                                            </div>
+                                        </div>
+            
+                                        {% if not request.user.employee.id == employee_id %}
+                                        <div class="col-lg-6 p-t-20 ">
+                                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">            
+                                                {% render_field form.template placeholder="" class="mdl-textfield__input" %}
+                                                <label class="mdl-textfield__label">Permission set</label> 
+                                                {% if form.template.errors %}
+                                                    <span class="error-message text-danger" style="font-size: 12px;">{{ form.template.errors.0 }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-lg-6 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                {% render_field form.template placeholder="" class="mdl-textfield__input read-only-select" %}
+                                                <label class="mdl-textfield__label">Permission set</label> 
+                                                {% if form.template.errors %}
+                                                    <span class="error-message text-danger" style="font-size: 12px;">{{ form.template.errors.0 }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        <div class="col-lg-6 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">            
+                                                {% render_field form.employment_type placeholder="" class="mdl-textfield__input" %}
+                                                <label class="mdl-textfield__label">Employment type</label> 
+                                            </div>
+                                        </div>
+                        
+
+                                        <div class="col-lg-6 p-t-20">
+                                            <div
+                                                 class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                                 {% render_field personform.is_active class="mdl-textfield__input" %}
+                                                 
+                                                 <label class="mdl-textfield__label" for="text5">Approved by admin</label>
+                                             </div>
+                                         </div>
+
+                                        <div class="col-lg-12 p-t-20">
+                                            <div class="mdl-textfield mdl-js-textfield txt-full-width">
+                                                {% render_field form.address class="mdl-textfield__input" oninput="autoExpand(this)" %}
+                                                <label class="mdl-textfield__label" for="text7">Address</label>
+                                            </div>
+                                        </div>
+                          
+                                        {% endfor %} 
+                               
+
+                                        <div class="col-lg-12 p-t-20">
+                                            <label class="control-label col-md-3" for="id_profile_image">Upload photo</label>
+                                            <div class="col-md-12 dropzone upload-sec text-center">
+                                                {% render_field personform.profile_image class="mdl-textfield__input hidden" %}
+                                        
+                                                <label for="id_profile_image" class="upload-files">Drop files here to upload</label>
+                                            </div>
+                                            <div id="currentFileContainer">Recommended size: 200x200 pixels</div>
+
+                                            {% comment %} {% if personform.instance.profile_image %}
+                                                <div class="profile-image-preview text-center">
+                                                    <img id="profileImage" src="{{ personform.instance.profile_image.url }}" alt="Profile Image" width="100">
+                                                    <button type="button" id="removeProfileImage" class="btn btn-danger btn-sm">Remove</button>
+                                                </div>
+                                            {% else %}
+                                                <img id="profileImage" src="{% static 'admin/img/user.png' %}" alt="Default Profile Image" width="100">
+                                            {% endif %} {% endcomment %}
+
+                                        </div>
+                                    
+                                
+
+                                        <div class="col-lg-12 p-t-20 text-center">
+                                            <button type="submit"
+                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-blue">Submit</button>
+                                                <a href="{% url 'company:employee_profile_view' employee_id %}"
+                                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                                            
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Permission confirmation popup -->
+<div class="modal fade permission-confirmation-modal" id="permissionConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="permissionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="icon-alert">
+            <i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+          </div>
+          <h2 class="modal-title" id="permissionModalTitle">Permission Change</h2>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to change the permission set? This action may affect user access levels.</p>
+        </div>
+        <div class="modal-footer">
+          <button style ="background-color :#188ae2"type="button" class="btn mdl-button mdl-js-button mdl-button--raised" id="permissionChangeConfirmed">Yes, change it!</button>
+          <button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(document_id) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + document_id).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function hideClearCheckbox() {
+            var clearCheckbox = document.getElementById("profile_image-clear_id");
+            if (clearCheckbox) {
+                clearCheckbox.style.display = "none";
+                var clearLabel = document.querySelector("label[for='profile_image-clear_id']");
+                if (clearLabel) {
+                    clearLabel.style.display = "none";
+                }
+            }
+        }
+        hideClearCheckbox();
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fileInput = document.getElementById("id_profile_image");
+        var currentFileContainer = document.getElementById("currentFileContainer");
+
+        fileInput.addEventListener("change", function() {
+            if (fileInput.files.length > 0) {
+                currentFileContainer.textContent = "Currently selected file: " + fileInput.files[0].name;
+            } else {
+                currentFileContainer.textContent = "No file selected";
+            }
+        });
+    });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var clearCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="-file-clear"]');
+    var clearLabels = document.querySelectorAll('label[for$="-file-clear_id"]');
+    
+    clearCheckboxes.forEach(function(checkbox) {
+        checkbox.remove();
+    });
+    
+    clearLabels.forEach(function(label) {
+        label.remove();
+    });
+});
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var textareas = document.querySelectorAll('textarea[id^="id_"]');
+        textareas.forEach(function(textarea) {
+            autoExpand(textarea);
+        });
+    });
+    
+    function autoExpand(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+    </script>
+
+    <script>
+        function managerdetailconfirmDelete(emp_id, document_id) {
+            $('#managerdetaildeleteConfirmationModal').modal('show');
+            $('#employee_id').val(emp_id)
+            $('#document_id').val(document_id)
+        }
+    </script>
+
+ 
+<script>
+    let originalSelection = '';
+    $(document).ready(function() {
+        originalSelection = $('#id_employee_f-0-template').val();
+        $('#id_employee_f-0-template').on('change', function(event) {
+            const newSelection = $(this).val();
+            const selectElement = $(this);
+            $('#permissionConfirmationModal').modal('show');
+            $('#permissionChangeConfirmed').off('click');
+            $('#permissionConfirmationModal').off('hidden.bs.modal');
+            $('#permissionChangeConfirmed').on('click', function() {
+            originalSelection = newSelection;
+            $('#permissionConfirmationModal').modal('hide');
+            });
+            
+            $('#permissionConfirmationModal').on('hidden.bs.modal', function() {
+            if (!$('#permissionChangeConfirmed').data('confirmed')) {
+                selectElement.val(originalSelection);
+            }
+            $('#permissionChangeConfirmed').data('confirmed', false);
+            });
+            
+            $('#permissionChangeConfirmed').on('click', function() {
+            $(this).data('confirmed', true);
+            });
+    });
+    $('[data-dismiss="modal"]').on('click', function(e) {
+        e.preventDefault();
+        $('#permissionConfirmationModal').modal('hide');
+    });
+    });
+</script>
+{% endblock javascripts %}

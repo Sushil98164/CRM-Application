@@ -1,0 +1,228 @@
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% load company_admin_tags %}
+{% block stylesheets %}
+<style>
+    .capitalize {
+        text-transform: capitalize;
+    }
+	i.fa.fa-plus {
+		color: #fff;
+	}
+</style>
+{% endblock stylesheets %}
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+						{% if messages %}
+						<div class="container-fluid">
+						  <ul class="list-unstyled">
+							{% for message in messages %}
+							  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </li>
+							{% endfor %}
+						  </ul>
+						</div>
+						<script>
+							// Automatically close alerts after 5 seconds
+							window.setTimeout(function () {
+							  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+								$(this).remove();
+							  });
+							}, 5000);
+						  </script>
+					  {% endif %}
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Client risk assessment list</header>
+
+								</div>
+								<div class="card-body ">
+									 <div class="row">
+										<div class="col-md-6 col-sm-6 col-6">
+											<div class="btn-group">
+												{% if request.user|has_permission:'company_admin.create_all_risk_assessments' or request.user|has_permission:'company_admin.create_risk_assessments_team_own' or  request.user|has_permission:'company_admin.create_risk_assessments_of_their_own' %}
+												<a href="{% url 'employee:client_employee_risk_assessment_add' client_id %}" id="addRow"
+													class="btn btn-info">
+													Add new <i class="fa fa-plus"></i>
+												</a>
+												{% endif %}
+											</div>
+										</div>
+									
+									</div> 
+									<div class="table-scrollable">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th class="">S.no</th>
+													<th class=""> Client name </th>
+													<th class=""> Prepared by </th>
+													<th class=""> Date prepared </th>
+													<th class=""> Review date </th>
+													<th class=""> Action </th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for risk in risk_assessment %}
+												<tr class="odd gradeX">
+													<td class="patient-img">
+														{% get_proper_counter forloop.counter risk_assessment %}
+													</td>
+													<td>{% if risk.client.person.first_name %} {{risk.client.person.first_name|title}}{% endif %}</td>
+													<td class="left">{% if risk.prepared_by %}{{risk.prepared_by|title}}{% endif %}</td>
+													<td class="left">{% if risk.assessment_date %}{{risk.assessment_date}}{% endif %}</td>
+													{% comment %} <td class="left">
+														 {% for review_date in risk.management_approval.all %}
+														{% if review_date.reviewed_date %} {{review_date.reviewed_date}}{% endif %}
+														{% endfor %} 
+
+													</td> {% endcomment %}
+													
+												<td class="left">
+													{% if risk.management_approval.all %}
+														{% with last_review=risk.management_approval.last %}
+															{% if last_review.reviewed_date %}
+																{{ last_review.reviewed_date }}
+															{% else %}
+																{% comment %} No review date available {% endcomment %}
+															{% endif %}
+														{% endwith %}
+													{% else %}
+														No reviews yet
+													{% endif %}
+												</td>
+
+													<td>
+													{% can_update_risk_assessment_data request.user client_id=client_id company_id=request.user.employee.company.id as can_access %}				
+														{% if can_access %}
+														<a href="{% url 'employee:client_risk_assessment_edit' client_id risk.id %}"
+														class="btn btn-primary btn-xs risk-tab-form">
+														<i class="fa fa-pencil"></i>
+														</a>
+													{% endif %}
+
+
+													<a href="{% url 'employee:client_risk_assessment_edit' client_id risk.id %}?risk_view=True"
+													class="btn btn-primary btn-xs risk-tab-form">
+													<i class="fa fa-eye"></i>
+													</a>
+
+
+													</td>
+												</tr>
+												{% endfor %}
+												
+											</tbody>
+										</table>
+										
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+												Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+												<ul class="pagination float-right">
+													<!-- Previous Button -->
+													<li class="paginate_button page-item previous {% if not risk_assessment.has_previous %}disabled{% endif %}">
+														{% if risk_assessment.has_previous %}
+															<a href="?page={{ risk_assessment.previous_page_number }}" class="page-link">Previous</a>
+														{% else %}
+															<a href="#" class="page-link">Previous</a>
+														{% endif %}
+													</li>
+
+													<!-- First Page -->
+													{% if risk_assessment.number > 4 %}
+														<li class="paginate_button page-item">
+															<a href="?page=1" class="page-link">1</a>
+														</li>
+														{% if risk_assessment.number > 5 %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+														{% endif %}
+													{% endif %}
+
+													<!-- Page Numbers -->
+													{% for num in risk_assessment.paginator.page_range %}
+														{% if num|add:"-3" <= risk_assessment.number and num|add:"3" >= risk_assessment.number %}
+															<li class="paginate_button page-item {% if risk_assessment.number == num %}active{% endif %}">
+																<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+															</li>
+														{% endif %}
+													{% endfor %}
+
+													<!-- Last Page -->
+													{% if risk_assessment.number < risk_assessment.paginator.num_pages|add:"-3" %}
+														<li class="paginate_button page-item disabled">
+															<span class="page-link">...</span>
+														</li>
+														<li class="paginate_button page-item">
+															<a href="?page={{ risk_assessment.paginator.num_pages }}" class="page-link">{{ risk_assessment.paginator.num_pages }}</a>
+														</li>
+													{% endif %}
+
+													<!-- Next Button -->
+													<li class="paginate_button page-item next {% if not risk_assessment.has_next %}disabled{% endif %}">
+														{% if risk_assessment.has_next %}
+															<a href="?page={{ risk_assessment.next_page_number }}" class="page-link">Next</a>
+														{% else %}
+															<a href="#" class="page-link">Next</a>
+														{% endif %}
+													</li>
+												</ul>
+											</div>
+										</div>
+								</div>
+							</div>
+						</div>
+
+	<!---delete confirm popup-->
+	<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="icon-alert">
+					<i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+					</div>
+					<h2 class="modal-title " id="exampleModalLongTitle">Are you sure?</h2>
+				</div>
+				<div class="modal-body ">
+					You won't be able to revert it!
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn mdl-button mdl-js-button mdl-button--raised " id="deleteConfirmed">Yes, delete it!</button>
+					<button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--pop up end-->
+
+	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

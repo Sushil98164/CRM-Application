@@ -1,0 +1,173 @@
+{% extends "base_company_admin.html" %}
+{% block title %}
+{% if request.resolver_match.url_name == 'employee_add' %}
+Add Employee
+{% else %}
+Edit Employee
+{% endif %}
+
+{% endblock title %}
+{% block stylesheets %}
+<style>
+    .error-message {
+        color: red;
+    }
+    
+    .error-message ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0; 
+    }
+    
+    .error-message li {
+        margin: 0;
+    }
+    @media screen and (max-width: 678px){
+        .error-phone{
+            bottom: -20px !important;
+        }
+    }
+    
+</style>
+
+{% endblock stylesheets %}
+{% block content %}
+{% load widget_tweaks %}
+
+<!-- start widget -->
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            {% if request.resolver_match.url_name == 'employee_add' %}
+            <div class="page-title">Add employee</div>
+            {% else %}
+            <div class="page-title">Edit employee</div>
+            {% endif %}
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li>
+                <i class="fa fa-home"></i>&nbsp;<a class="parent-item"
+                    href="{% url 'company:employee_list' %}">Employee</a>&nbsp;
+                <i class="fa fa-angle-right"></i>
+            </li>
+            {% if request.resolver_match.url_name == 'employee_add' %}
+            <li class="active">Add</li>
+            {% else %}
+            <li class="active">Edit</li>
+            {% endif %}
+
+
+        </ol>
+    </div>
+</div>
+<div class="row">
+    {% if messages %}
+    <div class="container-fluid">
+      <ul class="list-unstyled">
+        {% for message in messages %}
+          <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <script>
+        // Automatically close alerts after 5 seconds
+        window.setTimeout(function () {
+          $(".alert").fadeTo(500, 0).slideUp(500, function () {
+            $(this).remove();
+          });
+        }, 5000);
+      </script>
+  {% endif %}
+    <div class="col-sm-12">
+        <form id="employeeAddForm" method="POST" class="disable-on-submit">
+            {% csrf_token %}
+            
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Employee information</header>
+                </div>
+                <div class="card-body row">
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field personform.first_name class="mdl-textfield__input"%}
+                            <span class="focus-input100 error-label" data-placeholder="&#xf191;" >{{ personform.first_name.errors }}</span>
+                            <label class="mdl-textfield__label">First name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field personform.last_name class="mdl-textfield__input" %}
+                            <span class="focus-input100 error-label" data-placeholder="&#xf191;" >{{ personform.last_name.errors }}</span> 
+                            <label class="mdl-textfield__label">Last name</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field personform.email class="mdl-textfield__input" %}
+                            <label class="mdl-textfield__label">Email address</label>
+                            {% render_field personform.password class="mdl-textfield__input" %}
+                            {% if personform.email.errors %}
+                            <span class="focus-input100 error-label"  style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ personform.email.errors.0 }}</span>
+                           {% endif %}
+                        </div>
+                       
+                    </div>
+                    <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                        
+                            {% render_field personform.phone_number class="mdl-textfield__input"  onkeypress="return /[0-9]/i.test(event.key)"  maxlength="10" title="Please enter a 10-digit phone number." %}
+                            <label class="mdl-textfield__label" for="text5">Phone number</label>
+                            {% if  personform.phone_number.errors.0 %}
+                            <span class="focus-input100 error-label error-phone"  style="color: red;font-size: 13px; position: absolute; padding-top:5px;" data-placeholder="&#xf191;" >{{ personform.phone_number.errors.0 }}
+                            </span> 
+                            {% endif %}
+                        </div>
+                      
+                    </div>
+                    
+                    
+                    {{employee_formset.management_form}}
+                    {% for form in employee_formset %}
+                    {% render_field form.created_by %}
+                    {% render_field form.company %}
+
+                    <div class="col-lg-6 p-t-20"> 
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field form.employment_type class="mdl-textfield__input" %}
+                            
+                            <label class="mdl-textfield__label" for="text5">Employment type</label>
+                        </div>
+                    </div>
+                    {% endfor %} 
+                    <div class="col-lg-6 p-t-20">
+                       <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                            {% render_field personform.is_active class="mdl-textfield__input" %}
+    
+                            <label class="mdl-textfield__label" for="text5">Approved by admin</label>
+                        </div>
+                    </div> 
+                    <div class="col-lg-12 p-t-20 text-center">
+                        <button type="submit"
+                            class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue">Submit</button>
+                            <a href="{% url 'company:employee_list' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- end widget -->
+{% endblock %}
+{% block javascripts %}
+{% endblock javascripts %}  

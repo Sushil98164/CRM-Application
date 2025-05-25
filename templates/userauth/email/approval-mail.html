@@ -1,0 +1,74 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <title>Approval Request</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Serif:opsz@8..144&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+            .im {
+        color: #fff !important;
+    }
+    p{
+        margin: 0px !important;
+    }
+            @media only screen and (max-width: 768px) {
+                        div{
+                            padding: 05px !important;
+                            margin: 0px !important;
+                            width: auto !important;
+                            height: auto !important;
+                        }
+                        p{
+                            font-size: 12px !important;
+                        }
+                
+                    img{
+                        min-width: 200px !important;
+                        min-height: 50px !important;
+                    }
+                    body{
+                        overflow: hidden !important; /* Hide scrollbars */
+                    }
+                    }
+
+        </style> 
+    </head>
+    <body>
+        <div style="width: 100%; height: 100%;">
+           <div style="border: 1px solid #000; background: #222C3C; height: autos;width: 856px; margin: 20px auto;" >
+               <div style="width: 100%; text-align: center; padding-top: 52px; padding-bottom: 20px;">
+                 <img src="https://bellscrmbucket-images.s3.ap-south-1.amazonaws.com/images/logo.png" alt="LOGO" style="width:407px; height: 62px;">
+
+                </div>
+               <div style="padding: 10px 20px; margin: 0px 33px;">
+                <!-- <h1 style="color: #fff; font-size: 30px; font-family: inter; font-weight: 700;">Approval Request</h1> -->
+                <div>
+                    <p style="font-family: inter; font-size: 14px; color: #fff; font-weight: 400  ;">Hi  {{first_name|title}} {{ last_name|title }},</p>
+                </div>
+                <div style="padding-top: 22px; ">
+                    <p style="margin: 0px !important; font-family: inter; font-size: 12px; color: #fff; font-weight: 400  ;">I hope this email finds you well. I wanted to inform you that your account has been successfully submitted for approval to the administration.</p>
+                </div>
+                <div style="padding-top: 22px; ">
+                    <p style="margin: 0px !important; font-family: inter; font-size: 12px; color: #fff; font-weight: 400  ;">Once the approval process is completed, you will be notified accordingly. If you have any questions or require further assistance, please feel free to reach out to our support team at Bellscrm@gmail.com.  </p>
+                </div>
+                <div style="padding-top: 22px; ">
+                    <p style="margin: 0px !important; font-family: inter; font-size: 12px; color: #fff; font-weight: 400  ;">Thank you for your cooperation.  </p>
+                </div>
+                <div style="padding-top: 22px; ">
+                    <p style="margin: 0px !important; font-family: inter; font-size: 12px; color: #fff; font-weight: 400  ;">Best Regards, <br>Bells CRM </p>
+                </div>
+               </div>
+               <div style="margin-top: 10px; border-top : 1px solid #FFF;padding: 10px 13px 10px 51px;">
+                <div >
+                    <div style="width: 13%; float: left;"><p style="margin: 0px !important; font-style: italic; font-family: inter; font-size: 14px; color: #fff; font-weight: 700  ;">Disclaimer -  </p></div>
+                    <div style="width: 87%; display: flow-root;"><p style="font-size: 12px; font-weight: 400; font-family: inter; color: #fff; margin: 0px;">This email is an automated message from Bells CRM. Please do not reply to this email. If this message is not pertinent to you, kindly ignore it.</p></div>
+                </div>
+               </div>
+           </div>
+        </div>
+    </body>
+</html>

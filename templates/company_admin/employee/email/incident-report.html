@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Report</title>
+</head>
+<body>
+    <p>Hello {{ email }},</p>
+
+    <p>We are writing to inform you about a recent  incident report: {{report_code}}</p>
+
+    <ul>
+        <li><strong>Incident created by:</strong> {{created_by }}</li>
+        <li><strong>Incident created for:</strong> {{client_email }}</li>
+        <li><strong>Incident status:</strong> {{incident_status }}</li>
+        <li><strong>Date and time:</strong> {{incident_date }}</li>
+
+        
+        
+    </ul>
+
+
+    <p>If you have any questions or need further information regarding this incident, please contact our support team.</p>
+
+    <p>Thank you for your attention to this matter.</p>
+
+    <p>Best regards,</p>
+</body>
+</html>

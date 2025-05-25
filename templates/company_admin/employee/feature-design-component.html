@@ -1,0 +1,90 @@
+     <!--common page-->
+     <div class="row ">
+        <div class="col-lg-4 ">
+            <div class="p-3 d-flex flex-column gap-40 input-upper-div h-100">
+                <div class="">
+                    <form class="mb-0">
+                        <div class="d-flex flex-column gap-40 input-innerr-div  p-2">
+                            <div class="p-1 d-flex align-items-center w-100">
+                                <input placeholder="search" type="text"
+                                    class="w-100 input-of-rolebase" required>
+                                <button type="submit"
+                                    class="ms-auto border-0 search-button-template">
+                                    <svg width="20" height="20" viewBox="0 0 30 30"
+                                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M23.45 23.45L28 28M26.7 14.35C26.7 7.52928 21.1707 2 14.35 2C7.52928 2 2 7.52928 2 14.35C2 21.1707 7.52928 26.7 14.35 26.7C21.1707 26.7 26.7 21.1707 26.7 14.35Z"
+                                            stroke="#28303F" stroke-width="2.4375"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div> 
+                <!--side nav for parent category-->
+                {% include 'company_admin/template/side-nav.html' %}
+                <!--end -->
+            </div>
+        </div>
+        <div class="col-lg-8 mt-3 mt-lg-0" id='feature-list'>
+            {% include 'company_admin/template/feature-list.html' %}
+
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-8">
+            <div class="d-flex gap-3 ml--2 justify-content-center">
+                <form id="template_form" action="{% url 'company:template_employee_assignment' %}"
+                    class="disable-on-submit" method="POST">
+                    {% csrf_token %}
+                    
+                    <input type="hidden" value={{template_id}}
+                    name="template_id">
+                    <input type="hidden" id="final_feature_data_input"
+                        name="final_feature_data">
+                    <input type="hidden" id="template_name_hidden"
+                        name="template_name_hidden">
+                    <div class="col-lg-12 p-t-20 text-center">
+                        {% if request.resolver_match.url_name == 'edit_template' %}
+                        <input type="hidden" name="template_id" value="{{ template_id }}">
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue template-submit-button">Update</button>
+                        {% elif request.resolver_match.url_name != 'view_template' %}
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue template-submit-button">Submit</button>
+                        {% endif %}
+                        {% if request.resolver_match.url_name == 'saved_template_assignment' or request.resolver_match.url_name == 'employee_scratch_template' %}
+                            <a href="{% url 'company:employee_list' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default " id="cancelBtn">Cancel</a>                            
+                        {% else %}
+                            <a href="{% url 'company:template_list' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default " id="cancelBtn">Cancel</a>                            
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+       <!--end-->
+       
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector(".input-of-rolebase");
+        const navItems = document.querySelectorAll(".searched-items .nav-item");
+    
+        searchInput.addEventListener("keyup", function () {
+            let searchTerm = searchInput.value.toLowerCase().trim();
+    
+            navItems.forEach((item) => {
+                let link = item.querySelector(".nav-link");
+                let text = link.textContent.toLowerCase();
+    
+                if (text.includes(searchTerm)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    }); 
+</script>

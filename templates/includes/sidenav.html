@@ -1,0 +1,217 @@
+<!-- start sidebar menu -->
+{% load static %}
+{% load company_admin_tags %}
+
+<style>
+	li.hide-on-desktop-view{
+		display: none !important;
+	}
+	li.nav-item.single_nav_item svg {
+    height: 18px !important;
+    width: 18px !important;
+}
+li.nav-item svg {
+    height: 18px !important;
+    width: 18px !important;
+}
+.dark-sidebar-color .sidemenu-container {
+    background-color: #222c3c;
+    width: 283px;
+}
+	@media only screen and (max-width: 768px){
+		li.hide-on-desktop-view{
+		display: block !important;
+	}
+	li.nav-item.hide-on-desktop-view ul li {
+    list-style: none;
+	}
+	li.nav-item.hide-on-desktop-view a {
+    color: #b7c0cd;
+    border-bottom: none;
+	display: block;
+    position: relative;
+    margin: 0;
+    padding: 17px 15px;
+    text-decoration: none;	
+    font-weight: 300;
+	}
+	i.icon-logout {
+		color: currentColor;
+		font-weight: 700;
+	}
+	li.nav-item.hide-on-desktop-view ul {
+    padding-left: 0px;
+	}
+	}
+	.title.title{
+		color: #B7C0CD;
+font-family: Poppins;
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+	}
+	.ml-7{
+		margin-right:7px !important;
+	}
+	
+	li.nav-item.single_nav_item.active path {
+    fill: #fff;
+}
+li.nav-item.single_nav_item path {
+    fill: #B7C0CD;
+}
+span.title path {
+    fill: #B7C0CD;
+}
+li.nav-item path {
+    fill: #B7C0CD;
+}
+li.nav-item.active path {
+	fill: #fff;
+}
+</style>
+<div class="sidebar-container">
+	<div class="sidemenu-container navbar-collapse collapse fixed-menu ">
+		<div id="remove-scroll" class="left-sidemenu">
+			
+			<ul class="sidemenu  page-header-fixed slimscroll-style" data-keep-expanded="false"
+				data-auto-scroll="true" data-slide-speed="200" style="padding-top: 20px">
+				<li class="nav-item hide-on-desktop-view {% if request.resolver_match.url_name == 'employee_profile' or request.resolver_match.url_name == 'employee_documents' or request.resolver_match.url_name == 'my_clients' or request.resolver_match.url_name == 'client_detail_view'  or  request.resolver_match.url_name == 'dailyshift_list' or  request.resolver_match.url_name == 'dailyshift_add' or request.resolver_match.url_name == 'client_risk_assessment_list_view' or request.resolver_match.url_name == 'client_risk_assessment_detail_view' or request.resolver_match.url_name == 'client_progress_note_detail' or request.resolver_match.url_name == 'client_progress_note_list_view' or request.resolver_match.url_name == 'client_profile_incident_list' or request.resolver_match.url_name == 'employee_client_profile_incident_detail' or request.resolver_match.url_name == 'employee_client_profile_mandatory_incident_detail'  %}active{% endif %}">
+					<ul class="">
+						<li>
+							<a href="{% url 'employee:employee_profile' %}">
+								<i class="icon-user"></i> My Profile </a>
+						</li>
+					</ul>	
+				</li>
+				<li class="sidebar-toggler-wrapper hide">
+					<div class="sidebar-toggler">
+						<span></span>
+					</div>
+				</li>
+
+				<!-- Content if the user doesn't have the permission -->
+			
+				<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'dashboard'%}active{% endif %}">
+					<a href="{% url 'company:dashboard' %}" class="nav-link nav-toggle"> 
+						<i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="24" viewBox="0 0 23 24" fill="none">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M2.3 0.5C1.02975 0.5 0 1.52975 0 2.8V7.4C0 8.67025 1.02975 9.7 2.3 9.7H6.9C8.17025 9.7 9.2 8.67025 9.2 7.4V2.8C9.2 1.52975 8.17025 0.5 6.9 0.5H2.3ZM18.4008 9.7C20.9413 9.7 23.0008 7.64051 23.0008 5.1C23.0008 2.55949 20.9413 0.5 18.4008 0.5C15.8603 0.5 13.8008 2.55949 13.8008 5.1C13.8008 7.64051 15.8603 9.7 18.4008 9.7ZM9.2 18.9C9.2 21.4405 7.14051 23.5 4.6 23.5C2.05949 23.5 0 21.4405 0 18.9C0 16.3595 2.05949 14.3 4.6 14.3C7.14051 14.3 9.2 16.3595 9.2 18.9ZM16.1008 14.3C14.8305 14.3 13.8008 15.3298 13.8008 16.6V21.2C13.8008 22.4703 14.8305 23.5 16.1008 23.5H20.7008C21.971 23.5 23.0008 22.4703 23.0008 21.2V16.6C23.0008 15.3298 21.971 14.3 20.7008 14.3H16.1008Z" fill="white"/>
+						  </svg></i>
+						<span class="title">Dashboard</span>
+					</a>
+				</li>
+				
+				<!---Company-->
+					{% if  request.user|has_permission:'userauth.read_own_employees' or request.user|has_permission:'userauth.create_all_employees' or  request.user|has_permission:'userauth.update_all_employees' or  request.user|has_permission:'userauth.update_team_employees' or request.user|has_permission:'userauth.read_all_employees' or request.user|has_permission:'userauth.read_team_employees' or request.user|has_permission:'userauth.read_all_acknowledgements' or request.user|has_permission:'userauth:read_team_acknowledgements' %}
+						<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'company_employee_acknowledgement' or request.resolver_match.url_name == 'manager_employee_profile_clients' or request.resolver_match.url_name == 'company_employee_documents' or request.resolver_match.url_name == 'manager_employee_profile_edit' or request.resolver_match.url_name == 'employee_profile_view' or request.resolver_match.url_name == 'employee_scratch_template' or request.resolver_match.url_name == 'saved_template_assignment' or request.resolver_match.url_name == 'employee_existing_template' or request.resolver_match.url_name == 'employee_add_step2' or request.resolver_match.url_name == 'employee_list' or request.resolver_match.url_name == 'employee_add' or request.resolver_match.url_name == 'company_employee_document' %}active{% endif %}">
+
+							<a href="{% url 'company:employee_list' %}" class="nav-link "><i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="25" viewBox="0 0 20 25" fill="none">
+								<path d="M15.6395 5.71429C15.6395 8.8702 13.0811 11.4286 9.92522 11.4286C6.76931 11.4286 4.21094 8.8702 4.21094 5.71429C4.21094 2.55837 6.76931 0 9.92522 0C13.0811 0 15.6395 2.55837 15.6395 5.71429Z" fill="white"/>
+								<path d="M20 19.0312C20 22.0688 15.5228 24.5312 10 24.5312C4.47715 24.5312 0 22.0688 0 19.0312C0 15.9937 4.47715 13.5312 10 13.5312C15.5228 13.5312 20 15.9937 20 19.0312Z" fill="white"/>
+							  </svg></i> <span class="title">Employee Management</span></a>
+						</li>
+					{% endif %}
+					{% if request.user|has_permission:'userauth.read_all_clients' or request.user|has_permission:'userauth.read_team_clients' or request.user|has_permission:'userauth.update_all_clients' or request.user|has_permission:'userauth.update_clients_team_owns' or request.user|has_permission:'userauth.create_all_clients' %}
+									  <li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'risk_assessment_edit' or request.resolver_match.url_name == 'client_profile_shift_note__detail' or request.resolver_match.url_name == 'client_profile_mandatory_incident_detail' or request.resolver_match.url_name == 'client_profile_incident_detail' or request.resolver_match.url_name == 'client_profile_shift_note' or request.resolver_match.url_name == 'client_profile_mandatory_incident' or request.resolver_match.url_name == 'client_profile_incident' or request.resolver_match.url_name == 'client_profile_risk_assessment' or  request.resolver_match.url_name == 'client_profile' or request.resolver_match.url_name == 'risk_assessment_add' or request.resolver_match.url_name == 'client_list' or request.resolver_match.url_name == 'client_edit' or request.resolver_match.url_name == 'client_delete' or request.resolver_match.url_name == 'client_add' or request.resolver_match.url_name == 'client_service_delivery_team'%}active{% endif %}">
+							<a href="{% url 'company:client_list' %}" class="nav-link "> <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="26" viewBox="0 0 20 26" fill="none">
+								<path fill-rule="evenodd" clip-rule="evenodd" d="M16 0H4C1.79086 0 0 1.79086 0 4V21C0 22.8642 1.27421 24.5563 3 25C3.31929 25.0821 3.6551 25 4 25H16C16.3449 25 16.6807 25.0821 17 25C18.7258 24.5563 20 22.8642 20 21V4C20 1.79086 18.2091 0 16 0ZM10 13.5C12.4617 13.5 14.5783 15.1062 15.5115 17.4071C15.9491 18.486 15.0067 19.5 13.8425 19.5H6.15752C4.99332 19.5 4.05092 18.486 4.48849 17.4071C5.42174 15.1062 7.53834 13.5 10 13.5ZM10 5.5C11.6569 5.5 13 6.84315 13 8.5C13 10.1569 11.6569 11.5 10 11.5C8.34315 11.5 7 10.1569 7 8.5C7 6.84315 8.34315 5.5 10 5.5Z" fill="white"/>
+							  </svg></i> <span class="title">Client Management</span></a>
+						</li>
+					{% endif %}
+					{% if request.user|has_permission:'userauth.update_department_all' or request.user|has_permission:'userauth.update_department_own' or request.user|has_permission:'userauth.read_department_all' or request.user|has_permission:'userauth.read_department_own'  or request.user|has_permission:'userauth.create_department_all' %}
+						<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'department_client_assignment' or request.resolver_match.url_name == 'department_employee_assignment' or request.resolver_match.url_name == 'departments_list' or request.resolver_match.url_name == 'departments_add' or request.resolver_match.url_name == 'departments_edit' %}active{% endif %}">
+							<a href="{% url 'company:departments_list' %}" class="nav-link "><i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+								<path fill-rule="evenodd" clip-rule="evenodd" d="M12.4696 6.31348C14.0636 6.26864 15.342 4.96238 15.342 3.35753C15.342 3.16481 15.3236 2.97639 15.2884 2.79395H20.7678V7.58744C19.2616 7.72424 18.0815 8.99048 18.0815 10.5323C18.0815 12.0742 19.2616 13.3404 20.7678 13.4772V13.4883H18.6878C17.9878 13.4883 17.4204 14.0557 17.4204 14.7557V19.1477H20.7678V23.9305H16.0139V20.5369C16.0139 19.837 15.4465 19.2695 14.7465 19.2695H12.4877C14.0817 19.2247 15.3601 17.9184 15.3601 16.3136C15.3601 14.6804 14.0361 13.3564 12.4029 13.3564C10.7698 13.3564 9.4458 14.6804 9.4458 16.3136C9.4458 17.9184 10.7242 19.2247 12.3182 19.2695H10.0521C9.35211 19.2695 8.78467 19.837 8.78467 20.5369V23.9305H4.03125V19.1438H7.34792V14.7518C7.34792 14.0518 6.78048 13.4844 6.08051 13.4844H4.03125V13.4711C5.52625 13.3234 6.69406 12.0623 6.69406 10.5284C6.69406 8.99457 5.52625 7.73348 4.03125 7.58575V2.79395H9.48138C9.44617 2.97639 9.42773 3.16481 9.42773 3.35753C9.42773 4.96238 10.7062 6.26864 12.3002 6.31348H10.034C9.33404 6.31348 8.7666 6.88092 8.7666 7.58088V11.9729H15.9959V7.58088C15.9959 6.88091 15.4284 6.31348 14.7285 6.31348H12.4696ZM9.87445 1.79395H4.03125H3.03125V2.79395V7.65601C1.7388 7.97245 0.779785 9.13844 0.779785 10.5284C0.779785 11.9184 1.7388 13.0844 3.03125 13.4008V13.4844H1.38606C0.68609 13.4844 0.118652 14.0518 0.118652 14.7518V19.1438H3.03125V23.9305V24.9305H4.03125H20.7678H21.7678V23.9305V19.1477H24.6497V14.7557C24.6497 14.0557 24.0822 13.4883 23.3823 13.4883H21.7678V13.3989C23.0484 13.0742 23.9958 11.9139 23.9958 10.5323C23.9958 9.15075 23.0484 7.99046 21.7678 7.66575V2.79395V1.79395H20.7678H14.8953C14.373 0.957149 13.444 0.400391 12.3849 0.400391C11.3258 0.400391 10.3967 0.957149 9.87445 1.79395Z" fill="black"/>
+							  </svg></i> <span class="title">Team</span></a>
+						</li>
+					{% endif %}
+
+						
+						{% if  request.user|has_permission:'company_admin.create_incident_all' or request.user|has_permission:'company_admin.create_incident_own_team'  or request.user|has_permission:'company_admin.create_incident_there_own' or request.user|has_permission:'company_admin.update_incident_all' or request.user|has_permission:'company_admin.update_incident_own_team' or request.user|has_permission:'company_admin.view_incident_all' or request.user|has_permission:'company_admin.view_incident_own_team' %}
+						<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'admin_incident_view' or request.resolver_match.url_name == 'admin_incident_edit' or request.resolver_match.url_name == 'admin_incident_add' or request.resolver_match.url_name == 'client_incident_reports_dashboard' or request.resolver_match.url_name == 'manager_tag_employee' %} active {% endif %}">
+							<a href="{% url 'company:client_incident_reports_dashboard' %} " class="nav-link "> <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="26" viewBox="0 0 23 26" fill="none">
+								<path fill-rule="evenodd" clip-rule="evenodd" d="M2.55556 0H20.4444C21.8558 0 23 1.14416 23 2.55556V21.9194C23 23.6894 21.2442 24.9235 19.5788 24.3239L17.5832 23.6055C16.9597 23.381 16.2733 23.4076 15.6689 23.6795L12.5487 25.0836C11.8818 25.3838 11.1182 25.3838 10.4513 25.0836L7.33109 23.6795C6.72672 23.4076 6.04033 23.381 5.41676 23.6055L3.42117 24.3239C1.75582 24.9235 0 23.6894 0 21.9194V2.55556C0 1.14416 1.14416 0 2.55556 0ZM6.38889 5.43056C5.85962 5.43056 5.43056 5.85962 5.43056 6.38889C5.43056 6.91816 5.85962 7.34722 6.38889 7.34722H11.5C12.0293 7.34722 12.4583 6.91816 12.4583 6.38889C12.4583 5.85962 12.0293 5.43056 11.5 5.43056H6.38889ZM6.38889 10.5417C5.85962 10.5417 5.43056 10.9707 5.43056 11.5C5.43056 12.0293 5.85962 12.4583 6.38889 12.4583H16.6111C17.1404 12.4583 17.5694 12.0293 17.5694 11.5C17.5694 10.9707 17.1404 10.5417 16.6111 10.5417H6.38889ZM6.38889 15.6528C5.85962 15.6528 5.43056 16.0818 5.43056 16.6111C5.43056 17.1404 5.85962 17.5694 6.38889 17.5694H16.6111C17.1404 17.5694 17.5694 17.1404 17.5694 16.6111C17.5694 16.0818 17.1404 15.6528 16.6111 15.6528H6.38889Z" fill="#B7C0CD"/>
+							  </svg></i> <span class="title">Client Incident Reports</span>
+							</a>
+						</li>						
+						{% endif %}
+						{% if request.user|has_permission:'company_admin.create_progress_notes_own' or request.user|has_permission:'company_admin.view_progress_notes_all' or request.user|has_permission:'company_admin.view_progress_notes_own_team' or request.user|has_permission:'company_admin.view_progress_notes_own' or request.user|has_permission:'company_admin.update_progress_notes_all' or request.user|has_permission:'company_admin.update_progress_notes_own_team' or request.user|has_permission:'company_admin.update_progress_notes_own'%}
+						<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'employee_shifts_list_view' or request.resolver_match.url_name == 'dailyshift_list_employee' or request.resolver_match.url_name == 'dailyshift_add_employee' or request.resolver_match.url_name == 'daily_shift_note_dashboard' or request.resolver_match.url_name == 'admin_dailyshift_edit' or request.resolver_match.url_name == 'admin_dailyshift_view'%}active{% endif %}">
+							<a href="{% url 'company:daily_shift_note_dashboard' %} " class="nav-link "> <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+								<path fill-rule="evenodd" clip-rule="evenodd" d="M1.72674 5.46802C1.72674 3.40177 3.40177 1.72674 5.46802 1.72674H12.375C12.8518 1.72674 13.2384 1.3402 13.2384 0.863372C13.2384 0.386545 12.8518 0 12.375 0H5.46802C2.44812 0 0 2.44812 0 5.46802V19.282C0 22.3019 2.44812 24.75 5.46802 24.75H19.282C22.3019 24.75 24.75 22.3019 24.75 19.282V12.375C24.75 11.8982 24.3635 11.5116 23.8866 11.5116C23.4098 11.5116 23.0233 11.8982 23.0233 12.375V19.282C23.0233 21.3482 21.3482 23.0233 19.282 23.0233H5.46802C3.40177 23.0233 1.72674 21.3482 1.72674 19.282V5.46802ZM17.462 1.64281C18.5013 0.603561 20.1862 0.603561 21.2255 1.64281L23.1072 3.52453C24.1464 4.56377 24.1464 6.24872 23.1072 7.28797L21.4388 8.95636C21.3078 8.89151 21.17 8.82138 21.0272 8.74616C20.0654 8.23986 18.9242 7.52926 18.0725 6.67754C17.2208 5.82583 16.5102 4.6846 16.0039 3.72289C15.9287 3.57999 15.8585 3.44218 15.7936 3.31119L17.462 1.64281ZM16.8515 7.89854C17.8594 8.9064 19.1411 9.69963 20.1562 10.2389L13.5953 16.7999C13.1881 17.207 12.6599 17.4711 12.0899 17.5526L8.13829 18.1171C7.26015 18.2425 6.50747 17.4898 6.63291 16.6117L7.19743 12.6601C7.27886 12.0901 7.54297 11.5619 7.95012 11.1547L14.5111 4.59375C15.0504 5.60886 15.8436 6.89065 16.8515 7.89854Z" fill="white"/>
+							  </svg></i> <span class="title">Progress Notes and Timesheet</span>
+							</a>
+						</li>
+						{% endif %}
+						{% if request.user|has_permission:'rostering.create_shift_all' or request.user|has_permission:'rostering.create_own_team_shift' or request.user|has_permission:'rostering.read_client_shift_all' or request.user|has_permission:'rostering.read_own_team_shift' or request.user|has_permission:'rostering.read_own_shift' or request.user|has_permission:'rostering.update_shift_all' or request.user|has_permission:'rostering.update_own_team_shift' or request.user|has_permission:'rostering.view_own_team_shift_reports' or request.user|has_permission:'rostering.view_all_shift_reports'%}
+						
+						<li class="nav-item {% if request.resolver_match.url_name == 'manager_rostering_dashboard' or request.resolver_match.url_name == 'manager_shift_report_view'%}active{% endif %}">
+				
+							<a href="#" class="nav-link nav-toggle"> 
+								 <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="21" height="25" viewBox="0 0 21 25" fill="none">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M16.0411 0.875C16.0411 0.391751 15.6493 0 15.1661 0C14.6828 0 14.2911 0.391751 14.2911 0.875V2.625H6.70776V0.875C6.70776 0.391751 6.31601 0 5.83276 0C5.34951 0 4.95776 0.391751 4.95776 0.875V2.625H4.66667C2.08934 2.625 0 4.71434 0 7.29167V19.5417C0 22.119 2.08934 24.2083 4.66667 24.2083H16.3333C18.9107 24.2083 21 22.119 21 19.5417V7.29167C21 4.71434 18.9107 2.625 16.3333 2.625H16.0411V0.875ZM5.83333 8.16667C5.35008 8.16667 4.95833 8.55842 4.95833 9.04167C4.95833 9.52492 5.35008 9.91667 5.83333 9.91667H10.5C10.9832 9.91667 11.375 9.52492 11.375 9.04167C11.375 8.55842 10.9832 8.16667 10.5 8.16667H5.83333ZM4.95833 13.7083C4.95833 13.2251 5.35008 12.8333 5.83333 12.8333H15.1667C15.6499 12.8333 16.0417 13.2251 16.0417 13.7083C16.0417 14.1916 15.6499 14.5833 15.1667 14.5833H5.83333C5.35008 14.5833 4.95833 14.1916 4.95833 13.7083ZM5.83333 17.5C5.35008 17.5 4.95833 17.8918 4.95833 18.375C4.95833 18.8582 5.35008 19.25 5.83333 19.25H15.1667C15.6499 19.25 16.0417 18.8582 16.0417 18.375C16.0417 17.8918 15.6499 17.5 15.1667 17.5H5.83333Z" fill="white"/>
+								  </svg></i> <span class="title">Rostering</span> <span class="arrow"></span>
+								
+							</a>
+							<ul class="sub-menu">
+								{% if request.user|has_permission:'rostering.create_shift_all' or request.user|has_permission:'rostering.create_own_team_shift' or request.user|has_permission:'rostering.read_client_shift_all' or request.user|has_permission:'rostering.read_own_team_shift' or request.user|has_permission:'rostering.read_own_shift' or request.user|has_permission:'rostering.update_shift_all' or request.user|has_permission:'rostering.update_own_team_shift'%}
+								<li class="nav-item {% if request.resolver_match.url_name == 'manager_rostering_dashboard'%}active{% endif %}">
+									<a href="{% url 'rostering:manager_rostering_dashboard' %}" class="nav-link "> <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.895431 0 2V6C0 7.10457 0.895431 8 2 8H6C7.10457 8 8 7.10457 8 6V2C8 0.895431 7.10457 0 6 0H2ZM4 20C6.20914 20 8 18.2091 8 16C8 13.7909 6.20914 12 4 12C1.79086 12 0 13.7909 0 16C0 18.2091 1.79086 20 4 20ZM12 14C12 12.8954 12.8954 12 14 12H18C19.1046 12 20 12.8954 20 14V18C20 19.1046 19.1046 20 18 20H14C12.8954 20 12 19.1046 12 18V14ZM16.5 0.75C16.5 0.335786 16.1642 0 15.75 0C15.3358 0 15 0.335786 15 0.75V3.5H12.25C11.8358 3.5 11.5 3.83579 11.5 4.25C11.5 4.66421 11.8358 5 12.25 5H15V7.75C15 8.16421 15.3358 8.5 15.75 8.5C16.1642 8.5 16.5 8.16421 16.5 7.75V5H19.25C19.6642 5 20 4.66421 20 4.25C20 3.83579 19.6642 3.5 19.25 3.5H16.5V0.75Z" fill="white"/>
+									  </svg></i> <span class="title">Shifts Dashboard</span></a>
+								</li>
+								{% endif %}
+								{% if request.user|has_permission:'rostering.view_own_team_shift_reports' or request.user|has_permission:'rostering.view_own_team_shift_reports' or request.user|has_permission:'rostering.view_all_shift_reports'%}
+								<li class="nav-item {% if request.resolver_match.url_name == 'manager_shift_report_view'%}active{% endif %}">
+									<a href="{% url 'rostering:manager_shift_report_view' %}" class="nav-link "> <span class="title"> <i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+										<g clip-path="url(#clip0_3465_41115)">
+										  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8679 4.36394C9.37507 2.65136 5.91483 1.87148 3.33243 1.57967C2.04087 1.43372 0.986328 2.51225 0.986328 3.84292V17.0946C0.986328 18.4253 2.04087 19.5042 3.33243 19.6502C5.91483 19.942 9.37507 20.7219 11.8679 22.4344V4.36394ZM13.6325 22.4344C16.1253 20.7219 19.5855 19.942 22.1679 19.6502C23.4595 19.5042 24.514 18.4253 24.514 17.0946V3.84292C24.514 2.51225 23.4595 1.43372 22.1679 1.57967C19.5855 1.87148 16.1253 2.65136 13.6325 4.36394V22.4344ZM3.64357 7.61298C3.71814 7.13144 4.16896 6.80154 4.65049 6.87611C6.18306 7.11346 7.90899 7.51017 9.53922 8.14059C9.9937 8.31633 10.2197 8.82723 10.0439 9.28171C9.86816 9.73619 9.35726 9.96214 8.90278 9.78639C7.42213 9.21382 5.82595 8.84377 4.38043 8.6199C3.8989 8.54533 3.56899 8.09451 3.64357 7.61298ZM4.65049 11.5816C4.16896 11.5071 3.71814 11.837 3.64357 12.3185C3.56899 12.8 3.8989 13.2509 4.38043 13.3254C5.1089 13.4383 5.87787 13.5885 6.6524 13.784C7.12487 13.9032 7.60451 13.6168 7.72371 13.1443C7.84292 12.6718 7.55654 12.1922 7.08407 12.073C6.25 11.8626 5.42659 11.7018 4.65049 11.5816Z" fill="white"/>
+										</g>
+										<defs>
+										  <clipPath id="clip0_3465_41115">
+											<rect width="24" height="24" fill="white" transform="translate(0.75)"/>
+										  </clipPath>
+										</defs>
+									  </svg></i> Shifts Report</span></a>
+								</li>
+								{% endif %}
+							</ul>
+						</li> 
+						{% endif %}
+						{% if request.user|has_permission:'company_admin.view_terms_and_conditions_all' or request.user|has_permission:'company_admin.update_terms_and_conditions_all' or request.user|has_permission:'company_admin.view_privacy_policy_all' or request.user|has_permission:'company_admin.update_privacy_policy_all' or request.user|has_permission:'userauth.create_templates' or request.user|has_permission:'userauth.update_templates' or request.user|has_permission:'userauth.read_templates'%}
+							<li class="nav-item single_nav_item {% if request.resolver_match.url_name == 'view_hierarchy' or request.resolver_match.url_name == 'hierarchy_stages_list' or request.resolver_match.url_name == 'company_hierarchy_update' or request.resolver_match.url_name == 'users_template_list' or request.resolver_match.url_name == 'employee_privacy_policy' or request.resolver_match.url_name == 'employee_terms_and_conditions' or request.resolver_match.url_name == 'employee_company_documents' or request.resolver_match.url_name == 'company_hierarchy_list' or request.resolver_match.url_name == 'clone_template' or request.resolver_match.url_name == 'add_template' or request.resolver_match.url_name == 'template_list' or request.resolver_match.url_name == 'company_terms_and_conditions_view' or request.resolver_match.url_name == 'company_terms_and_conditions_edit' or request.resolver_match.url_name == 'company_documents' or request.resolver_match.url_name == 'company_settings'  or  '/company/template/edit' in request.path   or  '/company/template/view' in request.path  %}active{% endif %}">
+								<a href="{% url 'company:company_settings' %}" class="nav-link "><i class="ml-7"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M10.7273 0H13.2727C14.6786 0 15.8182 1.07452 15.8182 2.4C15.8182 3.91682 17.4411 4.88118 18.7733 4.15597L18.9086 4.08232C20.1261 3.41958 21.6829 3.81288 22.3858 4.96078L23.6585 7.03924C24.3615 8.18714 23.9443 9.65496 22.7268 10.3177C21.394 11.0432 21.394 12.9568 22.7268 13.6823C23.9443 14.345 24.3615 15.8129 23.6585 16.9608L22.3858 19.0392C21.6829 20.1871 20.1261 20.5804 18.9086 19.9177L18.7733 19.844C17.4411 19.1188 15.8182 20.0832 15.8182 21.6C15.8182 22.9255 14.6786 24 13.2727 24H10.7273C9.32145 24 8.1818 22.9255 8.1818 21.6C8.1818 20.0832 6.55889 19.1188 5.22667 19.844L5.09135 19.9177C3.87388 20.5804 2.31709 20.1871 1.61418 19.0392L0.341452 16.9608C-0.361458 15.8129 0.0556804 14.3451 1.27316 13.6823C2.60601 12.9568 2.60601 11.0432 1.27316 10.3177C0.0556824 9.65494 -0.361456 8.18712 0.341454 7.03922L1.61419 4.96076C2.3171 3.81286 3.87388 3.41956 5.09135 4.0823L5.22667 4.15596C6.55889 4.88116 8.1818 3.91682 8.1818 2.4C8.1818 1.07452 9.32145 0 10.7273 0ZM12 16C14.2092 16 16 14.2091 16 12C16 9.79086 14.2092 8 12 8C9.79087 8 8.00001 9.79086 8.00001 12C8.00001 14.2091 9.79087 16 12 16Z" fill="#B7C0CD"/>
+								</svg></i> <span class="title">Settings</span></a>
+							</li>
+						{% endif %}
+					
+			<!--end -->
+			
+			<!--dashboard-->	
+
+			<!--end -->
+			<li class="nav-item hide-on-desktop-view {% if request.resolver_match.url_name == 'incident_list' or request.resolver_match.url_name == 'mandatory_incident_list' or request.resolver_match.url_name == 'incident_add' or request.resolver_match.url_name == 'incident_edit'  or  request.resolver_match.url_name == 'dailyshift_list' or  request.resolver_match.url_name == 'dailyshift_add' or request.resolver_match.url_name == 'dailyshift_edit' or request.resolver_match.url_name == 'mandatory_incident_list' or request.resolver_match.url_name == 'mandatory_incident_add' or request.resolver_match.url_name == 'mandatory_incident_edit' %}active{% endif %}">
+			<ul class="">
+			    <li>
+					<a href="{% url 'user_auth:change_password' %}">
+						<i class="icon-logout"></i> Change Password </a>
+				</li>
+				<li>
+					<a href="{% url 'user_auth:logout' %}">
+						<i class="icon-logout"></i> Log Out </a>
+				</li>
+			</ul>	
+		</li>
+		
+
+
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- end sidebar menu -->

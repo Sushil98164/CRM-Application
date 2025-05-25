@@ -1,0 +1,154 @@
+{% extends "base_company_admin.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+Terms and conditions
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .django-ckeditor-widget {
+        width: 100%;
+    }
+    .checkbox-terms {
+        display: flex;
+        {% comment %} align-items: center; {% endcomment %}
+    }
+    .checkbox-terms p {
+        margin: 0;
+        padding-left: 6px;
+    }
+    .modal .modal-content{
+        width:50% !important;
+    }
+    .mdl-textfield__input.new-check {
+        margin-top: 6px;
+        height:fit-content !important;
+    }
+    @media (max-width: 768px) {
+        .modal .modal-content{
+            width:65% !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-bar">
+	<div class="page-title-breadcrumb">
+		<div class=" pull-left">
+			<div class="page-title">Terms and conditions</div>
+		</div>
+		<ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="{% url 'company:company_settings' %}">Settings</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+			<li><a class="parent-item" href="{% url 'company:company_documents' %}">Company policies</a>&nbsp;<i class="fa fa-angle-right"></i>
+			</li>
+			<li class="active">Terms and conditions</li>
+		</ol>
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        {% if terms_and_conditions and terms_and_conditions.description%}
+            <div class="card-box">
+                <div class="card-head">
+                    <header>Terms and conditions</header>
+                </div>
+                <div class="card-body row">
+                    <div class="col-lg-12 p-t-20">
+                        <div class="txt-full-width w-100 d-block">
+                            {{ terms_and_conditions.description|safe }}
+                        </div>
+                    </div>
+                </div>
+            {% if already_acknowledged %}
+            <div class="p-l-20">
+                <input type="checkbox" checked disabled>  You have already acknowledged to the company terms and conditions.</p>
+                <div class="col-lg-12 p-t-20 text-center">
+                    <a href="{% url 'company:company_documents' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Back</a>
+                </div>
+            </div
+            {% else %}
+            <form method="post" class="disable-on-submit">
+                {% csrf_token %}
+                {{ form.policy }}
+                {{ form.employee }}
+                <div class="col-lg-12 p-t-20">
+                    <div class="checkbox-terms">
+                        {% render_field form.is_acknowledged class="mdl-textfield__input new-check text-area-info w-auto" %}
+                        <span class="focus-input100 error-label" style="color: red; font-size: 13px; position: absolute; padding-top: 5px;">
+                            {{ form.is_acknowledged.errors.0 }}
+                        </span>
+                        <p>I hereby accept and agree to abide by the company's Terms and Conditions.</p>
+                    </div>
+                </div>
+                <div class="col-lg-12 p-t-20 text-center">
+                    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised m-b-10 m-r-20 btn-blue">Acknowledge</button>
+                    <a href="{% url 'company:company_documents' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Back</a>
+                </div>
+            </form>
+            {% endif %}
+            </div>
+        {% else %}
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+        
+                </div>
+                <div class="card-body text-center">
+                    No data to display
+                </div>
+                <div class="col-lg-12 p-t-20 text-center">
+                    <a href="{% url 'company:company_documents' %}" class="mdl-button mdl-js-button mdl-button--raised m-b-10 btn-default" id="cancelBtn">Back</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content p-2">
+        <!-- <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div> -->
+        <div class="modal-body text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48"
+            style="fill:#40C057;">
+            <path d="M 24 3 C 12.413858 3 3 12.413866 3 24 C 3 35.586134 12.413858 45 24 45 C 35.586142 45 45 35.586134 45 24 C 45 12.413866 35.586142 3 24 3 z M 24 5 C 34.505263 5 43 13.494744 43 24 C 43 34.505256 34.505263 43 24 43 C 13.494737 43 5 34.505256 5 24 C 5 13.494744 13.494737 5 24 5 z M 33.951172 15.990234 A 1.0001 1.0001 0 0 0 33.208984 16.388672 L 22.244141 30.568359 L 14.640625 24.232422 A 1.0001 1.0001 0 1 0 13.359375 25.767578 L 21.759766 32.767578 A 1.0001 1.0001 0 0 0 23.191406 32.611328 L 34.791016 17.611328 A 1.0001 1.0001 0 0 0 33.951172 15.990234 z"></path>
+            </svg>
+            <h3>Thanks for acknowledging!!</h3>
+        </div>       
+        <!-- <div class="modal-footer">
+        </div> -->
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if messages %}
+  {% for message in messages %}
+    {% if "SHOW_MODAL" in message.message %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          $('#exampleModalCenter').modal('show');
+        });
+      </script>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% endblock %}

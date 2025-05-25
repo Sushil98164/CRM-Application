@@ -1,0 +1,415 @@
+{% extends "base_company_admin.html" %}
+{% load widget_tweaks %}
+{% load rostering_tags %}
+{% load company_admin_tags %}
+{% block title %}
+Teams List 
+{% endblock title %}
+
+{% block stylesheets %}
+<style>
+	i.fa.fa-plus {
+		color: #fff;
+	}
+	.modal-header {
+	border: none;
+	}
+	.modal-footer {
+		border: none;
+	}
+	button.btn.btn-secondary {
+	background-color: #188AE2;
+	color: #FEFEFC;
+	font-family: Inter;
+	font-size: 24px;
+	font-weight: 700;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 5px;
+	margin-right: 20px;
+	}
+	
+	.modal-footer {
+	text-align: center;
+	display: block;
+	}
+	.delete-confirmation-modal .icon-alert {
+		border-radius: 50px;
+		width: 77px;
+		height: 77px;
+		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1.875em;
+		border: .25em solid #facea8;
+		color: #f8bb86;
+	}
+	.modal-header {
+	text-align: center;
+	padding-bottom:0px;
+	display: block;
+	}
+	.modal-content{
+		width: 80% !important;
+	}
+	.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+		margin: 0 auto;
+		max-width: 32em;
+		display: flex;
+		justify-content: center;
+	}
+	
+	.delete-confirmation-modal #exampleModalLongTitle {
+		text-align: center;
+		font-weight: 600;
+		color: #595959;
+		font-size: 30px;
+		margin: 0 0 .4em;
+	}
+		.delete-confirmation-modal .modal-dialog.modal-dialog-centered {
+			margin: 0 auto;
+			max-width: 32em;
+	}
+	.delete-confirmation-modal .modal-content {
+		padding: 1.25em;
+	}
+	.delete-confirmation-modal.modal .modal-content {
+		-webkit-border-radius: 0.3125em;
+		-moz-border-radius: 0.3125em;
+		-ms-border-radius: 0.3125em;
+		-o-border-radius: 0.3125em;
+		border-radius: 0.3125em;
+	}
+	.delete-confirmation-modal.modal  .modal-header {
+		border-bottom: none;
+		padding: 0;
+	}
+	.delete-confirmation-modal.modal .modal-body {
+		text-align: center;
+		font-size: 1.125em;
+		font-weight: 400;
+		color: #545454;
+		line-height: normal;
+		padding: 0;
+	}
+	{% comment %} .delete-confirmation-modal.modal #deleteConfirmed {
+    border-radius: 0.25em;
+    background: initial;
+    display: inline-block;
+    background-color: rgb(48, 133, 214);
+    border-left-color: rgb(48, 133, 214);
+    border-right-color: rgb(48, 133, 214);
+    color: #fff;
+    font-size: 1.0625em;
+	margin: 0.3125em;
+    padding: 0.625em 2em;
+    box-shadow: none;
+    font-weight: 500;
+	}
+	.delete-confirmation-modal.modal #deleteConfirmed:hover {
+		background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+	} {% endcomment %}
+	.delete-confirmation-modal .modal-footer button.btn {
+		display: inline-block;
+		background-color: rgb(221, 51, 51);
+		border: 0;
+		border-radius: 0.25em;
+		color: #fff;
+		font-size: 1.0625em;
+		margin: 0.3125em;
+		padding: 0.625em 2em;
+		box-shadow: none;
+		font-weight: 500;
+		padding: 8px 16px;
+		min-height: 36px;
+		font-size: 14px;
+		text-transform: unset !important;
+	}
+	.delete-confirmation-modal .modal-footer button.btn:hover {
+		background-image: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1));
+	}
+	.delete-confirmation-modal .modal-content .modal-footer {
+		border: 0;
+		padding: 0;
+		margin: 1.25em auto 0;
+	}
+	.delete-confirmation-modal {
+		padding: .625em !important;
+	}
+
+	@media screen and (max-width: 678px) {
+		.modal-content {
+			width: 100% !important;
+		}
+
+	}
+ </style>
+{% endblock stylesheets %}
+{% block content %}
+
+<!-- startwidget -->
+<div class="page-bar">
+	<div class="page-title-breadcrumb">
+		<div class=" pull-left">
+			<div class="page-title">Teams list</div>
+		</div>
+		<ol class="breadcrumb page-breadcrumb pull-right">
+		
+			<li><a class="parent-item" href="#">Teams</a>&nbsp;<i class="fa fa-angle-right"></i>
+			</li>
+			<li class="active">Teams list</li>
+		</ol>
+	</div>
+</div>
+
+
+<div class="row">
+
+	<div class="col-md-12">
+		<div class="tabbable-line">
+			<ul class="nav customtab nav-tabs" role="tablist">
+
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active fontawesome-demo" id="tab1">
+					<div class="row">
+						{% if messages %}
+						<div class="container-fluid">
+						  <ul class="list-unstyled">
+							{% for message in messages %}
+							  <li class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </li>
+							{% endfor %}
+						  </ul>
+						</div>
+						<script>
+							// Automatically close alerts after 5 seconds
+							window.setTimeout(function () {
+							  $(".alert").fadeTo(500, 0).slideUp(500, function () {
+								$(this).remove();
+							  });
+							}, 5000);
+						  </script>
+					  {% endif %}
+						<div class="col-md-12">
+							<div class="card card-box">
+								<div class="card-head">
+									<header>Teams list</header>
+
+								</div>
+								<div class="card-body ">
+									<div class="row">
+										{% if request.user|has_permission:'userauth.create_department_all' or request.user|has_permission:'userauth.create_department_team_own' %}
+										<div class="col-md-12 col-sm-12 d-flex justify-content-end">
+											<div class="btn-group">
+												<a href="{% url 'company:departments_add' %}" id="addRow"
+													class="btn btn-info">
+													Add new <i class="fa fa-plus"></i>
+												</a>
+												
+											</div>
+										</div>
+										{% endif %}
+									
+									</div>
+									<div class="table-scrollable">
+										<table
+											class="table table-striped table-bordered table-hover table-checkable order-column valign-middle"
+											id="example4">
+											<thead>
+												<tr>
+													<th>S.no</th>
+													<th>Name</th>
+													<th>Manager </th>
+													{% if show_update_button_for or show_delete_button_for %}
+													<th> Action </th>
+													{% endif %}
+												</tr>
+											</thead>
+											<tbody>
+												{% for department in departments %}
+												<tr class="odd gradeX">
+													<td class="patient-img">
+														{% get_proper_counter forloop.counter departments %}
+													</td>
+													<td>{% if department.name %} {{department.name}}{% else %} - {% endif %}</td>
+													<td class="left">{% if department.manager.person.first_name or department.manager.person.last_name %}{{department.manager.person.first_name}} {{department.manager.person.last_name}}{% else %} - {% endif %}</td>
+													{% if show_update_button_for or show_delete_button_for %}
+													<td class="d-flex">
+														{% if department.id in show_update_button_for %}
+														<div >
+															<a href="{% url 'company:departments_edit' department.id %}"
+															class="btn btn-primary btn-xs">
+															<i class="fa fa-pencil"></i>
+														</a>
+														</div>
+														{% endif %}
+														{% if department.id in show_delete_button_for %}
+
+															<form id="deleteForm_{{ department.id }}" action="{% url 'company:department_delete' department.id %}" method="post">
+																{% csrf_token %}
+																<button type="button" class="btn btn-danger btn-xs" onclick="confirmDelete('{{ department.id }}')" data-toggle="modal" data-target="#deleteConfirmationModal">
+																	<i class="fa fa-trash-o"></i>
+																</button>
+															</form> 
+															{% endif %}
+
+													</td> 
+													{% endif %}
+												</tr>
+												{% endfor %}
+												
+											</tbody>
+										</table>
+										
+									</div>
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="example4_info" role="status" aria-live="polite">
+												Showing {{ start_entry }} to {{ end_entry }} of {{ total_entries }} entries
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="example4_paginate">
+												<ul class="pagination float-right">
+													<!-- Previous Button -->
+													<li class="paginate_button page-item previous {% if not departments.has_previous %}disabled{% endif %}">
+														{% if departments.has_previous %}
+															<a href="?page={{ departments.previous_page_number }}" class="page-link">Previous</a>
+														{% else %}
+															<a href="#" class="page-link">Previous</a>
+														{% endif %}
+													</li>
+
+													<!-- First Page -->
+													{% if departments.number > 4 %}
+														<li class="paginate_button page-item">
+															<a href="?page=1" class="page-link">1</a>
+														</li>
+														{% if departments.number > 5 %}
+															<li class="paginate_button page-item disabled">
+																<span class="page-link">...</span>
+															</li>
+														{% endif %}
+													{% endif %}
+
+													<!-- Page Numbers -->
+													{% for num in departments.paginator.page_range %}
+														{% if num|add:"-3" <= departments.number and num|add:"3" >= departments.number %}
+															<li class="paginate_button page-item {% if departments.number == num %}active{% endif %}">
+																<a href="?page={{ num }}" class="page-link">{{ num }}</a>
+															</li>
+														{% endif %}
+													{% endfor %}
+
+													<!-- Last Page -->
+													{% if departments.number < departments.paginator.num_pages|add:"-3" %}
+														<li class="paginate_button page-item disabled">
+															<span class="page-link">...</span>
+														</li>
+														<li class="paginate_button page-item">
+															<a href="?page={{ departments.paginator.num_pages }}" class="page-link">{{ departments.paginator.num_pages }}</a>
+														</li>
+													{% endif %}
+
+													<!-- Next Button -->
+													<li class="paginate_button page-item next {% if not departments.has_next %}disabled{% endif %}">
+														{% if departments.has_next %}
+															<a href="?page={{ departments.next_page_number }}" class="page-link">Next</a>
+														{% else %}
+															<a href="#" class="page-link">Next</a>
+														{% endif %}
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+	<!---delete confirm popup-->
+	<div class="modal fade delete-confirmation-modal" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="icon-alert">
+					<i class="fa fa-exclamation" style="font-size:48px;color:#FFC2A0;"></i>
+					</div>
+					<h2 class="modal-title" id="exampleModalLongTitle">Are you sure?</h2>
+				</div>
+				<div class="modal-body">
+					You won't be able to revert it!
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn mdl-button mdl-js-button mdl-button--raised" id="deleteConfirmed">Yes, delete it!</button>
+					<button type="button" class="mdl-button mdl-js-button ml-2 mdl-button--raised  btn-default" data-dismiss="modal" id="deleteCanceled">Cancel</button>
+
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--pop up end-->
+
+	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- end widget -->
+{% endblock %}
+
+{% block javascripts %}
+<!-- <script>
+    function confirmDelete(employeeId) {
+        $('#deleteConfirmationModal').modal('show');
+        $('#deleteConfirmed').click(function () {
+            $('#deleteForm_' + employeeId).submit();
+        });
+    }
+</script> -->
+<script>
+	const deleteConfirmButton = document.getElementById('deleteConfirmed')
+	const deleteCancelButton = document.getElementById('deleteCanceled')
+
+    function confirmDelete(employeeId) {
+        $('#deleteConfirmationModal').modal('show');
+        // $('#deleteConfirmed').click(function () {
+        //     $('#deleteForm_' + employeeId).submit();
+        // });
+		deleteConfirmButton.addEventListener('click',function(){
+			 
+			deleteConfirmButton.disabled = true;
+			deleteConfirmButton.innerHTML = '<span class="loader"></span>';
+			$('#deleteForm_' + employeeId).submit();
+		});
+		deleteCancelButton.addEventListener('click',function(){
+			 
+			deleteCancelButton.disabled = true;
+			deleteCancelButton.innerHTML = '<span class="loader cancel-btn"></span>';
+			setTimeout(function() {
+				deleteCancelButton.disabled = false;
+				deleteCancelButton.innerHTML = 'Cancel'; 
+				$('#deleteConfirmationModal').modal('hide');
+			}, 500);
+			
+		});
+		
+    }
+	$('#example4').DataTable({
+		paging: false,
+		info: false
+	});
+</script>
+
+{% endblock javascripts %}

@@ -1,0 +1,448 @@
+{% extends "base_rostering.html" %}
+{% load static %}
+
+{% block title %}
+Rostering
+{% endblock title %}
+{% block stylesheets %}
+
+
+<style>
+    .dtp {
+z-index: 99999;
+}
+li{
+list-style: none;
+}
+@media screen and (max-width: 678px) {
+        
+    }
+.modal-dialog.modal-dialog-centered.modal-xl {
+    width: fit-content;
+}
+</style>
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="page-bar">
+    <div class="page-title-breadcrumb">
+        <div class=" pull-left">
+            <div class="page-title">Rostering</div>
+        </div>
+        <ol class="breadcrumb page-breadcrumb pull-right">
+            <li><a class="parent-item" href="">Rostering</a>&nbsp;<i class="fa fa-angle-right"></i>
+            </li>
+            <li class="active">Dashboard</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="card-box">
+            <div class="card-head">
+                <header>Shifts Calendar</header>
+            </div>
+            <div class="card-body ">
+                <div class="panel-body d-flex row">
+                    <div id="calendar" class="has-toolbar col-md-12"> </div>
+                    <div class="col-md-2">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<!---modals-->
+
+<div class="modal fade" id="createshift">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+
+            <!-- Modal Header -->
+            <div class="modal-header card-head">
+                <header>Create shift</header>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body p-0">
+                {% include "rostering/admin/dashboard/create-shift-form.html" %}
+                <div style="color:red" id="errorContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createshift">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create shift</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% render_field shift_form.author %}
+                    {% render_field shift_form.company %}
+                    {% render_field shift_form.shift_category %}
+                    {% render_field shift_form.status %}
+
+                    <div class="card-body row">
+                
+                        <div class="col-lg-12 p-t-20">
+                            <div class="col">
+                            <div class="form-group">
+                                    <label for="client">Shift Type</label>
+                                    {% render_field shift_form.shift_type class="form-control" %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                         <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                            <div class="form-control-wrapper">
+                                {% render_field shift_form.start_date_time class="mdl-textfield__input" placeholder=""%}
+                                <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_date_time.errors.0 }}</span>
+                                <label class="mdl-textfield__label capitalize">Start Date And Time</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                            <div class="form-control-wrapper">
+                                {% render_field shift_form.end_date_time class="mdl-textfield__input" placeholder=""%}
+                                <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_date_time.errors.0 }}</span>
+                                <label class="mdl-textfield__label capitalize">End Date And Time</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                        <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                            <div class="form-control-wrapper">
+                                {% render_field shift_form.client class="mdl-textfield__input" placeholder=""%}
+                                <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_date_time.errors.0 }}</span>
+                                <label class="mdl-textfield__label capitalize">Client Name</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div
+                            class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width is-focused">
+                            <div class="form-control-wrapper">
+                                {% render_field shift_form.employee class="mdl-textfield__input" placeholder=""%}
+                                <span class="focus-input100 error-label" style="color: red; font-size: 13px;  position: absolute; padding-top:5px; "  data-placeholder="&#xf191;" >{{ incident_form.incident_date_time.errors.0 }}</span>
+                                <label class="mdl-textfield__label capitalize">Employee Name</label>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="col-lg-12 p-t-20 text-center">
+                            <button type="submit"
+                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-pink">Publish</button>
+                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  
+
+<div class="modal fade" id="eventcalendar">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content p-3">
+            <span class="close">&times;</span>
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit shift</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form>
+                    <div class="card-body row">
+                        <div class="col-lg-12 p-t-20">
+                            <div
+                                class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height txt-full-width">
+                                <input class="mdl-textfield__input" type="text" id="sample2" value="Morning" readonly
+                                    tabIndex="-1">
+                                <label for="sample2" class="pull-right margin-0">
+                                    <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
+                                </label>
+                                <label for="sample2" class="mdl-textfield__label">Shift type</label>
+                                <ul data-mdl-for="sample2" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
+                                    <li class="mdl-menu__item" data-val="DE">Morning</li>
+                                    <li class="mdl-menu__item" data-val="BY">Evening</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                <input type="datetime-local" name="end_date_time" max="" placeholder=""
+                                    class="mdl-textfield__input" required="" id="id_end_date_time">
+                                <label class="mdl-textfield__label">Start Date and Time</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                <input type="datetime-local" name="end_date_time" max="" placeholder=""
+                                    class="mdl-textfield__input" required="" id="id_end_date_time">
+                                <label class="mdl-textfield__label">End Date and Time</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                <input class="mdl-textfield__input" type="text" value="Joshi" id="txtLasttName">
+                                <label class="mdl-textfield__label">Client Name</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 p-t-20">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label txt-full-width">
+                                <input class="mdl-textfield__input" type="text" value="Jayesh" id="txtFirstName">
+                                <label class="mdl-textfield__label">Employee Name</label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 p-t-20 text-center">
+                            <button type="button"
+                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 m-r-20 btn-pink">Edit</button>
+                            <button type="button"
+                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect m-b-10 btn-default" data-dismiss="modal">Delete</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--endif-->
+{% endblock %}
+
+{% block javascripts %}
+
+<!--Fetch all shift to map in calender-->
+<script>
+var shiftDetailsUrl = "{% url 'rostering:employee_shift_details' %}";
+
+var AppCalendar = function() {
+    return {
+        init: function() {
+            this.initCalendar();
+        },
+        initCalendar: function() {
+            if (jQuery().fullCalendar) {
+                var e = new Date,
+                    t = e.getDate(),
+                    a = e.getMonth(),
+                    n = e.getFullYear(),
+                    r = {};
+                $("#calendar").removeClass("mobile"), r = {
+                    left: "prev,next,today",
+                    center: "title",
+                    //right: "month,agendaWeek,agendaDay"
+                    right: "month"
+
+                };
+                var l = function(e) {
+                        var t = {
+                            title: $.trim(e.text())
+                        };
+                        e.data("eventObject", t);
+
+                    },
+                    o = function(e) {
+                        e = 0 === e.length ? "Untitled Event" : e;
+                        var t = $('<div class="external-event label label-event-' + e + '">' + e + "</div>");
+                        jQuery("#event_box").append(t), l(t);
+                    };
+                $("#external-events div.external-event").each(function() {
+                    l($(this));
+                }), $("#event_add").unbind("click").click(function() {
+                    var e = $("#event_title").val();
+                    o(e);
+                }), $("#event_box").html(""), o("holiday"), o("birthday"), o("meeting"), o("competition"), o("dinner"), o("party"), $("#calendar").fullCalendar("destroy"), $("#calendar").fullCalendar({
+                    header: r,
+                    defaultView: "month",
+                    slotMinutes: 15,
+                    editable: false, 
+                    droppable: false, 
+                    displayEventTime: false,
+                    drop: function(e, t) {
+                        var a = $(this).data("eventObject"),
+                            n = $.extend({}, a);
+                        n.start = e, n.allDay = t, n.className = $(this).attr("data-class"), $("#calendar").fullCalendar("renderEvent", n, !0), $("#drop-remove").is(":checked") && $(this).remove();
+                    },
+                    displayEventTime: false, 
+                    eventClick: function(event, jsEvent, view) {
+                        $('#eventModal').modal('show');
+                        $('#eventModalLabel').text('Shift Details');
+                        const closeBtn = document.getElementById('closeBtn')
+
+                        $.ajax({
+                            url: shiftDetailsUrl,
+                            type: 'GET',
+                            data: {
+                                shift: event.id,
+                            },
+                            success: function(data) {
+                                if (data.error) {
+                                    $('#eventModal .modal-body').html(`<p>${data.error}</p>`);
+                                }else {
+                                    let shiftHtml = `
+                                        <table class="table table-striped table-bordered table-hover table-checkable order-column valign-middle text-center" id="client-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>S.No.</th>
+                                                    <th>Client Name</th>
+                                                    <th>Start Date Time</th>
+                                                    <th>End Date Time</th>
+                                                    <th>Location</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                    `;
+                                
+                                    for (let i = 0; i < data.shifts.length; i++) {
+                                        shiftHtml += `
+                                            <tr>
+                                                <td>${i + 1}</td>
+                                                <td>${data.shifts[i].clientName}</td>
+                                                <td>${data.shifts[i].startDateTime}</td>
+                                                <td>${data.shifts[i].endDateTime}</td>
+                                                <td>${data.shifts[i].address}</td>
+                                               
+                                            </tr>
+                                        `;
+                                    }
+                                
+                                    shiftHtml += `
+                                            </tbody>
+                                        </table>
+                                    `;
+                                
+                                    $('#eventModal .modal-body').html(shiftHtml);
+                                }
+                            },
+                            error: function() {
+                                $('eventModal.modal-body').html('Error loading event details.');
+                            }
+                        });
+
+                        closeBtn.addEventListener('click',function(){
+                            closeBtn.disabled = true;
+                            closeBtn.innerHTML = '<span class="loader cancel-btn"></span>';
+                            setTimeout(function() {
+                                closeBtn.disabled = false;
+                                closeBtn.innerHTML = 'Close'; 
+                                $('#eventModal').modal('hide');
+                            }, 500);
+                   });
+                    }
+                });
+            }
+        },
+
+    }
+}();
+jQuery(document).ready(function() {
+    'use strict';
+    AppCalendar.init();
+});
+
+    $(document).ready(function() {
+
+        var calendar_view = 'month';
+
+        function handleCalendarView(view) {
+            calendar_view = view;
+            sendDataToBackend();
+        }
+    
+        $(".fc-month-button").click(function() {
+            handleCalendarView('month');
+        });
+    
+        $(".fc-agendaWeek-button").click(function() {
+            handleCalendarView('week');
+        });
+    
+        $(".fc-agendaDay-button").click(function() {
+            handleCalendarView('day');
+        });
+
+
+
+        var fetchShiftsURL = "{% url 'rostering:fetch_employee_shifts_to_calendar' %}";
+        var calendar_view = 'month';
+
+        function sendDataToBackend() {
+
+        $.ajax({
+            url: fetchShiftsURL,
+            method: 'GET',
+            data: {
+                calendar_view:calendar_view
+            },
+            success: function(data) {
+                $('#calendar').fullCalendar('removeEvents');
+            
+                $.each(data, function(index, shift) {
+                    var newEvent = {
+                        title: shift.title,
+                        start: shift.start_date_time,
+                        //end: shift.end_date_time,
+                        id:shift.shift_id
+                    };
+                    if (shift.calendar_view !== 'month') {
+                        newEvent.end = shift.end_date_time;
+                    }
+                
+            
+                    $('#calendar').fullCalendar('renderEvent', newEvent, true);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+    sendDataToBackend();
+
+    });
+    </script>
+
+{% endblock javascripts %} 
+
