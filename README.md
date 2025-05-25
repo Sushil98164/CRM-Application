@@ -12,7 +12,7 @@ A Customer Relationship Management application built with Django 5.0 and Python 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/Sushil98164/CRM-Application.git)
 cd CRM-Application
 ```
 
@@ -75,30 +75,12 @@ python manage.py runserver
 
 The application will be available at `http://127.0.0.1:8000/`
 
-## Project Structure
-
-```
-CRM-Application/
-├── manage.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-├── venv/                 # Virtual environment (not tracked in git)
-├── crm_project/          # Main project directory
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-└── apps/                 # Django applications
-    └── ...
-```
-
 ## Environment Variables
 
 Create a `.env` file in the root directory and add the following variables:
 
 ```env
-SECRET_KEY=your-secret-key-here
+AWS_SECRET_KEY=your-secret-key-here
 DEBUG=True
 DATABASE_URL=sqlite:///db.sqlite3
 ```
@@ -110,96 +92,6 @@ DATABASE_URL=sqlite:///db.sqlite3
 source venv/bin/activate  # macOS/Linux
 venv\Scripts\activate     # Windows
 
-# Install new package
-pip install package-name
-pip freeze > requirements.txt  # Update requirements
-
-# Database operations
-python manage.py makemigrations
-python manage.py migrate
-python manage.py showmigrations
-
-# Create superuser
-python manage.py createsuperuser
-
-# Run development server
-python manage.py runserver
-
-# Run tests
-python manage.py test
-
-# Collect static files (for production)
-python manage.py collectstatic
-```
-
-## Development
-
-### Adding New Dependencies
-
-1. Activate virtual environment
-2. Install the package: `pip install package-name`
-3. Update requirements: `pip freeze > requirements.txt`
-4. Commit the updated requirements.txt
-
-### Database Changes
-
-1. Make model changes in your Django apps
-2. Create migrations: `python manage.py makemigrations`
-3. Review the migration files
-4. Apply migrations: `python manage.py migrate`
-
-## Deactivating Virtual Environment
-
-```bash
-deactivate
-```
-
-## Troubleshooting
-
-### Virtual Environment Issues
-
-- **Windows PowerShell execution policy error:**
-  ```bash
-  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-  ```
-
-- **Permission denied on activation:**
-  - Make sure you have proper permissions
-  - Try running terminal as administrator (Windows)
-
-### Database Issues
-
-- **Migration conflicts:**
-  ```bash
-  python manage.py migrate --fake-initial
-  ```
-
-- **Reset migrations:**
-  ```bash
-  # Delete migration files (keep __init__.py)
-  python manage.py makemigrations
-  python manage.py migrate
-  ```
-
-### Requirements Installation Issues
-
-- **Upgrade pip:**
-  ```bash
-  python -m pip install --upgrade pip
-  ```
-
-- **Install specific package version:**
-  ```bash
-  pip install package-name==version
-  ```
-
-## Contributing
-
-1. Create a new branch for your feature
-2. Make your changes
-3. Test your changes
-4. Submit a pull request
-
 ## Tech Stack
 
 - **Backend:** Django 5.0
@@ -207,10 +99,3 @@ deactivate
 - **Database:** SQLite (default), PostgreSQL/MySQL (production)
 - **Frontend:** HTML, CSS, JavaScript (Django templates)
 
-## License
-
-[Add your license information here]
-
-## Contact
-
-[Add your contact information here]
